@@ -6,45 +6,55 @@
 *   **Build Tool:** Vite
 *   **Language:** TypeScript
 *   **Routing:** TanStack Router (React Router)
-*   **State Management/Data Fetching:** TanStack Query (React Query)
+*   **State Management/Data Fetching:** Convex React (replaces TanStack Query)
 *   **UI Components:** Shadcn UI
 *   **Styling:** Tailwind CSS (comes with Shadcn UI)
 
-## 3.2. Backend (Conceptual - Requires further definition)
+## 3.2. Backend
 
-*   **Language/Framework:** To be determined (e.g., Python with FastAPI/Flask, Node.js with Express, etc.)
-*   **Database:** To be determined (e.g., PostgreSQL for relational data, MongoDB for NoSQL, Vector Database for embeddings).
+*   **Platform:** Convex (Full-stack TypeScript platform)
+*   **Database:** Convex Database (NoSQL document database with ACID transactions)
+*   **Real-time:** Built-in real-time subscriptions via Convex
+*   **Functions:** Convex functions (queries, mutations, actions)
+*   **File Storage:** Convex File Storage for document uploads
+*   **Vector Search:** Convex Vector Search for embeddings and similarity search
+*   **Authentication:** Clerk (integrated with Convex)
 *   **AI/LLM Integration:**
-    *   Interaction with a Large Language Model (LLM) API (e.g., OpenAI, Anthropic, or self-hosted).
-    *   Embedding generation for documents and queries.
-    *   Vector search for retrieving relevant context.
-*   **Document Processing:** Libraries for parsing PDFs, DOCs, TXT files.
-*   **Web Crawling:** Libraries/services for fetching and parsing web content.
-*   **Authentication:** JWT-based or similar.
-*   **Task Queues (Potentially):** For handling asynchronous tasks like document processing, crawling, and agent retraining (e.g., Celery, RabbitMQ).
+    *   Interaction with LLM APIs (OpenAI, Anthropic, etc.) via Convex actions
+    *   Embedding generation using Convex actions
+    *   Vector search using Convex's built-in vector database
+*   **Document Processing:** Server-side processing via Convex actions
+*   **Web Crawling:** Implemented as Convex actions for fetching web content
+*   **Scheduled Tasks:** Convex cron jobs for periodic tasks (document reprocessing, cleanup, etc.)
 
-## 3.3. Hosting & Deployment (Conceptual)
+## 3.3. Hosting & Deployment
 
-*   **Frontend:** Static hosting (e.g., Vercel, Netlify, AWS S3/CloudFront).
-*   **Backend:** Server-based hosting (e.g., AWS EC2/ECS/Lambda, Google Cloud Run, Heroku).
-*   **Database:** Managed database service (e.g., AWS RDS, MongoDB Atlas).
-*   **Iframe Delivery:** Ensure the iframe content is served efficiently and securely.
+*   **Frontend:** Vercel (recommended for Convex integration)
+*   **Backend:** Convex Cloud (fully managed)
+*   **Database:** Convex Database (included with Convex Cloud)
+*   **Authentication:** Clerk (cloud-hosted)
+*   **File Storage:** Convex File Storage (included)
+*   **Iframe Delivery:** Served via Vercel with Convex backend integration
 
 ## 3.4. High-Level Architecture Considerations
 
-*   **Modular Design:** Separate services for user management, agent configuration, data ingestion, AI interaction, and the chat interface.
-*   **API-Driven:** Frontend communicates with the backend via RESTful or GraphQL APIs.
-*   **Scalability:** Design components to scale independently (e.g., ingestion pipeline, chat request handling).
-*   **Security:** Implement security best practices for data storage, API access, and user authentication.
+*   **Unified Platform:** Convex provides database, real-time updates, file storage, and serverless functions in one platform
+*   **Type Safety:** End-to-end TypeScript from frontend to backend
+*   **Real-time by Default:** All data updates are automatically real-time via Convex subscriptions
+*   **Authentication Integration:** Clerk seamlessly integrates with Convex for user management
+*   **Scalability:** Convex automatically scales based on usage
+*   **Security:** Built-in security with Convex's authentication integration and Clerk's user management
 *   **Data Flow for Agent Query:**
-    1.  End-user sends a query via the iframe chat widget.
-    2.  Query is forwarded to the backend.
-    3.  Backend generates an embedding for the query.
-    4.  Backend performs a vector search against the specific agent's knowledge base (indexed documents/content) to find relevant context.
-    5.  Backend sends the query + relevant context to an LLM.
-    6.  LLM generates a response.
-    7.  Backend sends the response back to the chat widget.
+    1.  End-user sends a query via the iframe chat widget
+    2.  Frontend calls Convex mutation with the query
+    3.  Convex action generates an embedding for the query
+    4.  Convex performs vector search against the agent's knowledge base
+    5.  Convex action sends query + context to LLM API
+    6.  LLM response is processed and stored via Convex mutation
+    7.  Real-time subscription automatically updates the chat widget
 
 ## 3.5. Iframe Communication
 
-*   The embedded iframe will need to communicate with the parent window for potential actions like resizing or passing initial configuration (e.g., agent ID). `postMessage` API will likely be used for cross-origin communication. 
+*   The embedded iframe communicates with the parent window using `postMessage` API for cross-origin communication
+*   Initial configuration (agent ID, theme, etc.) passed via URL parameters or postMessage
+*   Convex handles all backend communication with built-in authentication via Clerk 

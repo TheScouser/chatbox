@@ -1,0 +1,19 @@
+{
+  "projectName": "infochat",
+  "mode": "file-router",
+  "typescript": true,
+  "tailwind": true,
+  "packageManager": "bun",
+  "git": true,
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "biome",
+    "clerk",
+    "convex",
+    "form",
+    "shadcn",
+    "table",
+    "t3env"
+  ]
+}
