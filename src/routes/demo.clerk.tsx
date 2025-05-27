@@ -39,11 +39,25 @@ function Content() {
   const agents = useQuery(api.agents.getAgentsForUser)
   const createAgent = useMutation(api.agents.createAgent)
   const createKnowledgeEntry = useMutation(api.knowledge.createKnowledgeEntry)
+  const createConversation = useMutation(api.conversations.createConversation)
+  const addMessage = useMutation(api.conversations.addMessage)
   
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null)
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null)
+  
   const knowledgeEntries = useQuery(
     api.knowledge.getKnowledgeForAgent, 
     selectedAgentId ? { agentId: selectedAgentId as any } : "skip"
+  )
+  
+  const conversations = useQuery(
+    api.conversations.getConversationsForAgent,
+    selectedAgentId ? { agentId: selectedAgentId as any } : "skip"
+  )
+  
+  const messages = useQuery(
+    api.conversations.getMessagesForConversation,
+    selectedConversationId ? { conversationId: selectedConversationId as any } : "skip"
   )
   
   // Automatically create user record on first login
@@ -79,6 +93,30 @@ function Content() {
         url: undefined,
         chunkIndex: undefined,
       }
+    })
+  }
+  
+  const handleCreateConversation = () => {
+    if (!selectedAgentId) return
+    
+    createConversation({
+      agentId: selectedAgentId as any,
+      title: `Test Conversation ${Date.now()}`,
+    })
+  }
+  
+  const handleAddMessage = (role: "user" | "assistant") => {
+    if (!selectedConversationId) return
+    
+    const content = role === "user" 
+      ? `User message sent at ${new Date().toLocaleString()}`
+      : `Assistant response generated at ${new Date().toLocaleString()}. This would be the AI's response to the user's query.`
+    
+    addMessage({
+      conversationId: selectedConversationId as any,
+      role,
+      content,
+      metadata: role === "assistant" ? { model: "test-model" } : undefined,
     })
   }
   
@@ -162,9 +200,89 @@ function Content() {
             ) : (
               <p className="text-gray-600">No knowledge entries yet. Click the button to add some!</p>
             )}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
+                     </div>
+         </div>
+       )}
+       
+       {selectedAgentId && (
+         <div>
+           <h2 className="text-lg font-semibold">Conversations:</h2>
+           <div className="bg-purple-50 p-4 rounded">
+             <div className="flex items-center gap-4 mb-3">
+               <span><strong>Count:</strong> {conversations?.length || 0}</span>
+               <button 
+                 onClick={handleCreateConversation}
+                 className="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600"
+               >
+                 Create Test Conversation
+               </button>
+             </div>
+             {conversations && conversations.length > 0 ? (
+               <div className="space-y-2">
+                 {conversations.map((conversation) => (
+                   <div 
+                     key={conversation._id} 
+                     className={`bg-white p-3 rounded border cursor-pointer ${
+                       selectedConversationId === conversation._id ? 'border-purple-500 bg-purple-50' : 'hover:bg-gray-50'
+                     }`}
+                     onClick={() => setSelectedConversationId(conversation._id)}
+                   >
+                     <p><strong>Title:</strong> {conversation.title}</p>
+                     <p><strong>Status:</strong> {conversation.isActive ? '🟢 Active' : '🔴 Inactive'}</p>
+                     <p><strong>Created:</strong> {new Date(conversation._creationTime).toLocaleString()}</p>
+                     {selectedConversationId === conversation._id && (
+                       <p className="text-purple-600 text-sm mt-1">✓ Selected for message testing</p>
+                     )}
+                   </div>
+                 ))}
+               </div>
+             ) : (
+               <p className="text-gray-600">No conversations yet. Click the button to create one!</p>
+             )}
+           </div>
+         </div>
+       )}
+       
+       {selectedConversationId && (
+         <div>
+           <h2 className="text-lg font-semibold">Messages:</h2>
+           <div className="bg-orange-50 p-4 rounded">
+             <div className="flex items-center gap-4 mb-3">
+               <span><strong>Count:</strong> {messages?.length || 0}</span>
+               <button 
+                 onClick={() => handleAddMessage("user")}
+                 className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+               >
+                 Add User Message
+               </button>
+               <button 
+                 onClick={() => handleAddMessage("assistant")}
+                 className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+               >
+                 Add Assistant Message
+               </button>
+             </div>
+             {messages && messages.length > 0 ? (
+               <div className="space-y-2">
+                 {messages.map((message) => (
+                   <div key={message._id} className={`p-3 rounded border ${
+                     message.role === "user" ? "bg-blue-100 border-blue-300" : "bg-green-100 border-green-300"
+                   }`}>
+                     <p><strong>Role:</strong> {message.role === "user" ? "👤 User" : "🤖 Assistant"}</p>
+                     <p><strong>Content:</strong> {message.content}</p>
+                     <p><strong>Time:</strong> {new Date(message._creationTime).toLocaleString()}</p>
+                     {message.metadata && (
+                       <p><strong>Metadata:</strong> {JSON.stringify(message.metadata)}</p>
+                     )}
+                   </div>
+                 ))}
+               </div>
+             ) : (
+               <p className="text-gray-600">No messages yet. Click the buttons to add some!</p>
+             )}
+           </div>
+         </div>
+       )}
+     </div>
+   )
+ }

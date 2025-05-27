@@ -26,6 +26,23 @@ export default defineSchema({
     embeddings: v.optional(v.array(v.number())),
   }).index("agentId", ["agentId"]),
   
+  conversations: defineTable({
+    agentId: v.id("agents"),
+    title: v.optional(v.string()),
+    isActive: v.boolean(),
+  }).index("agentId", ["agentId"]),
+  
+  messages: defineTable({
+    conversationId: v.id("conversations"),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    content: v.string(),
+    metadata: v.optional(v.object({
+      userId: v.optional(v.string()), // For user messages
+      model: v.optional(v.string()), // For assistant messages
+      tokensUsed: v.optional(v.number()),
+    })),
+  }).index("conversationId", ["conversationId"]),
+  
   products: defineTable({
     title: v.string(),
     imageId: v.string(),
