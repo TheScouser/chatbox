@@ -1,5 +1,5 @@
 {
-  "projectName": "infochat",
+  "projectName": "chatbox",
   "mode": "file-router",
   "typescript": true,
   "tailwind": true,

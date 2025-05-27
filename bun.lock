@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "infochat",
+      "name": "chatbox",
       "dependencies": {
         "@clerk/clerk-react": "^5.22.13",
         "@convex-dev/react-query": "0.0.0-alpha.8",

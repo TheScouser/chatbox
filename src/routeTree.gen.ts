@@ -13,7 +13,6 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as DemoTableImport } from './routes/demo.table'
-import { Route as DemoConvexImport } from './routes/demo.convex'
 import { Route as DemoClerkImport } from './routes/demo.clerk'
 import { Route as DemoFormSimpleImport } from './routes/demo.form.simple'
 import { Route as DemoFormAddressImport } from './routes/demo.form.address'
@@ -29,12 +28,6 @@ const IndexRoute = IndexImport.update({
 const DemoTableRoute = DemoTableImport.update({
   id: '/demo/table',
   path: '/demo/table',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoConvexRoute = DemoConvexImport.update({
-  id: '/demo/convex',
-  path: '/demo/convex',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -74,13 +67,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoClerkImport
       parentRoute: typeof rootRoute
     }
-    '/demo/convex': {
-      id: '/demo/convex'
-      path: '/demo/convex'
-      fullPath: '/demo/convex'
-      preLoaderRoute: typeof DemoConvexImport
-      parentRoute: typeof rootRoute
-    }
     '/demo/table': {
       id: '/demo/table'
       path: '/demo/table'
@@ -110,7 +96,6 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo/clerk': typeof DemoClerkRoute
-  '/demo/convex': typeof DemoConvexRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
@@ -119,7 +104,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/clerk': typeof DemoClerkRoute
-  '/demo/convex': typeof DemoConvexRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
@@ -129,7 +113,6 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/demo/clerk': typeof DemoClerkRoute
-  '/demo/convex': typeof DemoConvexRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
@@ -140,7 +123,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/demo/clerk'
-    | '/demo/convex'
     | '/demo/table'
     | '/demo/form/address'
     | '/demo/form/simple'
@@ -148,7 +130,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/demo/clerk'
-    | '/demo/convex'
     | '/demo/table'
     | '/demo/form/address'
     | '/demo/form/simple'
@@ -156,7 +137,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/demo/clerk'
-    | '/demo/convex'
     | '/demo/table'
     | '/demo/form/address'
     | '/demo/form/simple'
@@ -166,7 +146,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DemoClerkRoute: typeof DemoClerkRoute
-  DemoConvexRoute: typeof DemoConvexRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
   DemoFormSimpleRoute: typeof DemoFormSimpleRoute
@@ -175,7 +154,6 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DemoClerkRoute: DemoClerkRoute,
-  DemoConvexRoute: DemoConvexRoute,
   DemoTableRoute: DemoTableRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
   DemoFormSimpleRoute: DemoFormSimpleRoute,
@@ -193,7 +171,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/demo/clerk",
-        "/demo/convex",
         "/demo/table",
         "/demo/form/address",
         "/demo/form/simple"
@@ -204,9 +181,6 @@ export const routeTree = rootRoute
     },
     "/demo/clerk": {
       "filePath": "demo.clerk.tsx"
-    },
-    "/demo/convex": {
-      "filePath": "demo.convex.tsx"
     },
     "/demo/table": {
       "filePath": "demo.table.tsx"
