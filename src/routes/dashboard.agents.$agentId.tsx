@@ -1,13 +1,280 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Authenticated, useQuery } from 'convex/react'
+import { Authenticated, useQuery, useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import DashboardLayout from '../components/DashboardLayout'
+import RichTextEditor from '../components/RichTextEditor'
 import { useState } from 'react'
 import { ArrowLeft, Bot, BookOpen, MessageSquare, Settings, Globe } from 'lucide-react'
 
 export const Route = createFileRoute('/dashboard/agents/$agentId')({
   component: AgentDetail,
 })
+
+function KnowledgeTab({ agentId }: { agentId: string }) {
+  const [content, setContent] = useState('')
+  const [title, setTitle] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+  const [editingEntry, setEditingEntry] = useState<string | null>(null)
+
+  const createKnowledgeEntry = useMutation(api.knowledge.createKnowledgeEntry)
+  const updateKnowledgeEntry = useMutation(api.knowledge.updateKnowledgeEntry)
+  const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry)
+  const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, { agentId: agentId as any })
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!content.trim() || !title.trim()) return
+
+    setIsSubmitting(true)
+    setError(null)
+    setSuccess(false)
+    
+    try {
+      if (editingEntry) {
+        // Update existing entry
+        await updateKnowledgeEntry({
+          entryId: editingEntry as any,
+          title: title.trim(),
+          content: content,
+        })
+        setEditingEntry(null)
+      } else {
+        // Create new entry
+        await createKnowledgeEntry({
+          agentId: agentId as any, // Type assertion needed for the ID
+          title: title.trim(),
+          content: content,
+          source: "text",
+          sourceMetadata: undefined,
+        })
+      }
+      
+      // Reset form and show success
+      setTitle('')
+      setContent('')
+      setSuccess(true)
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(false), 3000)
+    } catch (error) {
+      console.error('Failed to save knowledge entry:', error)
+      setError(error instanceof Error ? error.message : 'Failed to save knowledge entry')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleEdit = (entry: any) => {
+    setEditingEntry(entry._id)
+    setTitle(entry.title || '')
+    setContent(entry.content)
+    setError(null)
+    setSuccess(false)
+    // Scroll to top of form
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleCancelEdit = () => {
+    setEditingEntry(null)
+    setTitle('')
+    setContent('')
+    setError(null)
+    setSuccess(false)
+  }
+
+  const handleDelete = async (entry: any) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${entry.title || 'Untitled Entry'}"? This action cannot be undone.`
+    )
+    
+    if (!confirmed) return
+
+    try {
+      await deleteKnowledgeEntry({ entryId: entry._id })
+      
+      // If we were editing this entry, cancel the edit
+      if (editingEntry === entry._id) {
+        handleCancelEdit()
+      }
+    } catch (error) {
+      console.error('Failed to delete knowledge entry:', error)
+      setError(error instanceof Error ? error.message : 'Failed to delete knowledge entry')
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium text-gray-900">
+          {editingEntry ? 'Edit Knowledge Entry' : 'Add Knowledge'}
+        </h3>
+        <p className="mt-1 text-sm text-gray-600">
+          {editingEntry 
+            ? 'Update the content and title of your knowledge entry.'
+            : 'Create rich text content to train your agent. You can format text, add headings, lists, and more.'
+          }
+        </p>
+        {editingEntry && (
+          <button
+            onClick={handleCancelEdit}
+            className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+          >
+            ← Cancel editing and create new entry
+          </button>
+        )}
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-md p-4">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+        
+        {success && (
+          <div className="bg-green-50 border border-green-200 rounded-md p-4">
+            <p className="text-sm text-green-600">Knowledge entry saved successfully!</p>
+          </div>
+        )}
+
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            Title
+          </label>
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter a title for this knowledge entry..."
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Content
+          </label>
+          <RichTextEditor
+            content={content}
+            onChange={setContent}
+            placeholder="Start writing your knowledge content..."
+            className="min-h-[300px]"
+          />
+        </div>
+
+        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
+          <button
+            type="button"
+            onClick={editingEntry ? handleCancelEdit : () => {
+              setTitle('')
+              setContent('')
+            }}
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            {editingEntry ? 'Cancel' : 'Clear'}
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting || !content.trim() || !title.trim()}
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting 
+              ? (editingEntry ? 'Updating...' : 'Saving...') 
+              : (editingEntry ? 'Update Entry' : 'Save Knowledge Entry')
+            }
+          </button>
+        </div>
+      </form>
+
+      {/* Knowledge Entries List */}
+      <div className="mt-8 pt-8 border-t border-gray-200">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-lg font-medium text-gray-900">Knowledge Entries</h3>
+          <span className="text-sm text-gray-500">
+            {knowledgeEntries?.length || 0} entries
+          </span>
+        </div>
+
+        {knowledgeEntries === undefined ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="animate-pulse bg-gray-100 rounded-lg p-4 h-24"></div>
+            ))}
+          </div>
+        ) : knowledgeEntries.length === 0 ? (
+          <div className="text-center py-8 bg-gray-50 rounded-lg">
+            <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
+            <h4 className="mt-2 text-sm font-medium text-gray-900">No knowledge entries yet</h4>
+            <p className="mt-1 text-sm text-gray-500">
+              Create your first knowledge entry using the form above.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {knowledgeEntries.map((entry) => (
+              <div key={entry._id} className={`bg-white border rounded-lg p-4 hover:border-gray-300 transition-colors ${
+                editingEntry === entry._id ? 'border-blue-300 bg-blue-50' : 'border-gray-200'
+              }`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-gray-900 mb-1 flex items-center">
+                      {entry.title || 'Untitled Entry'}
+                      {editingEntry === entry._id && (
+                        <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          Editing
+                        </span>
+                      )}
+                    </h4>
+                    <div 
+                      className="text-sm text-gray-600 line-clamp-3"
+                      dangerouslySetInnerHTML={{ 
+                        __html: entry.content.length > 200 
+                          ? entry.content.substring(0, 200) + '...' 
+                          : entry.content 
+                      }}
+                    />
+                    <div className="flex items-center mt-2 text-xs text-gray-500">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                        {entry.source}
+                      </span>
+                      <span className="ml-2">
+                        Created {new Date(entry._creationTime).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 ml-4">
+                    <button
+                      onClick={() => handleEdit(entry)}
+                      className="text-gray-400 hover:text-blue-600 transition-colors"
+                      title="Edit entry"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(entry)}
+                      className="text-gray-400 hover:text-red-600 transition-colors"
+                      title="Delete entry"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 function AgentDetail() {
   const navigate = useNavigate()
@@ -196,18 +463,7 @@ function AgentDetail() {
               )}
 
               {activeTab === 'knowledge' && (
-                <div className="text-center py-12">
-                  <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">No knowledge entries yet</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Start by adding some knowledge to train your agent.
-                  </p>
-                  <div className="mt-6">
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                      Add Knowledge
-                    </button>
-                  </div>
-                </div>
+                <KnowledgeTab agentId={agent._id} />
               )}
 
               {activeTab === 'conversations' && (

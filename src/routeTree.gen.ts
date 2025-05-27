@@ -15,6 +15,8 @@ import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard.index'
 import { Route as DemoTableImport } from './routes/demo.table'
+import { Route as DemoRichTextImport } from './routes/demo.rich-text'
+import { Route as DemoKnowledgeImport } from './routes/demo.knowledge'
 import { Route as DemoClerkImport } from './routes/demo.clerk'
 import { Route as DashboardAgentsImport } from './routes/dashboard.agents'
 import { Route as DashboardAgentsIndexImport } from './routes/dashboard.agents.index'
@@ -46,6 +48,18 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 const DemoTableRoute = DemoTableImport.update({
   id: '/demo/table',
   path: '/demo/table',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DemoRichTextRoute = DemoRichTextImport.update({
+  id: '/demo/rich-text',
+  path: '/demo/rich-text',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DemoKnowledgeRoute = DemoKnowledgeImport.update({
+  id: '/demo/knowledge',
+  path: '/demo/knowledge',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -121,6 +135,20 @@ declare module '@tanstack/react-router' {
       path: '/demo/clerk'
       fullPath: '/demo/clerk'
       preLoaderRoute: typeof DemoClerkImport
+      parentRoute: typeof rootRoute
+    }
+    '/demo/knowledge': {
+      id: '/demo/knowledge'
+      path: '/demo/knowledge'
+      fullPath: '/demo/knowledge'
+      preLoaderRoute: typeof DemoKnowledgeImport
+      parentRoute: typeof rootRoute
+    }
+    '/demo/rich-text': {
+      id: '/demo/rich-text'
+      path: '/demo/rich-text'
+      fullPath: '/demo/rich-text'
+      preLoaderRoute: typeof DemoRichTextImport
       parentRoute: typeof rootRoute
     }
     '/demo/table': {
@@ -212,6 +240,8 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/demo/clerk': typeof DemoClerkRoute
+  '/demo/knowledge': typeof DemoKnowledgeRoute
+  '/demo/rich-text': typeof DemoRichTextRoute
   '/demo/table': typeof DemoTableRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
@@ -224,6 +254,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/clerk': typeof DemoClerkRoute
+  '/demo/knowledge': typeof DemoKnowledgeRoute
+  '/demo/rich-text': typeof DemoRichTextRoute
   '/demo/table': typeof DemoTableRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
@@ -239,6 +271,8 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/demo/clerk': typeof DemoClerkRoute
+  '/demo/knowledge': typeof DemoKnowledgeRoute
+  '/demo/rich-text': typeof DemoRichTextRoute
   '/demo/table': typeof DemoTableRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
@@ -255,6 +289,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/agents'
     | '/demo/clerk'
+    | '/demo/knowledge'
+    | '/demo/rich-text'
     | '/demo/table'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
@@ -266,6 +302,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/demo/clerk'
+    | '/demo/knowledge'
+    | '/demo/rich-text'
     | '/demo/table'
     | '/dashboard'
     | '/dashboard/agents/$agentId'
@@ -279,6 +317,8 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/agents'
     | '/demo/clerk'
+    | '/demo/knowledge'
+    | '/demo/rich-text'
     | '/demo/table'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
@@ -293,6 +333,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   DemoClerkRoute: typeof DemoClerkRoute
+  DemoKnowledgeRoute: typeof DemoKnowledgeRoute
+  DemoRichTextRoute: typeof DemoRichTextRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
   DemoFormSimpleRoute: typeof DemoFormSimpleRoute
@@ -302,6 +344,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   DemoClerkRoute: DemoClerkRoute,
+  DemoKnowledgeRoute: DemoKnowledgeRoute,
+  DemoRichTextRoute: DemoRichTextRoute,
   DemoTableRoute: DemoTableRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
   DemoFormSimpleRoute: DemoFormSimpleRoute,
@@ -320,6 +364,8 @@ export const routeTree = rootRoute
         "/",
         "/dashboard",
         "/demo/clerk",
+        "/demo/knowledge",
+        "/demo/rich-text",
         "/demo/table",
         "/demo/form/address",
         "/demo/form/simple"
@@ -346,6 +392,12 @@ export const routeTree = rootRoute
     },
     "/demo/clerk": {
       "filePath": "demo.clerk.tsx"
+    },
+    "/demo/knowledge": {
+      "filePath": "demo.knowledge.tsx"
+    },
+    "/demo/rich-text": {
+      "filePath": "demo.rich-text.tsx"
     },
     "/demo/table": {
       "filePath": "demo.table.tsx"

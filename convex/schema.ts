@@ -16,6 +16,7 @@ export default defineSchema({
   
   knowledgeEntries: defineTable({
     agentId: v.id("agents"),
+    title: v.optional(v.string()),
     content: v.string(),
     source: v.string(), // "text", "document", "url"
     sourceMetadata: v.optional(v.object({
@@ -42,10 +43,4 @@ export default defineSchema({
       tokensUsed: v.optional(v.number()),
     })),
   }).index("conversationId", ["conversationId"]),
-  
-  products: defineTable({
-    title: v.string(),
-    imageId: v.string(),
-    price: v.number(),
-  }),
 })
