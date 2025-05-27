@@ -14,9 +14,11 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard.index'
+import { Route as DemoTextExtractionImport } from './routes/demo.text-extraction'
 import { Route as DemoTableImport } from './routes/demo.table'
 import { Route as DemoRichTextImport } from './routes/demo.rich-text'
 import { Route as DemoKnowledgeImport } from './routes/demo.knowledge'
+import { Route as DemoFileUploadImport } from './routes/demo.file-upload'
 import { Route as DemoClerkImport } from './routes/demo.clerk'
 import { Route as DashboardAgentsImport } from './routes/dashboard.agents'
 import { Route as DashboardAgentsIndexImport } from './routes/dashboard.agents.index'
@@ -45,6 +47,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
+const DemoTextExtractionRoute = DemoTextExtractionImport.update({
+  id: '/demo/text-extraction',
+  path: '/demo/text-extraction',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const DemoTableRoute = DemoTableImport.update({
   id: '/demo/table',
   path: '/demo/table',
@@ -60,6 +68,12 @@ const DemoRichTextRoute = DemoRichTextImport.update({
 const DemoKnowledgeRoute = DemoKnowledgeImport.update({
   id: '/demo/knowledge',
   path: '/demo/knowledge',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DemoFileUploadRoute = DemoFileUploadImport.update({
+  id: '/demo/file-upload',
+  path: '/demo/file-upload',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -137,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoClerkImport
       parentRoute: typeof rootRoute
     }
+    '/demo/file-upload': {
+      id: '/demo/file-upload'
+      path: '/demo/file-upload'
+      fullPath: '/demo/file-upload'
+      preLoaderRoute: typeof DemoFileUploadImport
+      parentRoute: typeof rootRoute
+    }
     '/demo/knowledge': {
       id: '/demo/knowledge'
       path: '/demo/knowledge'
@@ -156,6 +177,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/table'
       fullPath: '/demo/table'
       preLoaderRoute: typeof DemoTableImport
+      parentRoute: typeof rootRoute
+    }
+    '/demo/text-extraction': {
+      id: '/demo/text-extraction'
+      path: '/demo/text-extraction'
+      fullPath: '/demo/text-extraction'
+      preLoaderRoute: typeof DemoTextExtractionImport
       parentRoute: typeof rootRoute
     }
     '/dashboard/': {
@@ -240,9 +268,11 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/demo/clerk': typeof DemoClerkRoute
+  '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/knowledge': typeof DemoKnowledgeRoute
   '/demo/rich-text': typeof DemoRichTextRoute
   '/demo/table': typeof DemoTableRoute
+  '/demo/text-extraction': typeof DemoTextExtractionRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -254,9 +284,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/clerk': typeof DemoClerkRoute
+  '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/knowledge': typeof DemoKnowledgeRoute
   '/demo/rich-text': typeof DemoRichTextRoute
   '/demo/table': typeof DemoTableRoute
+  '/demo/text-extraction': typeof DemoTextExtractionRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -271,9 +303,11 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/demo/clerk': typeof DemoClerkRoute
+  '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/knowledge': typeof DemoKnowledgeRoute
   '/demo/rich-text': typeof DemoRichTextRoute
   '/demo/table': typeof DemoTableRoute
+  '/demo/text-extraction': typeof DemoTextExtractionRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -289,9 +323,11 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/agents'
     | '/demo/clerk'
+    | '/demo/file-upload'
     | '/demo/knowledge'
     | '/demo/rich-text'
     | '/demo/table'
+    | '/demo/text-extraction'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
@@ -302,9 +338,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/demo/clerk'
+    | '/demo/file-upload'
     | '/demo/knowledge'
     | '/demo/rich-text'
     | '/demo/table'
+    | '/demo/text-extraction'
     | '/dashboard'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
@@ -317,9 +355,11 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/dashboard/agents'
     | '/demo/clerk'
+    | '/demo/file-upload'
     | '/demo/knowledge'
     | '/demo/rich-text'
     | '/demo/table'
+    | '/demo/text-extraction'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
@@ -333,9 +373,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   DemoClerkRoute: typeof DemoClerkRoute
+  DemoFileUploadRoute: typeof DemoFileUploadRoute
   DemoKnowledgeRoute: typeof DemoKnowledgeRoute
   DemoRichTextRoute: typeof DemoRichTextRoute
   DemoTableRoute: typeof DemoTableRoute
+  DemoTextExtractionRoute: typeof DemoTextExtractionRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
   DemoFormSimpleRoute: typeof DemoFormSimpleRoute
 }
@@ -344,9 +386,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   DemoClerkRoute: DemoClerkRoute,
+  DemoFileUploadRoute: DemoFileUploadRoute,
   DemoKnowledgeRoute: DemoKnowledgeRoute,
   DemoRichTextRoute: DemoRichTextRoute,
   DemoTableRoute: DemoTableRoute,
+  DemoTextExtractionRoute: DemoTextExtractionRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
   DemoFormSimpleRoute: DemoFormSimpleRoute,
 }
@@ -364,9 +408,11 @@ export const routeTree = rootRoute
         "/",
         "/dashboard",
         "/demo/clerk",
+        "/demo/file-upload",
         "/demo/knowledge",
         "/demo/rich-text",
         "/demo/table",
+        "/demo/text-extraction",
         "/demo/form/address",
         "/demo/form/simple"
       ]
@@ -393,6 +439,9 @@ export const routeTree = rootRoute
     "/demo/clerk": {
       "filePath": "demo.clerk.tsx"
     },
+    "/demo/file-upload": {
+      "filePath": "demo.file-upload.tsx"
+    },
     "/demo/knowledge": {
       "filePath": "demo.knowledge.tsx"
     },
@@ -401,6 +450,9 @@ export const routeTree = rootRoute
     },
     "/demo/table": {
       "filePath": "demo.table.tsx"
+    },
+    "/demo/text-extraction": {
+      "filePath": "demo.text-extraction.tsx"
     },
     "/dashboard/": {
       "filePath": "dashboard.index.tsx",

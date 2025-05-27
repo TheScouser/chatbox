@@ -43,4 +43,18 @@ export default defineSchema({
       tokensUsed: v.optional(v.number()),
     })),
   }).index("conversationId", ["conversationId"]),
+  
+  files: defineTable({
+    storageId: v.id("_storage"),
+    agentId: v.id("agents"),
+    filename: v.string(),
+    contentType: v.string(),
+    size: v.number(),
+    status: v.union(
+      v.literal("uploaded"),
+      v.literal("processing"), 
+      v.literal("processed"),
+      v.literal("error")
+    ),
+  }).index("agentId", ["agentId"]),
 })

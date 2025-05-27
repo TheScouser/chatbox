@@ -15,7 +15,9 @@ import type {
 } from "convex/server";
 import type * as agents from "../agents.js";
 import type * as conversations from "../conversations.js";
+import type * as files from "../files.js";
 import type * as knowledge from "../knowledge.js";
+import type * as textExtraction from "../textExtraction.js";
 import type * as users from "../users.js";
 
 /**
@@ -29,7 +31,9 @@ import type * as users from "../users.js";
 declare const fullApi: ApiFromModules<{
   agents: typeof agents;
   conversations: typeof conversations;
+  files: typeof files;
   knowledge: typeof knowledge;
+  textExtraction: typeof textExtraction;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

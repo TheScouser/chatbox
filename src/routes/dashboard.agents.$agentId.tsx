@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Authenticated, useQuery, useMutation } from 'convex/react'
+import { Authenticated, useQuery, useMutation, useAction } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import DashboardLayout from '../components/DashboardLayout'
 import RichTextEditor from '../components/RichTextEditor'
+import FileUpload from '../components/FileUpload'
 import { useState } from 'react'
-import { ArrowLeft, Bot, BookOpen, MessageSquare, Settings, Globe } from 'lucide-react'
+import { ArrowLeft, Bot, BookOpen, MessageSquare, Settings, Globe, Upload, FileText } from 'lucide-react'
 
 export const Route = createFileRoute('/dashboard/agents/$agentId')({
   component: AgentDetail,
@@ -17,11 +18,14 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [editingEntry, setEditingEntry] = useState<string | null>(null)
+  const [activeSection, setActiveSection] = useState<'text' | 'upload'>('text')
 
   const createKnowledgeEntry = useMutation(api.knowledge.createKnowledgeEntry)
   const updateKnowledgeEntry = useMutation(api.knowledge.updateKnowledgeEntry)
   const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry)
   const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, { agentId: agentId as any })
+  const files = useQuery(api.files.getFilesForAgent, { agentId: agentId as any })
+  const extractText = useAction(api.textExtraction.extractTextFromUploadedFile)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -104,6 +108,27 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
     }
   }
 
+  const handleFileUploadComplete = async (fileId: string) => {
+    try {
+      setSuccess(false)
+      setError(null)
+      
+      // Trigger text extraction
+      await extractText({ fileId: fileId as any })
+      
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
+    } catch (error) {
+      console.error('Failed to process uploaded file:', error)
+      setError(error instanceof Error ? error.message : 'Failed to process uploaded file')
+    }
+  }
+
+  const handleFileUploadError = (error: string) => {
+    setError(error)
+    setSuccess(false)
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -113,7 +138,7 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
         <p className="mt-1 text-sm text-gray-600">
           {editingEntry 
             ? 'Update the content and title of your knowledge entry.'
-            : 'Create rich text content to train your agent. You can format text, add headings, lists, and more.'
+            : 'Create knowledge entries by writing text directly or uploading documents.'
           }
         </p>
         {editingEntry && (
@@ -126,69 +151,155 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-sm text-red-600">{error}</p>
+      {/* Section Tabs */}
+      {!editingEntry && (
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveSection('text')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeSection === 'text'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <FileText className="inline-block w-4 h-4 mr-2" />
+              Write Text
+            </button>
+            <button
+              onClick={() => setActiveSection('upload')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeSection === 'upload'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Upload className="inline-block w-4 h-4 mr-2" />
+              Upload Documents
+            </button>
+          </nav>
+        </div>
+      )}
+
+      {/* Error and Success Messages */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+      
+      {success && (
+        <div className="bg-green-50 border border-green-200 rounded-md p-4">
+          <p className="text-sm text-green-600">
+            {activeSection === 'upload' ? 'File uploaded and processed successfully!' : 'Knowledge entry saved successfully!'}
+          </p>
+        </div>
+      )}
+
+      {/* Text Entry Form */}
+      {(activeSection === 'text' || editingEntry) && (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+              Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter a title for this knowledge entry..."
+              required
+            />
           </div>
-        )}
-        
-        {success && (
-          <div className="bg-green-50 border border-green-200 rounded-md p-4">
-            <p className="text-sm text-green-600">Knowledge entry saved successfully!</p>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Content
+            </label>
+            <RichTextEditor
+              content={content}
+              onChange={setContent}
+              placeholder="Start writing your knowledge content..."
+              className="min-h-[300px]"
+            />
           </div>
-        )}
 
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-            Title
-          </label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter a title for this knowledge entry..."
-            required
-          />
-        </div>
+          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={editingEntry ? handleCancelEdit : () => {
+                setTitle('')
+                setContent('')
+              }}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              {editingEntry ? 'Cancel' : 'Clear'}
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting || !content.trim() || !title.trim()}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting 
+                ? (editingEntry ? 'Updating...' : 'Saving...') 
+                : (editingEntry ? 'Update Entry' : 'Save Knowledge Entry')
+              }
+            </button>
+          </div>
+        </form>
+      )}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Content
-          </label>
-          <RichTextEditor
-            content={content}
-            onChange={setContent}
-            placeholder="Start writing your knowledge content..."
-            className="min-h-[300px]"
-          />
-        </div>
+      {/* File Upload Section */}
+      {activeSection === 'upload' && !editingEntry && (
+        <div className="space-y-6">
+          <div>
+            <h4 className="text-sm font-medium text-gray-900 mb-2">Upload Documents</h4>
+            <p className="text-sm text-gray-600 mb-4">
+              Upload PDF, DOC, DOCX, or TXT files. Text will be automatically extracted and added to your knowledge base.
+            </p>
+            <FileUpload
+              agentId={agentId}
+              onUploadComplete={handleFileUploadComplete}
+              onUploadError={handleFileUploadError}
+              accept=".pdf,.doc,.docx,.txt"
+              maxSize={10}
+            />
+          </div>
 
-        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-          <button
-            type="button"
-            onClick={editingEntry ? handleCancelEdit : () => {
-              setTitle('')
-              setContent('')
-            }}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            {editingEntry ? 'Cancel' : 'Clear'}
-          </button>
-          <button
-            type="submit"
-            disabled={isSubmitting || !content.trim() || !title.trim()}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSubmitting 
-              ? (editingEntry ? 'Updating...' : 'Saving...') 
-              : (editingEntry ? 'Update Entry' : 'Save Knowledge Entry')
-            }
-          </button>
+          {/* Uploaded Files List */}
+          {files && files.length > 0 && (
+            <div className="mt-6">
+              <h4 className="text-sm font-medium text-gray-900 mb-3">Uploaded Files</h4>
+              <div className="space-y-2">
+                {files.map((file) => (
+                  <div key={file._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <FileText className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{file.filename}</p>
+                        <p className="text-xs text-gray-500">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB • 
+                          Uploaded {new Date(file._creationTime).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      file.status === 'processed' ? 'bg-green-100 text-green-800' :
+                      file.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
+                      file.status === 'error' ? 'bg-red-100 text-red-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {file.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      </form>
+      )}
 
       {/* Knowledge Entries List */}
       <div className="mt-8 pt-8 border-t border-gray-200">
@@ -238,9 +349,26 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
                       }}
                     />
                     <div className="flex items-center mt-2 text-xs text-gray-500">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800">
-                        {entry.source}
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        entry.source === 'document' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {entry.source === 'document' ? (
+                          <>
+                            <FileText className="w-3 h-3 mr-1" />
+                            Document
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="w-3 h-3 mr-1" />
+                            Text
+                          </>
+                        )}
                       </span>
+                      {entry.sourceMetadata?.filename && (
+                        <span className="ml-2 text-gray-400">
+                          {entry.sourceMetadata.filename}
+                        </span>
+                      )}
                       <span className="ml-2">
                         Created {new Date(entry._creationTime).toLocaleDateString()}
                       </span>
