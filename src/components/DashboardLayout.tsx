@@ -1,4 +1,4 @@
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { UserButton } from '@clerk/clerk-react'
 import { 
   Bot, 
@@ -15,10 +15,11 @@ interface DashboardLayoutProps {
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation()
+  const navigate = useNavigate()
   
   const navigation = [
     { name: 'Overview', href: '/dashboard', icon: Home },
-    { name: 'Agents', href: '/dashboard', icon: Bot, disabled: true },
+    { name: 'Agents', href: '/dashboard/agents', icon: Bot },
     { name: 'Conversations', href: '/dashboard', icon: MessageSquare, disabled: true },
     { name: 'Knowledge Base', href: '/dashboard', icon: BookOpen, disabled: true },
     { name: 'Settings', href: '/dashboard', icon: Settings, disabled: true },
@@ -84,10 +85,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="px-4 pb-4">
             <button
               className="flex w-full items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-              onClick={() => {
-                // TODO: Navigate to create agent page when route is created
-                console.log('Create agent clicked')
-              }}
+              onClick={() => navigate({ to: '/dashboard/agents/new' })}
             >
               <Plus className="mr-2 h-4 w-4" />
               Create Agent

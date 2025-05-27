@@ -13,10 +13,15 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
+import { Route as DashboardIndexImport } from './routes/dashboard.index'
 import { Route as DemoTableImport } from './routes/demo.table'
 import { Route as DemoClerkImport } from './routes/demo.clerk'
+import { Route as DashboardAgentsImport } from './routes/dashboard.agents'
+import { Route as DashboardAgentsIndexImport } from './routes/dashboard.agents.index'
 import { Route as DemoFormSimpleImport } from './routes/demo.form.simple'
 import { Route as DemoFormAddressImport } from './routes/demo.form.address'
+import { Route as DashboardAgentsNewImport } from './routes/dashboard.agents.new'
+import { Route as DashboardAgentsAgentIdImport } from './routes/dashboard.agents.$agentId'
 
 // Create/Update Routes
 
@@ -32,6 +37,12 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const DashboardIndexRoute = DashboardIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
 const DemoTableRoute = DemoTableImport.update({
   id: '/demo/table',
   path: '/demo/table',
@@ -44,6 +55,18 @@ const DemoClerkRoute = DemoClerkImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const DashboardAgentsRoute = DashboardAgentsImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardAgentsIndexRoute = DashboardAgentsIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAgentsRoute,
+} as any)
+
 const DemoFormSimpleRoute = DemoFormSimpleImport.update({
   id: '/demo/form/simple',
   path: '/demo/form/simple',
@@ -54,6 +77,18 @@ const DemoFormAddressRoute = DemoFormAddressImport.update({
   id: '/demo/form/address',
   path: '/demo/form/address',
   getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardAgentsNewRoute = DashboardAgentsNewImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => DashboardAgentsRoute,
+} as any)
+
+const DashboardAgentsAgentIdRoute = DashboardAgentsAgentIdImport.update({
+  id: '/$agentId',
+  path: '/$agentId',
+  getParentRoute: () => DashboardAgentsRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -74,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/agents': {
+      id: '/dashboard/agents'
+      path: '/agents'
+      fullPath: '/dashboard/agents'
+      preLoaderRoute: typeof DashboardAgentsImport
+      parentRoute: typeof DashboardImport
+    }
     '/demo/clerk': {
       id: '/demo/clerk'
       path: '/demo/clerk'
@@ -87,6 +129,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/demo/table'
       preLoaderRoute: typeof DemoTableImport
       parentRoute: typeof rootRoute
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof DashboardImport
+    }
+    '/dashboard/agents/$agentId': {
+      id: '/dashboard/agents/$agentId'
+      path: '/$agentId'
+      fullPath: '/dashboard/agents/$agentId'
+      preLoaderRoute: typeof DashboardAgentsAgentIdImport
+      parentRoute: typeof DashboardAgentsImport
+    }
+    '/dashboard/agents/new': {
+      id: '/dashboard/agents/new'
+      path: '/new'
+      fullPath: '/dashboard/agents/new'
+      preLoaderRoute: typeof DashboardAgentsNewImport
+      parentRoute: typeof DashboardAgentsImport
     }
     '/demo/form/address': {
       id: '/demo/form/address'
@@ -102,37 +165,87 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoFormSimpleImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/agents/': {
+      id: '/dashboard/agents/'
+      path: '/'
+      fullPath: '/dashboard/agents/'
+      preLoaderRoute: typeof DashboardAgentsIndexImport
+      parentRoute: typeof DashboardAgentsImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardAgentsRouteChildren {
+  DashboardAgentsAgentIdRoute: typeof DashboardAgentsAgentIdRoute
+  DashboardAgentsNewRoute: typeof DashboardAgentsNewRoute
+  DashboardAgentsIndexRoute: typeof DashboardAgentsIndexRoute
+}
+
+const DashboardAgentsRouteChildren: DashboardAgentsRouteChildren = {
+  DashboardAgentsAgentIdRoute: DashboardAgentsAgentIdRoute,
+  DashboardAgentsNewRoute: DashboardAgentsNewRoute,
+  DashboardAgentsIndexRoute: DashboardAgentsIndexRoute,
+}
+
+const DashboardAgentsRouteWithChildren = DashboardAgentsRoute._addFileChildren(
+  DashboardAgentsRouteChildren,
+)
+
+interface DashboardRouteChildren {
+  DashboardAgentsRoute: typeof DashboardAgentsRouteWithChildren
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAgentsRoute: DashboardAgentsRouteWithChildren,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/table': typeof DemoTableRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
+  '/dashboard/agents/new': typeof DashboardAgentsNewRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
+  '/dashboard/agents/': typeof DashboardAgentsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/table': typeof DemoTableRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
+  '/dashboard/agents/new': typeof DashboardAgentsNewRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
+  '/dashboard/agents': typeof DashboardAgentsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/table': typeof DemoTableRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
+  '/dashboard/agents/new': typeof DashboardAgentsNewRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
+  '/dashboard/agents/': typeof DashboardAgentsIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -140,32 +253,45 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/dashboard/agents'
     | '/demo/clerk'
     | '/demo/table'
+    | '/dashboard/'
+    | '/dashboard/agents/$agentId'
+    | '/dashboard/agents/new'
     | '/demo/form/address'
     | '/demo/form/simple'
+    | '/dashboard/agents/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
     | '/demo/clerk'
     | '/demo/table'
+    | '/dashboard'
+    | '/dashboard/agents/$agentId'
+    | '/dashboard/agents/new'
     | '/demo/form/address'
     | '/demo/form/simple'
+    | '/dashboard/agents'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/dashboard/agents'
     | '/demo/clerk'
     | '/demo/table'
+    | '/dashboard/'
+    | '/dashboard/agents/$agentId'
+    | '/dashboard/agents/new'
     | '/demo/form/address'
     | '/demo/form/simple'
+    | '/dashboard/agents/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   DemoClerkRoute: typeof DemoClerkRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
@@ -174,7 +300,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   DemoClerkRoute: DemoClerkRoute,
   DemoTableRoute: DemoTableRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
@@ -203,7 +329,20 @@ export const routeTree = rootRoute
       "filePath": "index.tsx"
     },
     "/dashboard": {
-      "filePath": "dashboard.tsx"
+      "filePath": "dashboard.tsx",
+      "children": [
+        "/dashboard/agents",
+        "/dashboard/"
+      ]
+    },
+    "/dashboard/agents": {
+      "filePath": "dashboard.agents.tsx",
+      "parent": "/dashboard",
+      "children": [
+        "/dashboard/agents/$agentId",
+        "/dashboard/agents/new",
+        "/dashboard/agents/"
+      ]
     },
     "/demo/clerk": {
       "filePath": "demo.clerk.tsx"
@@ -211,11 +350,27 @@ export const routeTree = rootRoute
     "/demo/table": {
       "filePath": "demo.table.tsx"
     },
+    "/dashboard/": {
+      "filePath": "dashboard.index.tsx",
+      "parent": "/dashboard"
+    },
+    "/dashboard/agents/$agentId": {
+      "filePath": "dashboard.agents.$agentId.tsx",
+      "parent": "/dashboard/agents"
+    },
+    "/dashboard/agents/new": {
+      "filePath": "dashboard.agents.new.tsx",
+      "parent": "/dashboard/agents"
+    },
     "/demo/form/address": {
       "filePath": "demo.form.address.tsx"
     },
     "/demo/form/simple": {
       "filePath": "demo.form.simple.tsx"
+    },
+    "/dashboard/agents/": {
+      "filePath": "dashboard.agents.index.tsx",
+      "parent": "/dashboard/agents"
     }
   }
 }
