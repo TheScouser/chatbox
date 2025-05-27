@@ -168,4 +168,88 @@ export const addMessage = mutation({
     
     return messageId;
   },
+});
+
+export const getConversationsForUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("Not authenticated");
+    }
+    
+    const user = await ctx.db
+      .query("users")
+      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
+      .first();
+    
+    if (!user) {
+      throw new Error("User not found");
+    }
+    
+    // Get all agents for this user
+    const agents = await ctx.db
+      .query("agents")
+      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .collect();
+    
+    // Get all conversations for all user's agents
+    const allConversations = [];
+    for (const agent of agents) {
+      const conversations = await ctx.db
+        .query("conversations")
+        .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+        .collect();
+      allConversations.push(...conversations);
+    }
+    
+    return allConversations;
+  },
+});
+
+export const getMessagesForUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("Not authenticated");
+    }
+    
+    const user = await ctx.db
+      .query("users")
+      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
+      .first();
+    
+    if (!user) {
+      throw new Error("User not found");
+    }
+    
+    // Get all agents for this user
+    const agents = await ctx.db
+      .query("agents")
+      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .collect();
+    
+    // Get all conversations for all user's agents
+    const allConversations = [];
+    for (const agent of agents) {
+      const conversations = await ctx.db
+        .query("conversations")
+        .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+        .collect();
+      allConversations.push(...conversations);
+    }
+    
+    // Get all messages for all conversations
+    const allMessages = [];
+    for (const conversation of allConversations) {
+      const messages = await ctx.db
+        .query("messages")
+        .withIndex("conversationId", (q) => q.eq("conversationId", conversation._id))
+        .collect();
+      allMessages.push(...messages);
+    }
+    
+    return allMessages;
+  },
 }); 

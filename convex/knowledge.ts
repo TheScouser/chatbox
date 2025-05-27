@@ -79,4 +79,41 @@ export const createKnowledgeEntry = mutation({
     
     return knowledgeEntryId;
   },
+});
+
+export const getKnowledgeForUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("Not authenticated");
+    }
+    
+    const user = await ctx.db
+      .query("users")
+      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
+      .first();
+    
+    if (!user) {
+      throw new Error("User not found");
+    }
+    
+    // Get all agents for this user
+    const agents = await ctx.db
+      .query("agents")
+      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .collect();
+    
+    // Get all knowledge entries for all user's agents
+    const allKnowledgeEntries = [];
+    for (const agent of agents) {
+      const knowledgeEntries = await ctx.db
+        .query("knowledgeEntries")
+        .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+        .collect();
+      allKnowledgeEntries.push(...knowledgeEntries);
+    }
+    
+    return allKnowledgeEntries;
+  },
 }); 
