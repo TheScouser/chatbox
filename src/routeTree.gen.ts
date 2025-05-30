@@ -21,6 +21,7 @@ import { Route as DemoRichTextImport } from './routes/demo.rich-text'
 import { Route as DemoKnowledgeImport } from './routes/demo.knowledge'
 import { Route as DemoFileUploadImport } from './routes/demo.file-upload'
 import { Route as DemoClerkImport } from './routes/demo.clerk'
+import { Route as DemoChatImport } from './routes/demo.chat'
 import { Route as DashboardAgentsImport } from './routes/dashboard.agents'
 import { Route as DashboardAgentsIndexImport } from './routes/dashboard.agents.index'
 import { Route as DemoFormSimpleImport } from './routes/demo.form.simple'
@@ -90,6 +91,12 @@ const DemoClerkRoute = DemoClerkImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const DemoChatRoute = DemoChatImport.update({
+  id: '/demo/chat',
+  path: '/demo/chat',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const DashboardAgentsRoute = DashboardAgentsImport.update({
   id: '/agents',
   path: '/agents',
@@ -150,6 +157,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/agents'
       preLoaderRoute: typeof DashboardAgentsImport
       parentRoute: typeof DashboardImport
+    }
+    '/demo/chat': {
+      id: '/demo/chat'
+      path: '/demo/chat'
+      fullPath: '/demo/chat'
+      preLoaderRoute: typeof DemoChatImport
+      parentRoute: typeof rootRoute
     }
     '/demo/clerk': {
       id: '/demo/clerk'
@@ -281,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
+  '/demo/chat': typeof DemoChatRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/knowledge': typeof DemoKnowledgeRoute
@@ -298,6 +313,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/demo/chat': typeof DemoChatRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/knowledge': typeof DemoKnowledgeRoute
@@ -318,6 +334,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
+  '/demo/chat': typeof DemoChatRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
   '/demo/knowledge': typeof DemoKnowledgeRoute
@@ -339,6 +356,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/agents'
+    | '/demo/chat'
     | '/demo/clerk'
     | '/demo/file-upload'
     | '/demo/knowledge'
@@ -355,6 +373,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/demo/chat'
     | '/demo/clerk'
     | '/demo/file-upload'
     | '/demo/knowledge'
@@ -373,6 +392,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/dashboard/agents'
+    | '/demo/chat'
     | '/demo/clerk'
     | '/demo/file-upload'
     | '/demo/knowledge'
@@ -392,6 +412,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  DemoChatRoute: typeof DemoChatRoute
   DemoClerkRoute: typeof DemoClerkRoute
   DemoFileUploadRoute: typeof DemoFileUploadRoute
   DemoKnowledgeRoute: typeof DemoKnowledgeRoute
@@ -406,6 +427,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  DemoChatRoute: DemoChatRoute,
   DemoClerkRoute: DemoClerkRoute,
   DemoFileUploadRoute: DemoFileUploadRoute,
   DemoKnowledgeRoute: DemoKnowledgeRoute,
@@ -429,6 +451,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/dashboard",
+        "/demo/chat",
         "/demo/clerk",
         "/demo/file-upload",
         "/demo/knowledge",
@@ -458,6 +481,9 @@ export const routeTree = rootRoute
         "/dashboard/agents/new",
         "/dashboard/agents/"
       ]
+    },
+    "/demo/chat": {
+      "filePath": "demo.chat.tsx"
     },
     "/demo/clerk": {
       "filePath": "demo.clerk.tsx"

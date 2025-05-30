@@ -1,5 +1,6 @@
 import { query, mutation, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import type { Id } from "./_generated/dataModel";
 
 export const getAgentsForUser = query({
@@ -62,12 +63,43 @@ export const createAgent = mutation({
   },
 });
 
-// Internal query to get an agent by ID
-export const getAgentById = internalQuery({
+// Public query to get agent by ID (with auth check)
+export const getAgentById = query({
   args: {
     agentId: v.id("agents"),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<Doc<"agents"> | null> => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("Not authenticated");
+    }
+
+    // Get the agent
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) {
+      return null;
+    }
+
+    // Verify the agent belongs to the current user
+    const user = await ctx.db
+      .query("users")
+      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
+      .first();
+
+    if (!user || agent.userId !== user._id) {
+      throw new Error("Not authorized to access this agent");
+    }
+
+    return agent;
+  },
+});
+
+// Internal query to get agent by ID (for use in actions)
+export const getAgentByIdInternal = internalQuery({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args): Promise<Doc<"agents"> | null> => {
     return await ctx.db.get(args.agentId);
   },
 });

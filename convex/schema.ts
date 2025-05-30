@@ -45,6 +45,8 @@ export default defineSchema({
       userId: v.optional(v.string()), // For user messages
       model: v.optional(v.string()), // For assistant messages
       tokensUsed: v.optional(v.number()),
+      knowledgeUsed: v.optional(v.number()), // Number of knowledge sources used
+      error: v.optional(v.string()), // Error message if response failed
     })),
   }).index("conversationId", ["conversationId"]),
   

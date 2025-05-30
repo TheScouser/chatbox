@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalQuery, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getConversationsForAgent = query({
@@ -251,5 +251,58 @@ export const getMessagesForUser = query({
     }
     
     return allMessages;
+  },
+});
+
+// Internal mutation to add message (for use in actions)
+export const addMessageInternal = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    content: v.string(),
+    metadata: v.optional(v.object({
+      userId: v.optional(v.string()),
+      model: v.optional(v.string()),
+      tokensUsed: v.optional(v.number()),
+      knowledgeUsed: v.optional(v.number()),
+      error: v.optional(v.string()),
+    })),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("messages", {
+      conversationId: args.conversationId,
+      role: args.role,
+      content: args.content,
+      metadata: args.metadata,
+    });
+  },
+});
+
+// Internal mutation to create conversation (for use in actions)
+export const createConversationInternal = internalMutation({
+  args: {
+    agentId: v.id("agents"),
+    title: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("conversations", {
+      agentId: args.agentId,
+      title: args.title || `Conversation ${new Date().toLocaleString()}`,
+      isActive: true,
+    });
+  },
+});
+
+// Internal query to get messages for conversation (for use in actions)
+export const getMessagesForConversationInternal = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("messages")
+      .withIndex("conversationId", (q) => q.eq("conversationId", args.conversationId))
+      .order("asc")
+      .collect();
   },
 }); 

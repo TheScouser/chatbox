@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as agents from "../agents.js";
+import type * as chat from "../chat.js";
 import type * as conversations from "../conversations.js";
 import type * as embeddings from "../embeddings.js";
 import type * as files from "../files.js";
@@ -33,6 +34,7 @@ import type * as vectorSearch from "../vectorSearch.js";
  */
 declare const fullApi: ApiFromModules<{
   agents: typeof agents;
+  chat: typeof chat;
   conversations: typeof conversations;
   embeddings: typeof embeddings;
   files: typeof files;
