@@ -24,8 +24,12 @@ export default defineSchema({
       url: v.optional(v.string()),
       chunkIndex: v.optional(v.number()),
     })),
-    embeddings: v.optional(v.array(v.number())),
-  }).index("agentId", ["agentId"]),
+    embedding: v.optional(v.array(v.number())),
+  }).index("agentId", ["agentId"])
+    .vectorIndex("byEmbedding", {
+      vectorField: "embedding",
+      dimensions: 1536,
+    }),
   
   conversations: defineTable({
     agentId: v.id("agents"),

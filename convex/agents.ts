@@ -1,5 +1,6 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 
 export const getAgentsForUser = query({
   args: {},
@@ -58,5 +59,28 @@ export const createAgent = mutation({
     });
     
     return agentId;
+  },
+});
+
+// Internal query to get an agent by ID
+export const getAgentById = internalQuery({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.agentId);
+  },
+});
+
+// Internal query to get agents for a user by user ID
+export const getAgentsForUserId = internalQuery({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("agents")
+      .withIndex("userId", (q) => q.eq("userId", args.userId))
+      .collect();
   },
 }); 

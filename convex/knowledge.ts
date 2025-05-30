@@ -1,4 +1,4 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getKnowledgeForAgent = query({
@@ -76,7 +76,7 @@ export const createKnowledgeEntry = mutation({
       content: args.content,
       source: args.source,
       sourceMetadata: args.sourceMetadata,
-      embeddings: undefined, // Will be populated later when we add embedding generation
+      embedding: undefined, // Will be populated later when we add embedding generation
     });
     
     return knowledgeEntryId;
@@ -198,5 +198,15 @@ export const getKnowledgeForUser = query({
     }
     
     return allKnowledgeEntries;
+  },
+});
+
+// Internal query to get a knowledge entry by ID
+export const getKnowledgeEntryById = internalQuery({
+  args: {
+    entryId: v.id("knowledgeEntries"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.entryId);
   },
 }); 

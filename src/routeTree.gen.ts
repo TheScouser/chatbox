@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard.index'
+import { Route as DemoVectorSearchImport } from './routes/demo.vector-search'
 import { Route as DemoTextExtractionImport } from './routes/demo.text-extraction'
 import { Route as DemoTableImport } from './routes/demo.table'
 import { Route as DemoRichTextImport } from './routes/demo.rich-text'
@@ -45,6 +46,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+
+const DemoVectorSearchRoute = DemoVectorSearchImport.update({
+  id: '/demo/vector-search',
+  path: '/demo/vector-search',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const DemoTextExtractionRoute = DemoTextExtractionImport.update({
@@ -186,6 +193,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoTextExtractionImport
       parentRoute: typeof rootRoute
     }
+    '/demo/vector-search': {
+      id: '/demo/vector-search'
+      path: '/demo/vector-search'
+      fullPath: '/demo/vector-search'
+      preLoaderRoute: typeof DemoVectorSearchImport
+      parentRoute: typeof rootRoute
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
@@ -273,6 +287,7 @@ export interface FileRoutesByFullPath {
   '/demo/rich-text': typeof DemoRichTextRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/text-extraction': typeof DemoTextExtractionRoute
+  '/demo/vector-search': typeof DemoVectorSearchRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -289,6 +304,7 @@ export interface FileRoutesByTo {
   '/demo/rich-text': typeof DemoRichTextRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/text-extraction': typeof DemoTextExtractionRoute
+  '/demo/vector-search': typeof DemoVectorSearchRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -308,6 +324,7 @@ export interface FileRoutesById {
   '/demo/rich-text': typeof DemoRichTextRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/text-extraction': typeof DemoTextExtractionRoute
+  '/demo/vector-search': typeof DemoVectorSearchRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -328,6 +345,7 @@ export interface FileRouteTypes {
     | '/demo/rich-text'
     | '/demo/table'
     | '/demo/text-extraction'
+    | '/demo/vector-search'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
@@ -343,6 +361,7 @@ export interface FileRouteTypes {
     | '/demo/rich-text'
     | '/demo/table'
     | '/demo/text-extraction'
+    | '/demo/vector-search'
     | '/dashboard'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
@@ -360,6 +379,7 @@ export interface FileRouteTypes {
     | '/demo/rich-text'
     | '/demo/table'
     | '/demo/text-extraction'
+    | '/demo/vector-search'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
@@ -378,6 +398,7 @@ export interface RootRouteChildren {
   DemoRichTextRoute: typeof DemoRichTextRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTextExtractionRoute: typeof DemoTextExtractionRoute
+  DemoVectorSearchRoute: typeof DemoVectorSearchRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
   DemoFormSimpleRoute: typeof DemoFormSimpleRoute
 }
@@ -391,6 +412,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoRichTextRoute: DemoRichTextRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTextExtractionRoute: DemoTextExtractionRoute,
+  DemoVectorSearchRoute: DemoVectorSearchRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
   DemoFormSimpleRoute: DemoFormSimpleRoute,
 }
@@ -413,6 +435,7 @@ export const routeTree = rootRoute
         "/demo/rich-text",
         "/demo/table",
         "/demo/text-extraction",
+        "/demo/vector-search",
         "/demo/form/address",
         "/demo/form/simple"
       ]
@@ -453,6 +476,9 @@ export const routeTree = rootRoute
     },
     "/demo/text-extraction": {
       "filePath": "demo.text-extraction.tsx"
+    },
+    "/demo/vector-search": {
+      "filePath": "demo.vector-search.tsx"
     },
     "/dashboard/": {
       "filePath": "dashboard.index.tsx",
