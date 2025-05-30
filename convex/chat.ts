@@ -61,14 +61,14 @@ export const generateAIResponse = action({
       const aiResponse = await ctx.runAction(internal.chat.generateResponseWithContext, {
         agentId: conversation.agentId,
         userMessage: args.userMessage,
-        relevantKnowledge: relevantKnowledge.map(entry => ({
+        relevantKnowledge: relevantKnowledge.map((entry: Doc<"knowledgeEntries"> & { _score: number }) => ({
           _id: entry._id,
           title: entry.title,
           content: entry.content,
           source: entry.source,
           _score: entry._score,
         })), // Only pass required fields, not full database objects
-        conversationHistory: messages.slice(-10).map(msg => ({
+        conversationHistory: messages.slice(-10).map((msg: any) => ({
           role: msg.role,
           content: msg.content,
         })), // Only pass role and content, not full message objects
@@ -265,20 +265,7 @@ export const startConversation = action({
       title: `Chat with ${agent.name}`,
     });
 
-    // Add initial message if provided
-    let messageId: Id<"messages"> | undefined;
-    if (args.initialMessage) {
-      // Add the user message first
-      messageId = await ctx.runMutation(internal.conversations.addMessageInternal, {
-        conversationId,
-        role: "user",
-        content: args.initialMessage,
-        metadata: { userId: identity.subject },
-      });
-
-      // Generate AI response (this will be handled by the frontend calling generateAIResponse)
-    }
-
-    return { conversationId, messageId };
+    // Note: Initial message will be added by generateAIResponse call from frontend
+    return { conversationId };
   },
 });

@@ -78,6 +78,12 @@ export default function ChatWidget({
         })
         currentConversationId = result.conversationId
         onConversationCreate?.(currentConversationId)
+        
+        // Generate AI response for the initial message
+        await generateAIResponse({
+          conversationId: currentConversationId,
+          userMessage,
+        })
       } else {
         // Generate AI response for existing conversation
         await generateAIResponse({
@@ -130,8 +136,8 @@ export default function ChatWidget({
 
       {/* Messages */}
       <CardContent className="flex-1 flex flex-col min-h-0 p-0">
-        <ScrollArea className="flex-1 px-4">
-          <div className="space-y-4 py-4">
+        <ScrollArea className="flex-1 px-4" style={{ maxHeight: 'calc(100% - 80px)' }}>
+          <div className="space-y-4 py-4 min-h-full">
             {!conversationId && !messages?.length && (
               <div className="text-center py-8">
                 <Bot className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
@@ -158,20 +164,20 @@ export default function ChatWidget({
                 )}
                 
                 <div
-                  className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                  className={`max-w-[75%] rounded-lg px-4 py-2 ${
                     msg.role === 'user'
                       ? 'bg-blue-600 text-white'
                       : 'bg-muted text-foreground'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                  <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
                   <div className="flex items-center justify-between mt-1 gap-2">
                     <span className={`text-xs ${
                       msg.role === 'user' ? 'text-blue-100' : 'text-muted-foreground'
                     }`}>
                       {formatTime(msg._creationTime)}
                     </span>
-                    {msg.metadata?.knowledgeUsed && (
+                    {msg.metadata?.knowledgeUsed && msg.metadata.knowledgeUsed > 0 && (
                       <Badge variant="outline" className="text-xs">
                         {msg.metadata.knowledgeUsed} sources
                       </Badge>

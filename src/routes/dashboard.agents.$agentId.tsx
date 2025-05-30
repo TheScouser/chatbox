@@ -4,8 +4,10 @@ import { api } from '../../convex/_generated/api'
 import DashboardLayout from '../components/DashboardLayout'
 import RichTextEditor from '../components/RichTextEditor'
 import FileUpload from '../components/FileUpload'
+import ChatWidget from '../components/ChatWidget'
 import { useState } from 'react'
 import { ArrowLeft, Bot, BookOpen, MessageSquare, Settings, Globe, Upload, FileText } from 'lucide-react'
+import type { Id } from '../../convex/_generated/dataModel'
 
 export const Route = createFileRoute('/dashboard/agents/$agentId')({
   component: AgentDetail,
@@ -413,15 +415,21 @@ function AgentDetail() {
   const agents = useQuery(api.agents.getAgentsForUser)
   const agent = agents?.find(a => a._id === agentId)
   
-  const [activeTab, setActiveTab] = useState<'overview' | 'knowledge' | 'conversations' | 'settings' | 'deploy'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'knowledge' | 'chat' | 'conversations' | 'settings' | 'deploy'>('overview')
+  const [currentConversationId, setCurrentConversationId] = useState<Id<"conversations"> | undefined>()
 
   const tabs = [
     { id: 'overview', name: 'Overview', icon: Bot },
     { id: 'knowledge', name: 'Knowledge Base', icon: BookOpen },
+    { id: 'chat', name: 'Chat Playground', icon: MessageSquare },
     { id: 'conversations', name: 'Conversations', icon: MessageSquare },
     { id: 'deploy', name: 'Deploy', icon: Globe },
     { id: 'settings', name: 'Settings', icon: Settings },
   ] as const
+
+  const handleConversationCreate = (conversationId: Id<"conversations">) => {
+    setCurrentConversationId(conversationId)
+  }
 
   if (agents === undefined) {
     return (
@@ -568,7 +576,15 @@ function AgentDetail() {
 
                   <div className="bg-gray-50 rounded-lg p-6">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                      <button
+                        onClick={() => setActiveTab('chat')}
+                        className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+                      >
+                        <MessageSquare className="h-6 w-6 text-green-500 mb-2" />
+                        <h4 className="font-medium text-gray-900">Test Agent</h4>
+                        <p className="text-sm text-gray-600">Chat with your agent in the playground</p>
+                      </button>
                       <button
                         onClick={() => setActiveTab('knowledge')}
                         className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
@@ -592,6 +608,91 @@ function AgentDetail() {
 
               {activeTab === 'knowledge' && (
                 <KnowledgeTab agentId={agent._id} />
+              )}
+
+              {activeTab === 'chat' && (
+                <div className="space-y-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start">
+                      <MessageSquare className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
+                      <div>
+                        <h3 className="text-sm font-medium text-blue-800">Chat Playground</h3>
+                        <p className="text-sm text-blue-700 mt-1">
+                          Test your agent by chatting with it directly. This is exactly how customers will interact with your agent when deployed.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div className="lg:col-span-3">
+                      <ChatWidget
+                        agentId={agent._id as any}
+                        conversationId={currentConversationId}
+                        onConversationCreate={handleConversationCreate}
+                        height="600px"
+                        className="border border-gray-200"
+                      />
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <div className="bg-white border border-gray-200 rounded-lg p-4">
+                        <h4 className="text-sm font-medium text-gray-900 mb-3">Testing Tips</h4>
+                        <ul className="text-sm text-gray-600 space-y-2">
+                          <li className="flex items-start">
+                            <span className="text-green-500 mr-2">•</span>
+                            Ask questions related to your knowledge base
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-500 mr-2">•</span>
+                            Test edge cases and unclear queries
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-500 mr-2">•</span>
+                            Check if responses are accurate and helpful
+                          </li>
+                          <li className="flex items-start">
+                            <span className="text-green-500 mr-2">•</span>
+                            Verify knowledge sources are being used
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div className="bg-white border border-gray-200 rounded-lg p-4">
+                        <h4 className="text-sm font-medium text-gray-900 mb-3">Quick Actions</h4>
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => setCurrentConversationId(undefined)}
+                            className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
+                          >
+                            🔄 Start New Conversation
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('knowledge')}
+                            className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
+                          >
+                            📚 Add More Knowledge
+                          </button>
+                          <button
+                            onClick={() => setActiveTab('deploy')}
+                            className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
+                          >
+                            🚀 Deploy Agent
+                          </button>
+                        </div>
+                      </div>
+
+                      {currentConversationId && (
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                          <h4 className="text-sm font-medium text-green-800 mb-2">Active Conversation</h4>
+                          <p className="text-xs text-green-700">
+                            Conversation ID: {currentConversationId}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               )}
 
               {activeTab === 'conversations' && (
