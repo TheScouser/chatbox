@@ -23,6 +23,7 @@ import type * as openai from "../openai.js";
 import type * as textExtraction from "../textExtraction.js";
 import type * as users from "../users.js";
 import type * as vectorSearch from "../vectorSearch.js";
+import type * as webCrawling from "../webCrawling.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   textExtraction: typeof textExtraction;
   users: typeof users;
   vectorSearch: typeof vectorSearch;
+  webCrawling: typeof webCrawling;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

@@ -15,6 +15,7 @@ import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard.index'
 import { Route as EmbedAgentIdImport } from './routes/embed.$agentId'
+import { Route as DemoWebCrawlingImport } from './routes/demo.web-crawling'
 import { Route as DemoVectorSearchImport } from './routes/demo.vector-search'
 import { Route as DemoTextExtractionImport } from './routes/demo.text-extraction'
 import { Route as DemoTableImport } from './routes/demo.table'
@@ -54,6 +55,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 const EmbedAgentIdRoute = EmbedAgentIdImport.update({
   id: '/embed/$agentId',
   path: '/embed/$agentId',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DemoWebCrawlingRoute = DemoWebCrawlingImport.update({
+  id: '/demo/web-crawling',
+  path: '/demo/web-crawling',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -235,6 +242,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoVectorSearchImport
       parentRoute: typeof rootRoute
     }
+    '/demo/web-crawling': {
+      id: '/demo/web-crawling'
+      path: '/demo/web-crawling'
+      fullPath: '/demo/web-crawling'
+      preLoaderRoute: typeof DemoWebCrawlingImport
+      parentRoute: typeof rootRoute
+    }
     '/embed/$agentId': {
       id: '/embed/$agentId'
       path: '/embed/$agentId'
@@ -332,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/demo/table': typeof DemoTableRoute
   '/demo/text-extraction': typeof DemoTextExtractionRoute
   '/demo/vector-search': typeof DemoVectorSearchRoute
+  '/demo/web-crawling': typeof DemoWebCrawlingRoute
   '/embed/$agentId': typeof EmbedAgentIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
@@ -352,6 +367,7 @@ export interface FileRoutesByTo {
   '/demo/table': typeof DemoTableRoute
   '/demo/text-extraction': typeof DemoTextExtractionRoute
   '/demo/vector-search': typeof DemoVectorSearchRoute
+  '/demo/web-crawling': typeof DemoWebCrawlingRoute
   '/embed/$agentId': typeof EmbedAgentIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
@@ -375,6 +391,7 @@ export interface FileRoutesById {
   '/demo/table': typeof DemoTableRoute
   '/demo/text-extraction': typeof DemoTextExtractionRoute
   '/demo/vector-search': typeof DemoVectorSearchRoute
+  '/demo/web-crawling': typeof DemoWebCrawlingRoute
   '/embed/$agentId': typeof EmbedAgentIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
@@ -399,6 +416,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/text-extraction'
     | '/demo/vector-search'
+    | '/demo/web-crawling'
     | '/embed/$agentId'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
@@ -418,6 +436,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/text-extraction'
     | '/demo/vector-search'
+    | '/demo/web-crawling'
     | '/embed/$agentId'
     | '/dashboard'
     | '/dashboard/agents/$agentId'
@@ -439,6 +458,7 @@ export interface FileRouteTypes {
     | '/demo/table'
     | '/demo/text-extraction'
     | '/demo/vector-search'
+    | '/demo/web-crawling'
     | '/embed/$agentId'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
@@ -461,6 +481,7 @@ export interface RootRouteChildren {
   DemoTableRoute: typeof DemoTableRoute
   DemoTextExtractionRoute: typeof DemoTextExtractionRoute
   DemoVectorSearchRoute: typeof DemoVectorSearchRoute
+  DemoWebCrawlingRoute: typeof DemoWebCrawlingRoute
   EmbedAgentIdRoute: typeof EmbedAgentIdRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
   DemoFormSimpleRoute: typeof DemoFormSimpleRoute
@@ -478,6 +499,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoTableRoute: DemoTableRoute,
   DemoTextExtractionRoute: DemoTextExtractionRoute,
   DemoVectorSearchRoute: DemoVectorSearchRoute,
+  DemoWebCrawlingRoute: DemoWebCrawlingRoute,
   EmbedAgentIdRoute: EmbedAgentIdRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
   DemoFormSimpleRoute: DemoFormSimpleRoute,
@@ -504,6 +526,7 @@ export const routeTree = rootRoute
         "/demo/table",
         "/demo/text-extraction",
         "/demo/vector-search",
+        "/demo/web-crawling",
         "/embed/$agentId",
         "/demo/form/address",
         "/demo/form/simple"
@@ -554,6 +577,9 @@ export const routeTree = rootRoute
     },
     "/demo/vector-search": {
       "filePath": "demo.vector-search.tsx"
+    },
+    "/demo/web-crawling": {
+      "filePath": "demo.web-crawling.tsx"
     },
     "/embed/$agentId": {
       "filePath": "embed.$agentId.tsx"
