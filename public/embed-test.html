@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .demo-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .embed-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .chat-widget {
+            flex-shrink: 0;
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+
+        code {
+            background: #f1f3f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Chat Widget Test Page</h1>
+            <p>This page demonstrates how your AI chat widget will appear on your website.</p>
+        </div>
+
+        <div class="demo-section">
+            <h2>Embedded Chat Widget Demo</h2>
+            <div class="embed-container">
+                <div class="content">
+                    <h3>Your Website Content</h3>
+                    <p>This is an example of how your chat widget will appear alongside your website content. The widget
+                        is embedded using an iframe and will maintain its functionality while being seamlessly
+                        integrated into your page.</p>
+
+                    <h4>Key Features:</h4>
+                    <ul>
+                        <li>Real-time AI responses</li>
+                        <li>Knowledge-based answers</li>
+                        <li>Responsive design</li>
+                        <li>Easy integration</li>
+                    </ul>
+
+                    <p>Visitors to your website can interact with the chat widget to get instant answers to their
+                        questions based on the knowledge you've provided to your AI agent.</p>
+                </div>
+
+                <div class="chat-widget">
+                    <!-- Replace this iframe with your actual embed code -->
+                    <iframe src="http://localhost:5173/embed/YOUR_AGENT_ID" width="400" height="600" frameborder="0"
+                        style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <div class="instructions">
+                <h3>How to Use This Test Page</h3>
+                <ol>
+                    <li>Copy your embed code from the dashboard</li>
+                    <li>Replace the iframe code above (line 67) with your actual embed code</li>
+                    <li>Open this HTML file in your browser to test</li>
+                    <li>Verify that the chat widget loads and functions correctly</li>
+                </ol>
+
+                <h4>Example Embed Code:</h4>
+                <code>
+                    &lt;iframe src="https://your-domain.com/embed/your-agent-id" width="400" height="600" frameborder="0"&gt;&lt;/iframe&gt;
+                </code>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>Different Layout Examples</h3>
+
+            <h4>Sidebar Layout (300px width):</h4>
+            <p>Perfect for placing in a sidebar or narrow column.</p>
+
+            <h4>Full Width Mobile (100% width):</h4>
+            <p>Ideal for mobile devices where the widget should take the full available width.</p>
+
+            <h4>Modal/Popup (500px width):</h4>
+            <p>Great for displaying the widget in a modal or popup overlay.</p>
+        </div>
+    </div>
+</body>
+
+</html>
