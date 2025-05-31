@@ -1,3 +1,5 @@
+"use node";
+
 import OpenAI from "openai";
 
 // Initialize OpenAI client
@@ -67,4 +69,77 @@ export async function generateChatCompletion(
     console.error('OpenAI chat completion error:', error);
     throw new Error(`Failed to generate chat completion: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-} 
+}
+
+// Extract text from image using GPT-4o Vision
+export async function extractTextFromImage(imageBase64: string, mimeType: string = "image/png"): Promise<string> {
+  try {
+    const openai = getOpenAIClient();
+    
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: `Please extract all text content from this image. 
+
+Instructions:
+- Extract ALL visible text, including headers, body text, captions, footnotes, etc.
+- Maintain the logical reading order and structure
+- Preserve formatting like bullet points, numbered lists, and paragraphs
+- If there are tables, format them clearly with proper spacing
+- If text is in multiple columns, read left to right, top to bottom
+- Include any text in images, charts, or diagrams
+- If the image contains no readable text, respond with "No readable text found"
+
+Please provide only the extracted text without any additional commentary.`
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${imageBase64}`,
+                detail: "high"
+              }
+            }
+          ]
+        }
+      ],
+      max_tokens: 4000,
+      temperature: 0.1, // Low temperature for consistent extraction
+    });
+
+    const extractedText = response.choices[0]?.message?.content?.trim();
+    
+    if (!extractedText || extractedText === "No readable text found") {
+      return "";
+    }
+    
+    return extractedText;
+  } catch (error) {
+    console.error('Error extracting text from image:', error);
+    throw new Error(`Failed to extract text from image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+// PDF text extraction - Currently limited in serverless environment
+export async function extractTextFromPDF(pdfBuffer: ArrayBuffer): Promise<string> {
+  // Note: Advanced PDF processing (OCR, image-based PDFs) requires system dependencies
+  // that aren't available in Convex's serverless environment.
+  
+  throw new Error(`PDF processing is currently limited in this environment.
+
+For PDF support, consider these options:
+
+1. **Text-based PDFs**: Use a client-side PDF processing service
+2. **Image-based/Scanned PDFs**: Use external OCR services like:
+   - Google Cloud Document AI
+   - AWS Textract
+   - Azure Form Recognizer
+   
+3. **Alternative**: Convert PDFs to text manually and paste the content
+
+We're working on implementing cloud-based PDF processing for future versions.`);
+}

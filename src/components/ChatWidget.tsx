@@ -77,13 +77,15 @@ export default function ChatWidget({
           initialMessage: userMessage,
         })
         currentConversationId = result.conversationId
-        onConversationCreate?.(currentConversationId)
-        
-        // Generate AI response for the initial message
-        await generateAIResponse({
-          conversationId: currentConversationId,
-          userMessage,
-        })
+        if (currentConversationId) {
+          onConversationCreate?.(currentConversationId)
+          
+          // Generate AI response for the initial message
+          await generateAIResponse({
+            conversationId: currentConversationId,
+            userMessage,
+          })
+        }
       } else {
         // Generate AI response for existing conversation
         await generateAIResponse({
