@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { Bot, Calendar, MessageSquare, Plus } from "lucide-react";
 import { api } from "../../convex/_generated/api";
-import { Bot, Plus, Calendar, MessageSquare } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/agents/")({
 	component: AgentsList,

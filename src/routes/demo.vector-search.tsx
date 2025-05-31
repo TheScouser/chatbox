@@ -1,9 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { useQuery, useAction } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
 	Card,
 	CardContent,
@@ -11,8 +7,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, Zap, Database } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { createFileRoute } from "@tanstack/react-router";
+import { useAction, useQuery } from "convex/react";
+import { Database, Loader2, Search, Zap } from "lucide-react";
+import { useState } from "react";
+import { api } from "../../convex/_generated/api";
 
 export const Route = createFileRoute("/demo/vector-search")({
 	component: VectorSearchDemo,

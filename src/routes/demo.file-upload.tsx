@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Authenticated, useQuery, useMutation } from "convex/react";
+import { Authenticated, useMutation, useQuery } from "convex/react";
+import { useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { useState, useRef } from "react";
 
 export const Route = createFileRoute("/demo/file-upload")({
 	component: FileUploadDemo,

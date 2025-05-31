@@ -1,12 +1,12 @@
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { UserButton } from "@clerk/clerk-react";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import {
-	Bot,
-	MessageSquare,
 	BookOpen,
-	Settings,
+	Bot,
 	Home,
+	MessageSquare,
 	Plus,
+	Settings,
 } from "lucide-react";
 
 interface DashboardLayoutProps {

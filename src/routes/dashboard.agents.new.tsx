@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Authenticated, useMutation } from "convex/react";
+import { ArrowLeft, Bot } from "lucide-react";
+import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import DashboardLayout from "../components/DashboardLayout";
-import { useState } from "react";
-import { ArrowLeft, Bot } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/agents/new")({
 	component: CreateAgent,

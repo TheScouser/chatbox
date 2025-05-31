@@ -1,8 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import ChatWidget from "../components/ChatWidget";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -10,10 +7,13 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Bot, Zap } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
+import { Bot, MessageSquare, Zap } from "lucide-react";
+import { useState } from "react";
+import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import ChatWidget from "../components/ChatWidget";
 
 export const Route = createFileRoute("/demo/chat")({
 	component: ChatDemo,

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import RichTextEditor from "../components/RichTextEditor";
 import { useState } from "react";
+import RichTextEditor from "../components/RichTextEditor";
 
 export const Route = createFileRoute("/demo/rich-text")({
 	component: RichTextDemo,

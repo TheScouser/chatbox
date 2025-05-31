@@ -1,22 +1,22 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Authenticated, useQuery, useMutation, useAction } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import DashboardLayout from "../components/DashboardLayout";
-import RichTextEditor from "../components/RichTextEditor";
-import FileUpload from "../components/FileUpload";
-import ChatWidget from "../components/ChatWidget";
-import { useState } from "react";
+import { Authenticated, useAction, useMutation, useQuery } from "convex/react";
 import {
 	ArrowLeft,
-	Bot,
 	BookOpen,
+	Bot,
+	FileText,
+	Globe,
 	MessageSquare,
 	Settings,
-	Globe,
 	Upload,
-	FileText,
 } from "lucide-react";
+import { useState } from "react";
+import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import ChatWidget from "../components/ChatWidget";
+import DashboardLayout from "../components/DashboardLayout";
+import FileUpload from "../components/FileUpload";
+import RichTextEditor from "../components/RichTextEditor";
 
 export const Route = createFileRoute("/dashboard/agents/$agentId")({
 	component: AgentDetail,

@@ -1,6 +1,6 @@
-import { ConvexProviderWithClerk } from "convex/react-clerk";
-import { ConvexReactClient } from "convex/react";
 import { useAuth } from "@clerk/clerk-react";
+import { ConvexReactClient } from "convex/react";
+import { ConvexProviderWithClerk } from "convex/react-clerk";
 
 const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL;
 if (!CONVEX_URL) {

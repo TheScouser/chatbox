@@ -1,14 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { SignInButton, UserButton } from "@clerk/clerk-react";
+import { createFileRoute } from "@tanstack/react-router";
 import {
+	AuthLoading,
 	Authenticated,
 	Unauthenticated,
-	AuthLoading,
-	useQuery,
 	useMutation,
+	useQuery,
 } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { useEffect, useState } from "react";
+import { api } from "../../convex/_generated/api";
 
 export const Route = createFileRoute("/demo/clerk")({
 	component: App,

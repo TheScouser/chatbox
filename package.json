@@ -9,8 +9,8 @@
     "serve": "vite preview",
     "test": "vitest run",
     "format": "biome format",
-    "lint": "biome lint",
-    "check": "biome check"
+    "lint": "biome lint --fix",
+    "check": "biome check --fix"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.22.13",

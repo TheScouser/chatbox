@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Authenticated, useQuery, useAction } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { Authenticated, useAction, useQuery } from "convex/react";
+import { CheckCircle, Clock, FileText, Upload, XCircle } from "lucide-react";
 import { useState } from "react";
+import { api } from "../../convex/_generated/api";
 import FileUpload from "../components/FileUpload";
-import { FileText, CheckCircle, XCircle, Clock, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/demo/text-extraction")({
 	component: TextExtractionDemo,

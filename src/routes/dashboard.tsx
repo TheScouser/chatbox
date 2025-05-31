@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { Authenticated } from "convex/react";
 import DashboardLayout from "../components/DashboardLayout";
 
