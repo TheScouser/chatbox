@@ -130,7 +130,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			{/* Main content */}
 			<div className="pl-64">
 				<main className="py-6">
-					<div className="mx-auto max-w-7xl px-6 lg:px-8">{children}</div>
+					<div className="mx-auto max-w-[1600px] px-6 lg:px-8">{children}</div>
 				</main>
 			</div>
 		</div>
