@@ -1,746 +1,892 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Authenticated, useQuery, useMutation, useAction } from 'convex/react'
-import { api } from '../../convex/_generated/api'
-import DashboardLayout from '../components/DashboardLayout'
-import RichTextEditor from '../components/RichTextEditor'
-import FileUpload from '../components/FileUpload'
-import ChatWidget from '../components/ChatWidget'
-import { useState } from 'react'
-import { ArrowLeft, Bot, BookOpen, MessageSquare, Settings, Globe, Upload, FileText } from 'lucide-react'
-import type { Id } from '../../convex/_generated/dataModel'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Authenticated, useQuery, useMutation, useAction } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import DashboardLayout from "../components/DashboardLayout";
+import RichTextEditor from "../components/RichTextEditor";
+import FileUpload from "../components/FileUpload";
+import ChatWidget from "../components/ChatWidget";
+import { useState } from "react";
+import {
+	ArrowLeft,
+	Bot,
+	BookOpen,
+	MessageSquare,
+	Settings,
+	Globe,
+	Upload,
+	FileText,
+} from "lucide-react";
+import type { Id } from "../../convex/_generated/dataModel";
 
-export const Route = createFileRoute('/dashboard/agents/$agentId')({
-  component: AgentDetail,
-})
+export const Route = createFileRoute("/dashboard/agents/$agentId")({
+	component: AgentDetail,
+});
 
 function KnowledgeTab({ agentId }: { agentId: string }) {
-  const [content, setContent] = useState('')
-  const [title, setTitle] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
-  const [editingEntry, setEditingEntry] = useState<string | null>(null)
-  const [activeSection, setActiveSection] = useState<'text' | 'upload'>('text')
+	const [content, setContent] = useState("");
+	const [title, setTitle] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState(false);
+	const [editingEntry, setEditingEntry] = useState<string | null>(null);
+	const [activeSection, setActiveSection] = useState<"text" | "upload">("text");
 
-  const createKnowledgeEntry = useMutation(api.knowledge.createKnowledgeEntry)
-  const updateKnowledgeEntry = useMutation(api.knowledge.updateKnowledgeEntry)
-  const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry)
-  const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, { agentId: agentId as any })
-  const files = useQuery(api.files.getFilesForAgent, { agentId: agentId as any })
-  const extractText = useAction(api.textExtraction.extractTextFromUploadedFile)
+	const createKnowledgeEntry = useMutation(api.knowledge.createKnowledgeEntry);
+	const updateKnowledgeEntry = useMutation(api.knowledge.updateKnowledgeEntry);
+	const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry);
+	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
+		agentId: agentId as any,
+	});
+	const files = useQuery(api.files.getFilesForAgent, {
+		agentId: agentId as any,
+	});
+	const extractText = useAction(api.textExtraction.extractTextFromUploadedFile);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!content.trim() || !title.trim()) return
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!content.trim() || !title.trim()) return;
 
-    setIsSubmitting(true)
-    setError(null)
-    setSuccess(false)
-    
-    try {
-      if (editingEntry) {
-        // Update existing entry
-        await updateKnowledgeEntry({
-          entryId: editingEntry as any,
-          title: title.trim(),
-          content: content,
-        })
-        setEditingEntry(null)
-      } else {
-        // Create new entry
-        await createKnowledgeEntry({
-          agentId: agentId as any, // Type assertion needed for the ID
-          title: title.trim(),
-          content: content,
-          source: "text",
-          sourceMetadata: undefined,
-        })
-      }
-      
-      // Reset form and show success
-      setTitle('')
-      setContent('')
-      setSuccess(true)
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(false), 3000)
-    } catch (error) {
-      console.error('Failed to save knowledge entry:', error)
-      setError(error instanceof Error ? error.message : 'Failed to save knowledge entry')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+		setIsSubmitting(true);
+		setError(null);
+		setSuccess(false);
 
-  const handleEdit = (entry: any) => {
-    setEditingEntry(entry._id)
-    setTitle(entry.title || '')
-    setContent(entry.content)
-    setError(null)
-    setSuccess(false)
-    // Scroll to top of form
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+		try {
+			if (editingEntry) {
+				// Update existing entry
+				await updateKnowledgeEntry({
+					entryId: editingEntry as any,
+					title: title.trim(),
+					content: content,
+				});
+				setEditingEntry(null);
+			} else {
+				// Create new entry
+				await createKnowledgeEntry({
+					agentId: agentId as any, // Type assertion needed for the ID
+					title: title.trim(),
+					content: content,
+					source: "text",
+					sourceMetadata: undefined,
+				});
+			}
 
-  const handleCancelEdit = () => {
-    setEditingEntry(null)
-    setTitle('')
-    setContent('')
-    setError(null)
-    setSuccess(false)
-  }
+			// Reset form and show success
+			setTitle("");
+			setContent("");
+			setSuccess(true);
 
-  const handleDelete = async (entry: any) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${entry.title || 'Untitled Entry'}"? This action cannot be undone.`
-    )
-    
-    if (!confirmed) return
+			// Clear success message after 3 seconds
+			setTimeout(() => setSuccess(false), 3000);
+		} catch (error) {
+			console.error("Failed to save knowledge entry:", error);
+			setError(
+				error instanceof Error
+					? error.message
+					: "Failed to save knowledge entry",
+			);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
-    try {
-      await deleteKnowledgeEntry({ entryId: entry._id })
-      
-      // If we were editing this entry, cancel the edit
-      if (editingEntry === entry._id) {
-        handleCancelEdit()
-      }
-    } catch (error) {
-      console.error('Failed to delete knowledge entry:', error)
-      setError(error instanceof Error ? error.message : 'Failed to delete knowledge entry')
-    }
-  }
+	const handleEdit = (entry: any) => {
+		setEditingEntry(entry._id);
+		setTitle(entry.title || "");
+		setContent(entry.content);
+		setError(null);
+		setSuccess(false);
+		// Scroll to top of form
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	};
 
-  const handleFileUploadComplete = async (fileId: string) => {
-    try {
-      setSuccess(false)
-      setError(null)
-      
-      // Trigger text extraction
-      await extractText({ fileId: fileId as any })
-      
-      setSuccess(true)
-      setTimeout(() => setSuccess(false), 3000)
-    } catch (error) {
-      console.error('Failed to process uploaded file:', error)
-      setError(error instanceof Error ? error.message : 'Failed to process uploaded file')
-    }
-  }
+	const handleCancelEdit = () => {
+		setEditingEntry(null);
+		setTitle("");
+		setContent("");
+		setError(null);
+		setSuccess(false);
+	};
 
-  const handleFileUploadError = (error: string) => {
-    setError(error)
-    setSuccess(false)
-  }
+	const handleDelete = async (entry: any) => {
+		const confirmed = window.confirm(
+			`Are you sure you want to delete "${entry.title || "Untitled Entry"}"? This action cannot be undone.`,
+		);
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium text-gray-900">
-          {editingEntry ? 'Edit Knowledge Entry' : 'Add Knowledge'}
-        </h3>
-        <p className="mt-1 text-sm text-gray-600">
-          {editingEntry 
-            ? 'Update the content and title of your knowledge entry.'
-            : 'Create knowledge entries by writing text directly or uploading documents.'
-          }
-        </p>
-        {editingEntry && (
-          <button
-            onClick={handleCancelEdit}
-            className="mt-2 text-sm text-blue-600 hover:text-blue-800"
-          >
-            ← Cancel editing and create new entry
-          </button>
-        )}
-      </div>
+		if (!confirmed) return;
 
-      {/* Section Tabs */}
-      {!editingEntry && (
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveSection('text')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeSection === 'text'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              <FileText className="inline-block w-4 h-4 mr-2" />
-              Write Text
-            </button>
-            <button
-              onClick={() => setActiveSection('upload')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeSection === 'upload'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              <Upload className="inline-block w-4 h-4 mr-2" />
-              Upload Documents
-            </button>
-          </nav>
-        </div>
-      )}
+		try {
+			await deleteKnowledgeEntry({ entryId: entry._id });
 
-      {/* Error and Success Messages */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
-      )}
-      
-      {success && (
-        <div className="bg-green-50 border border-green-200 rounded-md p-4">
-          <p className="text-sm text-green-600">
-            {activeSection === 'upload' ? 'File uploaded and processed successfully!' : 'Knowledge entry saved successfully!'}
-          </p>
-        </div>
-      )}
+			// If we were editing this entry, cancel the edit
+			if (editingEntry === entry._id) {
+				handleCancelEdit();
+			}
+		} catch (error) {
+			console.error("Failed to delete knowledge entry:", error);
+			setError(
+				error instanceof Error
+					? error.message
+					: "Failed to delete knowledge entry",
+			);
+		}
+	};
 
-      {/* Text Entry Form */}
-      {(activeSection === 'text' || editingEntry) && (
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-              Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter a title for this knowledge entry..."
-              required
-            />
-          </div>
+	const handleFileUploadComplete = async (fileId: string) => {
+		try {
+			setSuccess(false);
+			setError(null);
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Content
-            </label>
-            <RichTextEditor
-              content={content}
-              onChange={setContent}
-              placeholder="Start writing your knowledge content..."
-              className="min-h-[300px]"
-            />
-          </div>
+			// Trigger text extraction
+			await extractText({ fileId: fileId as any });
 
-          <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={editingEntry ? handleCancelEdit : () => {
-                setTitle('')
-                setContent('')
-              }}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              {editingEntry ? 'Cancel' : 'Clear'}
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting || !content.trim() || !title.trim()}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting 
-                ? (editingEntry ? 'Updating...' : 'Saving...') 
-                : (editingEntry ? 'Update Entry' : 'Save Knowledge Entry')
-              }
-            </button>
-          </div>
-        </form>
-      )}
+			setSuccess(true);
+			setTimeout(() => setSuccess(false), 3000);
+		} catch (error) {
+			console.error("Failed to process uploaded file:", error);
+			setError(
+				error instanceof Error
+					? error.message
+					: "Failed to process uploaded file",
+			);
+		}
+	};
 
-      {/* File Upload Section */}
-      {activeSection === 'upload' && !editingEntry && (
-        <div className="space-y-6">
-          <div>
-            <h4 className="text-sm font-medium text-gray-900 mb-2">Upload Documents</h4>
-            <p className="text-sm text-gray-600 mb-4">
-              Upload PDF, DOC, DOCX, or TXT files. Text will be automatically extracted and added to your knowledge base.
-            </p>
-            <FileUpload
-              agentId={agentId}
-              onUploadComplete={handleFileUploadComplete}
-              onUploadError={handleFileUploadError}
-              accept=".pdf,.doc,.docx,.txt"
-              maxSize={10}
-            />
-          </div>
+	const handleFileUploadError = (error: string) => {
+		setError(error);
+		setSuccess(false);
+	};
 
-          {/* Uploaded Files List */}
-          {files && files.length > 0 && (
-            <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-900 mb-3">Uploaded Files</h4>
-              <div className="space-y-2">
-                {files.map((file) => (
-                  <div key={file._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <FileText className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{file.filename}</p>
-                        <p className="text-xs text-gray-500">
-                          {(file.size / 1024 / 1024).toFixed(2)} MB • 
-                          Uploaded {new Date(file._creationTime).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      file.status === 'processed' ? 'bg-green-100 text-green-800' :
-                      file.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
-                      file.status === 'error' ? 'bg-red-100 text-red-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {file.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+	return (
+		<div className="space-y-6">
+			<div>
+				<h3 className="text-lg font-medium text-gray-900">
+					{editingEntry ? "Edit Knowledge Entry" : "Add Knowledge"}
+				</h3>
+				<p className="mt-1 text-sm text-gray-600">
+					{editingEntry
+						? "Update the content and title of your knowledge entry."
+						: "Create knowledge entries by writing text directly or uploading documents."}
+				</p>
+				{editingEntry && (
+					<button
+						onClick={handleCancelEdit}
+						className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+					>
+						← Cancel editing and create new entry
+					</button>
+				)}
+			</div>
 
-      {/* Knowledge Entries List */}
-      <div className="mt-8 pt-8 border-t border-gray-200">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-medium text-gray-900">Knowledge Entries</h3>
-          <span className="text-sm text-gray-500">
-            {knowledgeEntries?.length || 0} entries
-          </span>
-        </div>
+			{/* Section Tabs */}
+			{!editingEntry && (
+				<div className="border-b border-gray-200">
+					<nav className="-mb-px flex space-x-8">
+						<button
+							onClick={() => setActiveSection("text")}
+							className={`py-2 px-1 border-b-2 font-medium text-sm ${
+								activeSection === "text"
+									? "border-blue-500 text-blue-600"
+									: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+							}`}
+						>
+							<FileText className="inline-block w-4 h-4 mr-2" />
+							Write Text
+						</button>
+						<button
+							onClick={() => setActiveSection("upload")}
+							className={`py-2 px-1 border-b-2 font-medium text-sm ${
+								activeSection === "upload"
+									? "border-blue-500 text-blue-600"
+									: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+							}`}
+						>
+							<Upload className="inline-block w-4 h-4 mr-2" />
+							Upload Documents
+						</button>
+					</nav>
+				</div>
+			)}
 
-        {knowledgeEntries === undefined ? (
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="animate-pulse bg-gray-100 rounded-lg p-4 h-24"></div>
-            ))}
-          </div>
-        ) : knowledgeEntries.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg">
-            <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
-            <h4 className="mt-2 text-sm font-medium text-gray-900">No knowledge entries yet</h4>
-            <p className="mt-1 text-sm text-gray-500">
-              Create your first knowledge entry using the form above.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {knowledgeEntries.map((entry) => (
-              <div key={entry._id} className={`bg-white border rounded-lg p-4 hover:border-gray-300 transition-colors ${
-                editingEntry === entry._id ? 'border-blue-300 bg-blue-50' : 'border-gray-200'
-              }`}>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h4 className="text-sm font-medium text-gray-900 mb-1 flex items-center">
-                      {entry.title || 'Untitled Entry'}
-                      {editingEntry === entry._id && (
-                        <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          Editing
-                        </span>
-                      )}
-                    </h4>
-                    <div 
-                      className="text-sm text-gray-600 line-clamp-3"
-                      dangerouslySetInnerHTML={{ 
-                        __html: entry.content.length > 200 
-                          ? entry.content.substring(0, 200) + '...' 
-                          : entry.content 
-                      }}
-                    />
-                    <div className="flex items-center mt-2 text-xs text-gray-500">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        entry.source === 'document' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {entry.source === 'document' ? (
-                          <>
-                            <FileText className="w-3 h-3 mr-1" />
-                            Document
-                          </>
-                        ) : (
-                          <>
-                            <FileText className="w-3 h-3 mr-1" />
-                            Text
-                          </>
-                        )}
-                      </span>
-                      {entry.sourceMetadata?.filename && (
-                        <span className="ml-2 text-gray-400">
-                          {entry.sourceMetadata.filename}
-                        </span>
-                      )}
-                      <span className="ml-2">
-                        Created {new Date(entry._creationTime).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2 ml-4">
-                    <button
-                      onClick={() => handleEdit(entry)}
-                      className="text-gray-400 hover:text-blue-600 transition-colors"
-                      title="Edit entry"
-                    >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => handleDelete(entry)}
-                      className="text-gray-400 hover:text-red-600 transition-colors"
-                      title="Delete entry"
-                    >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  )
+			{/* Error and Success Messages */}
+			{error && (
+				<div className="bg-red-50 border border-red-200 rounded-md p-4">
+					<p className="text-sm text-red-600">{error}</p>
+				</div>
+			)}
+
+			{success && (
+				<div className="bg-green-50 border border-green-200 rounded-md p-4">
+					<p className="text-sm text-green-600">
+						{activeSection === "upload"
+							? "File uploaded and processed successfully!"
+							: "Knowledge entry saved successfully!"}
+					</p>
+				</div>
+			)}
+
+			{/* Text Entry Form */}
+			{(activeSection === "text" || editingEntry) && (
+				<form onSubmit={handleSubmit} className="space-y-6">
+					<div>
+						<label
+							htmlFor="title"
+							className="block text-sm font-medium text-gray-700 mb-2"
+						>
+							Title
+						</label>
+						<input
+							type="text"
+							id="title"
+							value={title}
+							onChange={(e) => setTitle(e.target.value)}
+							className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+							placeholder="Enter a title for this knowledge entry..."
+							required
+						/>
+					</div>
+
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-2">
+							Content
+						</label>
+						<RichTextEditor
+							content={content}
+							onChange={setContent}
+							placeholder="Start writing your knowledge content..."
+							className="min-h-[300px]"
+						/>
+					</div>
+
+					<div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
+						<button
+							type="button"
+							onClick={
+								editingEntry
+									? handleCancelEdit
+									: () => {
+											setTitle("");
+											setContent("");
+										}
+							}
+							className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+						>
+							{editingEntry ? "Cancel" : "Clear"}
+						</button>
+						<button
+							type="submit"
+							disabled={isSubmitting || !content.trim() || !title.trim()}
+							className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							{isSubmitting
+								? editingEntry
+									? "Updating..."
+									: "Saving..."
+								: editingEntry
+									? "Update Entry"
+									: "Save Knowledge Entry"}
+						</button>
+					</div>
+				</form>
+			)}
+
+			{/* File Upload Section */}
+			{activeSection === "upload" && !editingEntry && (
+				<div className="space-y-6">
+					<div>
+						<h4 className="text-sm font-medium text-gray-900 mb-2">
+							Upload Documents
+						</h4>
+						<p className="text-sm text-gray-600 mb-4">
+							Upload PDF, DOC, DOCX, or TXT files. Text will be automatically
+							extracted and added to your knowledge base.
+						</p>
+						<FileUpload
+							agentId={agentId}
+							onUploadComplete={handleFileUploadComplete}
+							onUploadError={handleFileUploadError}
+							accept=".pdf,.doc,.docx,.txt"
+							maxSize={10}
+						/>
+					</div>
+
+					{/* Uploaded Files List */}
+					{files && files.length > 0 && (
+						<div className="mt-6">
+							<h4 className="text-sm font-medium text-gray-900 mb-3">
+								Uploaded Files
+							</h4>
+							<div className="space-y-2">
+								{files.map((file) => (
+									<div
+										key={file._id}
+										className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+									>
+										<div className="flex items-center space-x-3">
+											<FileText className="h-5 w-5 text-gray-400" />
+											<div>
+												<p className="text-sm font-medium text-gray-900">
+													{file.filename}
+												</p>
+												<p className="text-xs text-gray-500">
+													{(file.size / 1024 / 1024).toFixed(2)} MB • Uploaded{" "}
+													{new Date(file._creationTime).toLocaleDateString()}
+												</p>
+											</div>
+										</div>
+										<span
+											className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+												file.status === "processed"
+													? "bg-green-100 text-green-800"
+													: file.status === "processing"
+														? "bg-yellow-100 text-yellow-800"
+														: file.status === "error"
+															? "bg-red-100 text-red-800"
+															: "bg-gray-100 text-gray-800"
+											}`}
+										>
+											{file.status}
+										</span>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
+				</div>
+			)}
+
+			{/* Knowledge Entries List */}
+			<div className="mt-8 pt-8 border-t border-gray-200">
+				<div className="flex items-center justify-between mb-6">
+					<h3 className="text-lg font-medium text-gray-900">
+						Knowledge Entries
+					</h3>
+					<span className="text-sm text-gray-500">
+						{knowledgeEntries?.length || 0} entries
+					</span>
+				</div>
+
+				{knowledgeEntries === undefined ? (
+					<div className="space-y-4">
+						{[...Array(3)].map((_, i) => (
+							<div
+								key={i}
+								className="animate-pulse bg-gray-100 rounded-lg p-4 h-24"
+							></div>
+						))}
+					</div>
+				) : knowledgeEntries.length === 0 ? (
+					<div className="text-center py-8 bg-gray-50 rounded-lg">
+						<BookOpen className="mx-auto h-12 w-12 text-gray-400" />
+						<h4 className="mt-2 text-sm font-medium text-gray-900">
+							No knowledge entries yet
+						</h4>
+						<p className="mt-1 text-sm text-gray-500">
+							Create your first knowledge entry using the form above.
+						</p>
+					</div>
+				) : (
+					<div className="space-y-4">
+						{knowledgeEntries.map((entry) => (
+							<div
+								key={entry._id}
+								className={`bg-white border rounded-lg p-4 hover:border-gray-300 transition-colors ${
+									editingEntry === entry._id
+										? "border-blue-300 bg-blue-50"
+										: "border-gray-200"
+								}`}
+							>
+								<div className="flex items-start justify-between">
+									<div className="flex-1">
+										<h4 className="text-sm font-medium text-gray-900 mb-1 flex items-center">
+											{entry.title || "Untitled Entry"}
+											{editingEntry === entry._id && (
+												<span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+													Editing
+												</span>
+											)}
+										</h4>
+										<div
+											className="text-sm text-gray-600 line-clamp-3"
+											dangerouslySetInnerHTML={{
+												__html:
+													entry.content.length > 200
+														? entry.content.substring(0, 200) + "..."
+														: entry.content,
+											}}
+										/>
+										<div className="flex items-center mt-2 text-xs text-gray-500">
+											<span
+												className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+													entry.source === "document"
+														? "bg-purple-100 text-purple-800"
+														: "bg-blue-100 text-blue-800"
+												}`}
+											>
+												{entry.source === "document" ? (
+													<>
+														<FileText className="w-3 h-3 mr-1" />
+														Document
+													</>
+												) : (
+													<>
+														<FileText className="w-3 h-3 mr-1" />
+														Text
+													</>
+												)}
+											</span>
+											{entry.sourceMetadata?.filename && (
+												<span className="ml-2 text-gray-400">
+													{entry.sourceMetadata.filename}
+												</span>
+											)}
+											<span className="ml-2">
+												Created{" "}
+												{new Date(entry._creationTime).toLocaleDateString()}
+											</span>
+										</div>
+									</div>
+									<div className="flex items-center space-x-2 ml-4">
+										<button
+											onClick={() => handleEdit(entry)}
+											className="text-gray-400 hover:text-blue-600 transition-colors"
+											title="Edit entry"
+										>
+											<svg
+												className="h-4 w-4"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+												/>
+											</svg>
+										</button>
+										<button
+											onClick={() => handleDelete(entry)}
+											className="text-gray-400 hover:text-red-600 transition-colors"
+											title="Delete entry"
+										>
+											<svg
+												className="h-4 w-4"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+												/>
+											</svg>
+										</button>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				)}
+			</div>
+		</div>
+	);
 }
 
 function AgentDetail() {
-  const navigate = useNavigate()
-  const { agentId } = Route.useParams()
-  
-  // For now, we'll use a placeholder since we can't query by ID easily
-  // In a real implementation, we'd have a getAgentById query
-  const agents = useQuery(api.agents.getAgentsForUser)
-  const agent = agents?.find(a => a._id === agentId)
-  
-  const [activeTab, setActiveTab] = useState<'overview' | 'knowledge' | 'chat' | 'conversations' | 'settings' | 'deploy'>('overview')
-  const [currentConversationId, setCurrentConversationId] = useState<Id<"conversations"> | undefined>()
+	const navigate = useNavigate();
+	const { agentId } = Route.useParams();
 
-  const tabs = [
-    { id: 'overview', name: 'Overview', icon: Bot },
-    { id: 'knowledge', name: 'Knowledge Base', icon: BookOpen },
-    { id: 'chat', name: 'Chat Playground', icon: MessageSquare },
-    { id: 'conversations', name: 'Conversations', icon: MessageSquare },
-    { id: 'deploy', name: 'Deploy', icon: Globe },
-    { id: 'settings', name: 'Settings', icon: Settings },
-  ] as const
+	// For now, we'll use a placeholder since we can't query by ID easily
+	// In a real implementation, we'd have a getAgentById query
+	const agents = useQuery(api.agents.getAgentsForUser);
+	const agent = agents?.find((a) => a._id === agentId);
 
-  const handleConversationCreate = (conversationId: Id<"conversations">) => {
-    setCurrentConversationId(conversationId)
-  }
+	const [activeTab, setActiveTab] = useState<
+		"overview" | "knowledge" | "chat" | "conversations" | "settings" | "deploy"
+	>("overview");
+	const [currentConversationId, setCurrentConversationId] = useState<
+		Id<"conversations"> | undefined
+	>();
 
-  if (agents === undefined) {
-    return (
-      <Authenticated>
-        <DashboardLayout>
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
-          </div>
-        </DashboardLayout>
-      </Authenticated>
-    )
-  }
+	const tabs = [
+		{ id: "overview", name: "Overview", icon: Bot },
+		{ id: "knowledge", name: "Knowledge Base", icon: BookOpen },
+		{ id: "chat", name: "Chat Playground", icon: MessageSquare },
+		{ id: "conversations", name: "Conversations", icon: MessageSquare },
+		{ id: "deploy", name: "Deploy", icon: Globe },
+		{ id: "settings", name: "Settings", icon: Settings },
+	] as const;
 
-  if (!agent) {
-    return (
-      <Authenticated>
-        <DashboardLayout>
-          <div className="text-center py-12">
-            <Bot className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">Agent not found</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              The agent you're looking for doesn't exist or you don't have access to it.
-            </p>
-            <div className="mt-6">
-              <button
-                onClick={() => navigate({ to: '/dashboard/agents' })}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Agents
-              </button>
-            </div>
-          </div>
-        </DashboardLayout>
-      </Authenticated>
-    )
-  }
+	const handleConversationCreate = (conversationId: Id<"conversations">) => {
+		setCurrentConversationId(conversationId);
+	};
 
-  return (
-    <Authenticated>
-      <DashboardLayout>
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate({ to: '/dashboard/agents' })}
-                className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-1" />
-                Back to Agents
-              </button>
-            </div>
-          </div>
+	if (agents === undefined) {
+		return (
+			<Authenticated>
+				<DashboardLayout>
+					<div className="animate-pulse">
+						<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+						<div className="h-64 bg-gray-200 rounded"></div>
+					</div>
+				</DashboardLayout>
+			</Authenticated>
+		);
+	}
 
-          {/* Agent Header */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                  <Bot className="h-7 w-7 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <h1 className="text-2xl font-bold text-gray-900">{agent.name}</h1>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {agent.description || 'No description provided'}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Created {new Date(agent._creationTime).toLocaleDateString()} • 
-                    Last updated {new Date(agent._creationTime).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Active
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+	if (!agent) {
+		return (
+			<Authenticated>
+				<DashboardLayout>
+					<div className="text-center py-12">
+						<Bot className="mx-auto h-12 w-12 text-gray-400" />
+						<h3 className="mt-2 text-sm font-medium text-gray-900">
+							Agent not found
+						</h3>
+						<p className="mt-1 text-sm text-gray-500">
+							The agent you're looking for doesn't exist or you don't have
+							access to it.
+						</p>
+						<div className="mt-6">
+							<button
+								onClick={() => navigate({ to: "/dashboard/agents" })}
+								className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+							>
+								<ArrowLeft className="mr-2 h-4 w-4" />
+								Back to Agents
+							</button>
+						</div>
+					</div>
+				</DashboardLayout>
+			</Authenticated>
+		);
+	}
 
-          {/* Tabs */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8 px-6">
-                {tabs.map((tab) => {
-                  const Icon = tab.icon
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm ${
-                        activeTab === tab.id
-                          ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                      }`}
-                    >
-                      <Icon
-                        className={`mr-2 h-5 w-5 ${
-                          activeTab === tab.id ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
-                        }`}
-                      />
-                      {tab.name}
-                    </button>
-                  )
-                })}
-              </nav>
-            </div>
+	return (
+		<Authenticated>
+			<DashboardLayout>
+				<div className="space-y-6">
+					{/* Header */}
+					<div className="flex items-center justify-between">
+						<div className="flex items-center space-x-4">
+							<button
+								onClick={() => navigate({ to: "/dashboard/agents" })}
+								className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
+							>
+								<ArrowLeft className="h-4 w-4 mr-1" />
+								Back to Agents
+							</button>
+						</div>
+					</div>
 
-            {/* Tab Content */}
-            <div className="p-6">
-              {activeTab === 'overview' && (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <BookOpen className="h-8 w-8 text-blue-500" />
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-gray-500">Knowledge Entries</p>
-                          <p className="text-2xl font-semibold text-gray-900">0</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <MessageSquare className="h-8 w-8 text-green-500" />
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-gray-500">Conversations</p>
-                          <p className="text-2xl font-semibold text-gray-900">0</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <Globe className="h-8 w-8 text-purple-500" />
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-gray-500">Deployments</p>
-                          <p className="text-2xl font-semibold text-gray-900">0</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+					{/* Agent Header */}
+					<div className="bg-white shadow rounded-lg">
+						<div className="px-6 py-4">
+							<div className="flex items-center">
+								<div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+									<Bot className="h-7 w-7 text-blue-600" />
+								</div>
+								<div className="flex-1">
+									<h1 className="text-2xl font-bold text-gray-900">
+										{agent.name}
+									</h1>
+									<p className="text-sm text-gray-600 mt-1">
+										{agent.description || "No description provided"}
+									</p>
+									<p className="text-xs text-gray-500 mt-1">
+										Created {new Date(agent._creationTime).toLocaleDateString()}{" "}
+										• Last updated{" "}
+										{new Date(agent._creationTime).toLocaleDateString()}
+									</p>
+								</div>
+								<div className="flex items-center space-x-2">
+									<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+										Active
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
 
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                      <button
-                        onClick={() => setActiveTab('chat')}
-                        className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
-                      >
-                        <MessageSquare className="h-6 w-6 text-green-500 mb-2" />
-                        <h4 className="font-medium text-gray-900">Test Agent</h4>
-                        <p className="text-sm text-gray-600">Chat with your agent in the playground</p>
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('knowledge')}
-                        className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
-                      >
-                        <BookOpen className="h-6 w-6 text-blue-500 mb-2" />
-                        <h4 className="font-medium text-gray-900">Add Knowledge</h4>
-                        <p className="text-sm text-gray-600">Upload documents or add text content</p>
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('deploy')}
-                        className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
-                      >
-                        <Globe className="h-6 w-6 text-purple-500 mb-2" />
-                        <h4 className="font-medium text-gray-900">Deploy Agent</h4>
-                        <p className="text-sm text-gray-600">Get embed code for your website</p>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+					{/* Tabs */}
+					<div className="bg-white shadow rounded-lg">
+						<div className="border-b border-gray-200">
+							<nav className="-mb-px flex space-x-8 px-6">
+								{tabs.map((tab) => {
+									const Icon = tab.icon;
+									return (
+										<button
+											key={tab.id}
+											onClick={() => setActiveTab(tab.id)}
+											className={`group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm ${
+												activeTab === tab.id
+													? "border-blue-500 text-blue-600"
+													: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+											}`}
+										>
+											<Icon
+												className={`mr-2 h-5 w-5 ${
+													activeTab === tab.id
+														? "text-blue-500"
+														: "text-gray-400 group-hover:text-gray-500"
+												}`}
+											/>
+											{tab.name}
+										</button>
+									);
+								})}
+							</nav>
+						</div>
 
-              {activeTab === 'knowledge' && (
-                <KnowledgeTab agentId={agent._id} />
-              )}
+						{/* Tab Content */}
+						<div className="p-6">
+							{activeTab === "overview" && (
+								<div className="space-y-6">
+									<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+										<div className="bg-gray-50 rounded-lg p-4">
+											<div className="flex items-center">
+												<BookOpen className="h-8 w-8 text-blue-500" />
+												<div className="ml-3">
+													<p className="text-sm font-medium text-gray-500">
+														Knowledge Entries
+													</p>
+													<p className="text-2xl font-semibold text-gray-900">
+														0
+													</p>
+												</div>
+											</div>
+										</div>
+										<div className="bg-gray-50 rounded-lg p-4">
+											<div className="flex items-center">
+												<MessageSquare className="h-8 w-8 text-green-500" />
+												<div className="ml-3">
+													<p className="text-sm font-medium text-gray-500">
+														Conversations
+													</p>
+													<p className="text-2xl font-semibold text-gray-900">
+														0
+													</p>
+												</div>
+											</div>
+										</div>
+										<div className="bg-gray-50 rounded-lg p-4">
+											<div className="flex items-center">
+												<Globe className="h-8 w-8 text-purple-500" />
+												<div className="ml-3">
+													<p className="text-sm font-medium text-gray-500">
+														Deployments
+													</p>
+													<p className="text-2xl font-semibold text-gray-900">
+														0
+													</p>
+												</div>
+											</div>
+										</div>
+									</div>
 
-              {activeTab === 'chat' && (
-                <div className="space-y-6">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <div className="flex items-start">
-                      <MessageSquare className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
-                      <div>
-                        <h3 className="text-sm font-medium text-blue-800">Chat Playground</h3>
-                        <p className="text-sm text-blue-700 mt-1">
-                          Test your agent by chatting with it directly. This is exactly how customers will interact with your agent when deployed.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+									<div className="bg-gray-50 rounded-lg p-6">
+										<h3 className="text-lg font-medium text-gray-900 mb-4">
+											Quick Actions
+										</h3>
+										<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+											<button
+												onClick={() => setActiveTab("chat")}
+												className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+											>
+												<MessageSquare className="h-6 w-6 text-green-500 mb-2" />
+												<h4 className="font-medium text-gray-900">
+													Test Agent
+												</h4>
+												<p className="text-sm text-gray-600">
+													Chat with your agent in the playground
+												</p>
+											</button>
+											<button
+												onClick={() => setActiveTab("knowledge")}
+												className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+											>
+												<BookOpen className="h-6 w-6 text-blue-500 mb-2" />
+												<h4 className="font-medium text-gray-900">
+													Add Knowledge
+												</h4>
+												<p className="text-sm text-gray-600">
+													Upload documents or add text content
+												</p>
+											</button>
+											<button
+												onClick={() => setActiveTab("deploy")}
+												className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+											>
+												<Globe className="h-6 w-6 text-purple-500 mb-2" />
+												<h4 className="font-medium text-gray-900">
+													Deploy Agent
+												</h4>
+												<p className="text-sm text-gray-600">
+													Get embed code for your website
+												</p>
+											</button>
+										</div>
+									</div>
+								</div>
+							)}
 
-                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    <div className="lg:col-span-3">
-                      <ChatWidget
-                        agentId={agent._id as any}
-                        conversationId={currentConversationId}
-                        onConversationCreate={handleConversationCreate}
-                        height="600px"
-                        className="border border-gray-200"
-                      />
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <h4 className="text-sm font-medium text-gray-900 mb-3">Testing Tips</h4>
-                        <ul className="text-sm text-gray-600 space-y-2">
-                          <li className="flex items-start">
-                            <span className="text-green-500 mr-2">•</span>
-                            Ask questions related to your knowledge base
-                          </li>
-                          <li className="flex items-start">
-                            <span className="text-green-500 mr-2">•</span>
-                            Test edge cases and unclear queries
-                          </li>
-                          <li className="flex items-start">
-                            <span className="text-green-500 mr-2">•</span>
-                            Check if responses are accurate and helpful
-                          </li>
-                          <li className="flex items-start">
-                            <span className="text-green-500 mr-2">•</span>
-                            Verify knowledge sources are being used
-                          </li>
-                        </ul>
-                      </div>
+							{activeTab === "knowledge" && (
+								<KnowledgeTab agentId={agent._id} />
+							)}
 
-                      <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <h4 className="text-sm font-medium text-gray-900 mb-3">Quick Actions</h4>
-                        <div className="space-y-2">
-                          <button
-                            onClick={() => setCurrentConversationId(undefined)}
-                            className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
-                          >
-                            🔄 Start New Conversation
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('knowledge')}
-                            className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
-                          >
-                            📚 Add More Knowledge
-                          </button>
-                          <button
-                            onClick={() => setActiveTab('deploy')}
-                            className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
-                          >
-                            🚀 Deploy Agent
-                          </button>
-                        </div>
-                      </div>
+							{activeTab === "chat" && (
+								<div className="space-y-6">
+									<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+										<div className="flex items-start">
+											<MessageSquare className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
+											<div>
+												<h3 className="text-sm font-medium text-blue-800">
+													Chat Playground
+												</h3>
+												<p className="text-sm text-blue-700 mt-1">
+													Test your agent by chatting with it directly. This is
+													exactly how customers will interact with your agent
+													when deployed.
+												</p>
+											</div>
+										</div>
+									</div>
 
-                      {currentConversationId && (
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                          <h4 className="text-sm font-medium text-green-800 mb-2">Active Conversation</h4>
-                          <p className="text-xs text-green-700">
-                            Conversation ID: {currentConversationId}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
+									<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+										<div className="lg:col-span-3">
+											<ChatWidget
+												agentId={agent._id as any}
+												conversationId={currentConversationId}
+												onConversationCreate={handleConversationCreate}
+												height="600px"
+												className="border border-gray-200"
+											/>
+										</div>
 
-              {activeTab === 'conversations' && (
-                <div className="text-center py-12">
-                  <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-sm font-medium text-gray-900">No conversations yet</h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Conversations will appear here once users start chatting with your agent.
-                  </p>
-                </div>
-              )}
+										<div className="space-y-4">
+											<div className="bg-white border border-gray-200 rounded-lg p-4">
+												<h4 className="text-sm font-medium text-gray-900 mb-3">
+													Testing Tips
+												</h4>
+												<ul className="text-sm text-gray-600 space-y-2">
+													<li className="flex items-start">
+														<span className="text-green-500 mr-2">•</span>
+														Ask questions related to your knowledge base
+													</li>
+													<li className="flex items-start">
+														<span className="text-green-500 mr-2">•</span>
+														Test edge cases and unclear queries
+													</li>
+													<li className="flex items-start">
+														<span className="text-green-500 mr-2">•</span>
+														Check if responses are accurate and helpful
+													</li>
+													<li className="flex items-start">
+														<span className="text-green-500 mr-2">•</span>
+														Verify knowledge sources are being used
+													</li>
+												</ul>
+											</div>
 
-              {activeTab === 'deploy' && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">Embed Your Agent</h3>
-                    <p className="mt-1 text-sm text-gray-600">
-                      Copy the code below to embed this agent on your website.
-                    </p>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <code className="text-sm text-gray-800">
-                      {`<iframe src="https://your-domain.com/chat/${agent._id}" width="400" height="600"></iframe>`}
-                    </code>
-                  </div>
-                  <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                    Copy Embed Code
-                  </button>
-                </div>
-              )}
+											<div className="bg-white border border-gray-200 rounded-lg p-4">
+												<h4 className="text-sm font-medium text-gray-900 mb-3">
+													Quick Actions
+												</h4>
+												<div className="space-y-2">
+													<button
+														onClick={() => setCurrentConversationId(undefined)}
+														className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
+													>
+														🔄 Start New Conversation
+													</button>
+													<button
+														onClick={() => setActiveTab("knowledge")}
+														className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
+													>
+														📚 Add More Knowledge
+													</button>
+													<button
+														onClick={() => setActiveTab("deploy")}
+														className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
+													>
+														🚀 Deploy Agent
+													</button>
+												</div>
+											</div>
 
-              {activeTab === 'settings' && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">Agent Settings</h3>
-                    <p className="mt-1 text-sm text-gray-600">
-                      Configure your agent's behavior and appearance.
-                    </p>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <p className="text-sm text-gray-600">Settings panel coming soon...</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </DashboardLayout>
-    </Authenticated>
-  )
-} 
+											{currentConversationId && (
+												<div className="bg-green-50 border border-green-200 rounded-lg p-4">
+													<h4 className="text-sm font-medium text-green-800 mb-2">
+														Active Conversation
+													</h4>
+													<p className="text-xs text-green-700">
+														Conversation ID: {currentConversationId}
+													</p>
+												</div>
+											)}
+										</div>
+									</div>
+								</div>
+							)}
+
+							{activeTab === "conversations" && (
+								<div className="text-center py-12">
+									<MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
+									<h3 className="mt-2 text-sm font-medium text-gray-900">
+										No conversations yet
+									</h3>
+									<p className="mt-1 text-sm text-gray-500">
+										Conversations will appear here once users start chatting
+										with your agent.
+									</p>
+								</div>
+							)}
+
+							{activeTab === "deploy" && (
+								<div className="space-y-6">
+									<div>
+										<h3 className="text-lg font-medium text-gray-900">
+											Embed Your Agent
+										</h3>
+										<p className="mt-1 text-sm text-gray-600">
+											Copy the code below to embed this agent on your website.
+										</p>
+									</div>
+									<div className="bg-gray-50 rounded-lg p-4">
+										<code className="text-sm text-gray-800">
+											{`<iframe src="https://your-domain.com/chat/${agent._id}" width="400" height="600"></iframe>`}
+										</code>
+									</div>
+									<button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+										Copy Embed Code
+									</button>
+								</div>
+							)}
+
+							{activeTab === "settings" && (
+								<div className="space-y-6">
+									<div>
+										<h3 className="text-lg font-medium text-gray-900">
+											Agent Settings
+										</h3>
+										<p className="mt-1 text-sm text-gray-600">
+											Configure your agent's behavior and appearance.
+										</p>
+									</div>
+									<div className="bg-gray-50 rounded-lg p-6">
+										<p className="text-sm text-gray-600">
+											Settings panel coming soon...
+										</p>
+									</div>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
+			</DashboardLayout>
+		</Authenticated>
+	);
+}
