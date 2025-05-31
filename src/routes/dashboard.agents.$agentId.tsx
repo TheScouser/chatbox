@@ -13,6 +13,7 @@ import {
 	ArrowLeft,
 	BookOpen,
 	Bot,
+	Brain,
 	Check,
 	Copy,
 	ExternalLink,
@@ -50,10 +51,21 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
 	const [urlTitle, setUrlTitle] = useState("");
 	const [isProcessingUrl, setIsProcessingUrl] = useState(false);
 
+	// Training state
+	const [isTraining, setIsTraining] = useState(false);
+	const [trainingResult, setTrainingResult] = useState<{
+		message: string;
+		processed: number;
+		errors: number;
+	} | null>(null);
+
 	const createKnowledgeEntry = useMutation(api.knowledge.createKnowledgeEntry);
 	const updateKnowledgeEntry = useMutation(api.knowledge.updateKnowledgeEntry);
 	const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry);
 	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
+		agentId: agentId as any,
+	});
+	const knowledgeStats = useQuery(api.vectorSearch.getKnowledgeStats, {
 		agentId: agentId as any,
 	});
 	const files = useQuery(api.files.getFilesForAgent, {
@@ -61,6 +73,7 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
 	});
 	const extractText = useAction(api.textExtraction.extractTextFromUploadedFile);
 	const processUrl = useAction(api.webCrawling.processUrlContent);
+	const generateEmbeddings = useAction(api.embeddings.generateEmbeddingsForAgent);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -81,13 +94,24 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
 				setEditingEntry(null);
 			} else {
 				// Create new entry
-				await createKnowledgeEntry({
+				const knowledgeEntryId = await createKnowledgeEntry({
 					agentId: agentId as any, // Type assertion needed for the ID
 					title: title.trim(),
 					content: content,
 					source: "text",
 					sourceMetadata: undefined,
 				});
+
+				// Generate embeddings for the newly created knowledge entry
+				try {
+					await generateEmbeddings({
+						agentId: agentId as any,
+					});
+					console.log(`Generated embeddings for new text knowledge entry`);
+				} catch (embeddingError) {
+					console.error('Failed to generate embeddings:', embeddingError);
+					// Don't fail the whole process if embedding generation fails
+				}
 			}
 
 			// Reset form and show success
@@ -208,6 +232,30 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
 		}
 	};
 
+	const handleTrainAgent = async () => {
+		setIsTraining(true);
+		setError(null);
+		setTrainingResult(null);
+
+		try {
+			const result = await generateEmbeddings({
+				agentId: agentId as any,
+			});
+
+			setTrainingResult(result);
+
+			// Clear result after 10 seconds
+			setTimeout(() => setTrainingResult(null), 10000);
+		} catch (error) {
+			console.error("Failed to train agent:", error);
+			setError(
+				error instanceof Error ? error.message : "Failed to train agent",
+			);
+		} finally {
+			setIsTraining(false);
+		}
+	};
+
 	return (
 		<div className="space-y-6">
 			<div>
@@ -286,6 +334,27 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
 								? "URL content processed successfully!"
 								: "Knowledge entry saved successfully!"}
 					</p>
+				</div>
+			)}
+
+			{trainingResult && (
+				<div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+					<div className="flex items-start">
+						<Brain className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
+						<div>
+							<p className="text-sm font-medium text-blue-800">
+								Training Complete
+							</p>
+							<p className="text-sm text-blue-700 mt-1">
+								{trainingResult.message}
+							</p>
+							{trainingResult.errors > 0 && (
+								<p className="text-sm text-orange-700 mt-1">
+									{trainingResult.errors} entries failed to process.
+								</p>
+							)}
+						</div>
+					</div>
 				</div>
 			)}
 
@@ -503,13 +572,46 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
 			{/* Knowledge Entries List */}
 			<div className="mt-8 pt-8 border-t border-gray-200">
 				<div className="flex items-center justify-between mb-6">
-					<h3 className="text-lg font-medium text-gray-900">
-						Knowledge Sources
-					</h3>
-					<div className="flex items-center gap-4">
-						<span className="text-sm text-gray-500">
-							{knowledgeEntries?.length || 0} sources
-						</span>
+					<div>
+						<h3 className="text-lg font-medium text-gray-900">
+							Knowledge Sources
+						</h3>
+						{knowledgeStats && (
+							<div className="flex items-center gap-4 mt-2">
+								<span className="text-sm text-gray-500">
+									{knowledgeStats.totalEntries} sources
+								</span>
+								<div className="flex items-center gap-2 text-xs">
+									<span className="text-green-600">
+										{knowledgeStats.entriesWithEmbeddings} trained
+									</span>
+									{knowledgeStats.entriesNeedingEmbeddings > 0 && (
+										<>
+											<span className="text-gray-300">•</span>
+											<span className="text-orange-600">
+												{knowledgeStats.entriesNeedingEmbeddings} need training
+											</span>
+										</>
+									)}
+									<span className="text-gray-300">•</span>
+									<span className="text-gray-500">
+										{Math.round(knowledgeStats.embeddingProgress)}% complete
+									</span>
+								</div>
+							</div>
+						)}
+					</div>
+					<div className="flex items-center gap-3">
+						{knowledgeStats && knowledgeStats.entriesNeedingEmbeddings > 0 && (
+							<button
+								onClick={handleTrainAgent}
+								disabled={isTraining}
+								className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+							>
+								<Brain className="h-4 w-4 mr-2" />
+								{isTraining ? "Training..." : "Train Agent"}
+							</button>
+						)}
 						{knowledgeEntries && knowledgeEntries.length > 0 && (
 							<div className="flex items-center gap-2 text-xs text-gray-500">
 								<div className="flex items-center gap-1">
@@ -668,6 +770,16 @@ function KnowledgeTab({ agentId }: { agentId: string }) {
 												>
 													{getSourceIcon()}
 													<span className="ml-1">{getSourceLabel()}</span>
+												</span>
+												<span
+													className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+														entry.embedding
+															? "bg-green-100 text-green-800"
+															: "bg-orange-100 text-orange-800"
+													}`}
+												>
+													<Brain className="h-3 w-3 mr-1" />
+													{entry.embedding ? "Trained" : "Needs Training"}
 												</span>
 												{getSourceMetadata() && (
 													<span className="text-gray-400 truncate max-w-xs">

@@ -3,6 +3,7 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { api } from "./_generated/api";
+import { internal } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
 import * as cheerio from "cheerio";
 
@@ -341,6 +342,17 @@ export const processUrlContent = action({
         source: "url",
         sourceMetadata,
       });
+
+      // Generate embeddings for the newly created knowledge entry
+      try {
+        await ctx.runAction(internal.embeddings.generateEmbeddingsForEntries, {
+          entryIds: [knowledgeEntry],
+        });
+        console.log(`Generated embeddings for knowledge entry from ${urlData.url}`);
+      } catch (embeddingError) {
+        console.error('Failed to generate embeddings:', embeddingError);
+        // Don't fail the whole process if embedding generation fails
+      }
 
       return {
         knowledgeEntryId: knowledgeEntry,
