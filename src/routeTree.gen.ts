@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard.index'
+import { Route as WidgetDemoAgentIdImport } from './routes/widget-demo.$agentId'
 import { Route as EmbedAgentIdImport } from './routes/embed.$agentId'
 import { Route as DemoWebCrawlingImport } from './routes/demo.web-crawling'
 import { Route as DemoVectorSearchImport } from './routes/demo.vector-search'
@@ -26,6 +27,7 @@ import { Route as DemoClerkImport } from './routes/demo.clerk'
 import { Route as DemoChatImport } from './routes/demo.chat'
 import { Route as DashboardAgentsImport } from './routes/dashboard.agents'
 import { Route as ChatAgentIdImport } from './routes/chat.$agentId'
+import { Route as ApiChatImport } from './routes/api.chat'
 import { Route as DashboardAgentsIndexImport } from './routes/dashboard.agents.index'
 import { Route as DemoFormSimpleImport } from './routes/demo.form.simple'
 import { Route as DemoFormAddressImport } from './routes/demo.form.address'
@@ -50,6 +52,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardRoute,
+} as any)
+
+const WidgetDemoAgentIdRoute = WidgetDemoAgentIdImport.update({
+  id: '/widget-demo/$agentId',
+  path: '/widget-demo/$agentId',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const EmbedAgentIdRoute = EmbedAgentIdImport.update({
@@ -124,6 +132,12 @@ const ChatAgentIdRoute = ChatAgentIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const ApiChatRoute = ApiChatImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const DashboardAgentsIndexRoute = DashboardAgentsIndexImport.update({
   id: '/',
   path: '/',
@@ -170,6 +184,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatImport
       parentRoute: typeof rootRoute
     }
     '/chat/$agentId': {
@@ -256,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmbedAgentIdImport
       parentRoute: typeof rootRoute
     }
+    '/widget-demo/$agentId': {
+      id: '/widget-demo/$agentId'
+      path: '/widget-demo/$agentId'
+      fullPath: '/widget-demo/$agentId'
+      preLoaderRoute: typeof WidgetDemoAgentIdImport
+      parentRoute: typeof rootRoute
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/'
@@ -336,6 +364,7 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/api/chat': typeof ApiChatRoute
   '/chat/$agentId': typeof ChatAgentIdRoute
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/demo/chat': typeof DemoChatRoute
@@ -348,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/demo/vector-search': typeof DemoVectorSearchRoute
   '/demo/web-crawling': typeof DemoWebCrawlingRoute
   '/embed/$agentId': typeof EmbedAgentIdRoute
+  '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -358,6 +388,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/chat': typeof ApiChatRoute
   '/chat/$agentId': typeof ChatAgentIdRoute
   '/demo/chat': typeof DemoChatRoute
   '/demo/clerk': typeof DemoClerkRoute
@@ -369,6 +400,7 @@ export interface FileRoutesByTo {
   '/demo/vector-search': typeof DemoVectorSearchRoute
   '/demo/web-crawling': typeof DemoWebCrawlingRoute
   '/embed/$agentId': typeof EmbedAgentIdRoute
+  '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -381,6 +413,7 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/api/chat': typeof ApiChatRoute
   '/chat/$agentId': typeof ChatAgentIdRoute
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
   '/demo/chat': typeof DemoChatRoute
@@ -393,6 +426,7 @@ export interface FileRoutesById {
   '/demo/vector-search': typeof DemoVectorSearchRoute
   '/demo/web-crawling': typeof DemoWebCrawlingRoute
   '/embed/$agentId': typeof EmbedAgentIdRoute
+  '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
@@ -406,6 +440,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/api/chat'
     | '/chat/$agentId'
     | '/dashboard/agents'
     | '/demo/chat'
@@ -418,6 +453,7 @@ export interface FileRouteTypes {
     | '/demo/vector-search'
     | '/demo/web-crawling'
     | '/embed/$agentId'
+    | '/widget-demo/$agentId'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
@@ -427,6 +463,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/api/chat'
     | '/chat/$agentId'
     | '/demo/chat'
     | '/demo/clerk'
@@ -438,6 +475,7 @@ export interface FileRouteTypes {
     | '/demo/vector-search'
     | '/demo/web-crawling'
     | '/embed/$agentId'
+    | '/widget-demo/$agentId'
     | '/dashboard'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
@@ -448,6 +486,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/api/chat'
     | '/chat/$agentId'
     | '/dashboard/agents'
     | '/demo/chat'
@@ -460,6 +499,7 @@ export interface FileRouteTypes {
     | '/demo/vector-search'
     | '/demo/web-crawling'
     | '/embed/$agentId'
+    | '/widget-demo/$agentId'
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
@@ -472,6 +512,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  ApiChatRoute: typeof ApiChatRoute
   ChatAgentIdRoute: typeof ChatAgentIdRoute
   DemoChatRoute: typeof DemoChatRoute
   DemoClerkRoute: typeof DemoClerkRoute
@@ -483,6 +524,7 @@ export interface RootRouteChildren {
   DemoVectorSearchRoute: typeof DemoVectorSearchRoute
   DemoWebCrawlingRoute: typeof DemoWebCrawlingRoute
   EmbedAgentIdRoute: typeof EmbedAgentIdRoute
+  WidgetDemoAgentIdRoute: typeof WidgetDemoAgentIdRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
   DemoFormSimpleRoute: typeof DemoFormSimpleRoute
 }
@@ -490,6 +532,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  ApiChatRoute: ApiChatRoute,
   ChatAgentIdRoute: ChatAgentIdRoute,
   DemoChatRoute: DemoChatRoute,
   DemoClerkRoute: DemoClerkRoute,
@@ -501,6 +544,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoVectorSearchRoute: DemoVectorSearchRoute,
   DemoWebCrawlingRoute: DemoWebCrawlingRoute,
   EmbedAgentIdRoute: EmbedAgentIdRoute,
+  WidgetDemoAgentIdRoute: WidgetDemoAgentIdRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,
   DemoFormSimpleRoute: DemoFormSimpleRoute,
 }
@@ -517,6 +561,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/dashboard",
+        "/api/chat",
         "/chat/$agentId",
         "/demo/chat",
         "/demo/clerk",
@@ -528,6 +573,7 @@ export const routeTree = rootRoute
         "/demo/vector-search",
         "/demo/web-crawling",
         "/embed/$agentId",
+        "/widget-demo/$agentId",
         "/demo/form/address",
         "/demo/form/simple"
       ]
@@ -541,6 +587,9 @@ export const routeTree = rootRoute
         "/dashboard/agents",
         "/dashboard/"
       ]
+    },
+    "/api/chat": {
+      "filePath": "api.chat.tsx"
     },
     "/chat/$agentId": {
       "filePath": "chat.$agentId.tsx"
@@ -583,6 +632,9 @@ export const routeTree = rootRoute
     },
     "/embed/$agentId": {
       "filePath": "embed.$agentId.tsx"
+    },
+    "/widget-demo/$agentId": {
+      "filePath": "widget-demo.$agentId.tsx"
     },
     "/dashboard/": {
       "filePath": "dashboard.index.tsx",

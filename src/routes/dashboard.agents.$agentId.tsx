@@ -1246,11 +1246,108 @@ function AgentDetail() {
 										</p>
 									</div>
 
+									{/* Chat Bubble Widget */}
+									<div className="bg-white border border-gray-200 rounded-lg p-6">
+										<div className="flex items-start justify-between">
+											<div className="flex items-start gap-3">
+												<MessageSquare className="h-5 w-5 text-blue-600 mt-0.5" />
+												<div>
+													<h4 className="text-sm font-medium text-gray-900">
+														Chat Bubble Widget
+														<span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+															Recommended
+														</span>
+													</h4>
+													<p className="text-sm text-gray-600 mt-1">
+														Floating chat bubble that appears on your website. Easy one-line installation.
+													</p>
+												</div>
+											</div>
+											<a
+												href={`${baseUrl}/widget-demo/${agent._id}`}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="text-sm text-blue-600 hover:text-blue-800"
+											>
+												Preview →
+											</a>
+										</div>
+										<div className="mt-4">
+											<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 whitespace-pre-wrap">
+{`<script>
+(function(){
+  if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
+    window.ChatboxWidget=(...arguments)=>{
+      if(!window.ChatboxWidget.q){window.ChatboxWidget.q=[]}
+      window.ChatboxWidget.q.push(arguments)
+    };
+    window.ChatboxWidget=new Proxy(window.ChatboxWidget,{
+      get(target,prop){
+        if(prop==="q"){return target.q}
+        return(...args)=>target(prop,...args)
+      }
+    })
+  }
+  const onLoad=function(){
+    const script=document.createElement("script");
+    script.src="${baseUrl}/widget.min.js";
+    script.id="${agent._id}";
+    script.domain="${new URL(baseUrl).hostname}";
+    document.body.appendChild(script)
+  };
+  if(document.readyState==="complete"){onLoad()}
+  else{window.addEventListener("load",onLoad)}
+})();
+</script>`}
+											</div>
+											<button
+												onClick={() => copyToClipboard(`<script>
+(function(){
+  if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
+    window.ChatboxWidget=(...arguments)=>{
+      if(!window.ChatboxWidget.q){window.ChatboxWidget.q=[]}
+      window.ChatboxWidget.q.push(arguments)
+    };
+    window.ChatboxWidget=new Proxy(window.ChatboxWidget,{
+      get(target,prop){
+        if(prop==="q"){return target.q}
+        return(...args)=>target(prop,...args)
+      }
+    })
+  }
+  const onLoad=function(){
+    const script=document.createElement("script");
+    script.src="${baseUrl}/widget.min.js";
+    script.id="${agent._id}";
+    script.domain="${new URL(baseUrl).hostname}";
+    document.body.appendChild(script)
+  };
+  if(document.readyState==="complete"){onLoad()}
+  else{window.addEventListener("load",onLoad)}
+})();
+</script>`, "bubble")}
+												className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+											>
+												{copiedCode === "bubble" ? (
+													<>
+														<Check className="h-4 w-4" />
+														Copied!
+													</>
+												) : (
+													<>
+														<Copy className="h-4 w-4" />
+														Copy Widget Code
+													</>
+												)}
+											</button>
+										</div>
+									</div>
+
 									{/* Public Chat Link */}
 									<div className="bg-white border border-gray-200 rounded-lg p-6">
 										<div className="flex items-start justify-between">
 											<div className="flex items-start gap-3">
-												<ExternalLink className="h-5 w-5 text-blue-600 mt-0.5" />
+												<ExternalLink className="h-5 w-5 text-green-600 mt-0.5" />
 												<div>
 													<h4 className="text-sm font-medium text-gray-900">
 														Public Chat Link
@@ -1321,11 +1418,11 @@ function AgentDetail() {
 											</div>
 											<button
 												onClick={() => copyToClipboard(iframeCode, "iframe")}
-												className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+												className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
 											>
 												{copiedCode === "iframe" ? (
 													<>
-														<Check className="h-4 w-4" />
+														<Check className="h-4 w-4 text-green-600" />
 														Copied!
 													</>
 												) : (
