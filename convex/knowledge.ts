@@ -1,5 +1,6 @@
-import { query, mutation, internalQuery } from "./_generated/server";
+import { query, mutation, internalQuery, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 
 export const getKnowledgeForAgent = query({
   args: {
@@ -208,5 +209,110 @@ export const getKnowledgeEntryById = internalQuery({
   },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.entryId);
+  },
+});
+
+// Helper function to chunk large text into smaller pieces for better embeddings
+function chunkText(text: string, maxChunkSize: number = 1000, overlap: number = 100): string[] {
+  if (text.length <= maxChunkSize) {
+    return [text];
+  }
+  
+  const chunks: string[] = [];
+  let start = 0;
+  
+  while (start < text.length) {
+    let end = start + maxChunkSize;
+    
+    // If we're not at the end, try to break at a sentence or paragraph boundary
+    if (end < text.length) {
+      // Look for paragraph break first
+      const paragraphBreak = text.lastIndexOf('\n\n', end);
+      if (paragraphBreak > start + maxChunkSize * 0.5) {
+        end = paragraphBreak + 2;
+      } else {
+        // Look for sentence break
+        const sentenceBreak = text.lastIndexOf('. ', end);
+        if (sentenceBreak > start + maxChunkSize * 0.5) {
+          end = sentenceBreak + 2;
+        } else {
+          // Look for any whitespace
+          const spaceBreak = text.lastIndexOf(' ', end);
+          if (spaceBreak > start + maxChunkSize * 0.5) {
+            end = spaceBreak + 1;
+          }
+        }
+      }
+    }
+    
+    const chunk = text.slice(start, end).trim();
+    if (chunk.length > 0) {
+      chunks.push(chunk);
+    }
+    
+    // Move start position with overlap
+    start = end - overlap;
+    if (start >= text.length) break;
+  }
+  
+  return chunks;
+}
+
+// Internal mutation to create knowledge entries from extracted text
+export const createKnowledgeFromText = internalMutation({
+  args: {
+    agentId: v.id("agents"),
+    text: v.string(),
+    source: v.string(),
+    sourceMetadata: v.object({
+      filename: v.optional(v.string()),
+    }),
+    fileId: v.id("files"),
+  },
+  handler: async (ctx, args): Promise<Id<"knowledgeEntries">[]> => {
+    // Chunk the text for better embeddings and retrieval
+    const chunks = chunkText(args.text, 1000, 100);
+    const knowledgeEntryIds: Id<"knowledgeEntries">[] = [];
+    
+    console.log(`Creating ${chunks.length} knowledge entries from ${args.sourceMetadata.filename}`);
+    
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i];
+      const title = chunks.length > 1 
+        ? `${args.sourceMetadata.filename} (Part ${i + 1}/${chunks.length})`
+        : `Document: ${args.sourceMetadata.filename}`;
+      
+      const knowledgeEntryId = await ctx.db.insert("knowledgeEntries", {
+        agentId: args.agentId,
+        title,
+        content: chunk,
+        source: args.source,
+        sourceMetadata: {
+          ...args.sourceMetadata,
+          chunkIndex: chunks.length > 1 ? i : undefined,
+          totalChunks: chunks.length > 1 ? chunks.length : undefined,
+        },
+      });
+      
+      knowledgeEntryIds.push(knowledgeEntryId);
+    }
+    
+    return knowledgeEntryIds;
+  },
+});
+
+// Internal mutation to update file status
+export const updateFileStatus = internalMutation({
+  args: {
+    fileId: v.id("files"),
+    status: v.union(
+      v.literal("uploaded"),
+      v.literal("processing"), 
+      v.literal("processed"),
+      v.literal("error")
+    ),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.fileId, { status: args.status });
   },
 }); 

@@ -1,12 +1,70 @@
-import { action, mutation, internalMutation } from "./_generated/server";
+"use node";
+
+import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import { extractTextFromPDF } from "./openai";
-import type { Id } from "./_generated/dataModel";
 import PizZip from "pizzip";
 
+// PDF text extraction using external Node service
+async function extractTextFromPDF(buffer: ArrayBuffer, filename: string): Promise<string> {
+  try {
+    
+    // Create FormData for multipart upload
+    const formData = new FormData();
+    
+    // Convert ArrayBuffer to Blob and append to form
+    const pdfBlob = new Blob([buffer], { type: 'application/pdf' });
+    formData.append('pdf', pdfBlob, filename);
+    
+    // Call the local Node service
+    const response = await fetch('https://chatbox-pdf-parsing.onrender.com/parse-pdf', {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`PDF parsing service returned ${response.status}: ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    
+    if (!result.success || !result.data || !result.data.text) {
+      throw new Error(result.error || 'No text content returned from PDF parsing service');
+    }
+    
+    const extractedText = result.data.text;
+    
+    
+    
+    return extractedText;
+    
+  } catch (error) {
+    
+    if (error instanceof Error && error.message.includes('ECONNREFUSED')) {
+      throw new Error(`PDF parsing service is not available. Please ensure the service is running on localhost:3001.
+
+To start the service, run your PDF parsing server locally.
+
+Error: ${error.message}`);
+    }
+    
+    throw new Error(`Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}
+
+This might be due to:
+- PDF parsing service being unavailable
+- Network connectivity issues
+- Invalid or corrupted PDF file
+- Password-protected or encrypted PDF
+
+Please try:
+1. Ensuring the PDF parsing service is running
+2. Converting to a text-based format (.txt, .docx)
+3. Copy and paste the text manually`);
+  }
+}
+
 // Simple text extraction for different file types
-// This is a basic implementation - in production you'd want to use proper libraries
+// This is a robust implementation using specialized libraries for each format
 async function extractTextFromFile(buffer: ArrayBuffer, contentType: string, filename: string): Promise<string> {
   try {
     // For TXT files, just decode as UTF-8
@@ -41,7 +99,6 @@ async function extractTextFromFile(buffer: ArrayBuffer, contentType: string, fil
         
         return textContent;
       } catch (docxError) {
-        console.error('DOCX extraction failed:', docxError);
         throw new Error(`Failed to extract text from DOCX file: ${docxError instanceof Error ? docxError.message : 'Unknown error'}`);
       }
     }
@@ -60,16 +117,22 @@ Please try one of these alternatives:
 We're working on adding full .doc support in future versions.`);
     }
     
-    // For PDF files, use GPT-4o for text extraction
+    // For PDF files, use external Node service for text extraction
     if (contentType === 'application/pdf' || filename.endsWith('.pdf')) {
-      // Use GPT-4o to extract text from PDF
-      const extractedText = await extractTextFromPDF(buffer);
-      
-      if (!extractedText.trim()) {
-        throw new Error("No text content could be extracted from the PDF");
+      try {
+        
+        const extractedText = await extractTextFromPDF(buffer, filename);
+        
+        if (!extractedText || extractedText.trim().length === 0) {
+          throw new Error("No text content could be extracted from the PDF. The PDF might be image-based or encrypted.");
+        }
+        
+        
+        return extractedText;
+        
+      } catch (pdfError) {
+        throw pdfError; // Re-throw with the detailed error message from extractTextFromPDF
       }
-      
-      return extractedText;
     }
     
     // Fallback: try to decode as text
@@ -84,60 +147,15 @@ We're working on adding full .doc support in future versions.`);
     throw new Error(`Unsupported file format: ${filename}. Supported formats: .txt, .docx, .pdf`);
     
   } catch (error) {
-    console.error('Text extraction error:', error);
     throw new Error(`Failed to extract text from ${filename}: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
-
-// Internal mutation to create knowledge entries from extracted text
-export const createKnowledgeFromText = internalMutation({
-  args: {
-    agentId: v.id("agents"),
-    text: v.string(),
-    source: v.string(),
-    sourceMetadata: v.object({
-      filename: v.optional(v.string()),
-    }),
-    fileId: v.id("files"),
-  },
-  handler: async (ctx, args): Promise<Id<"knowledgeEntries">> => {
-    // For now, create a single knowledge entry with the full text
-    // In a more sophisticated implementation, you might want to chunk the text
-    // following the patterns from the Convex AI chat guide
-    
-    const knowledgeEntryId = await ctx.db.insert("knowledgeEntries", {
-      agentId: args.agentId,
-      title: `Document: ${args.sourceMetadata.filename}`,
-      content: args.text,
-      source: args.source,
-      sourceMetadata: args.sourceMetadata,
-    });
-    
-    return knowledgeEntryId;
-  },
-});
-
-// Internal mutation to update file status
-export const updateFileStatus = internalMutation({
-  args: {
-    fileId: v.id("files"),
-    status: v.union(
-      v.literal("uploaded"),
-      v.literal("processing"), 
-      v.literal("processed"),
-      v.literal("error")
-    ),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.patch(args.fileId, { status: args.status });
-  },
-});
 
 export const extractTextFromUploadedFile = action({
   args: {
     fileId: v.id("files"),
   },
-  handler: async (ctx, args): Promise<{ success: boolean; textLength: number; filename: string }> => {
+  handler: async (ctx, args): Promise<{ success: boolean; textLength: number; filename: string; chunksCreated: number }> => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
       throw new Error("Not authenticated");
@@ -161,10 +179,11 @@ export const extractTextFromUploadedFile = action({
     
     try {
       // Update file status to processing
-      await ctx.runMutation(internal.textExtraction.updateFileStatus, {
+      await ctx.runMutation(internal.knowledge.updateFileStatus, {
         fileId: args.fileId,
         status: "processing"
       });
+      
       
       // Get file content from storage
       const fileUrl = await ctx.storage.getUrl(file.storageId);
@@ -187,8 +206,9 @@ export const extractTextFromUploadedFile = action({
         throw new Error("No text content could be extracted from the file");
       }
       
-      // Create knowledge entries from extracted text
-      const knowledgeEntryId = await ctx.runMutation(internal.textExtraction.createKnowledgeFromText, {
+      
+      // Create knowledge entries from extracted text (with chunking)
+      const knowledgeEntryIds = await ctx.runMutation(internal.knowledge.createKnowledgeFromText, {
         agentId: file.agentId,
         text: extractedText,
         source: "document",
@@ -198,34 +218,34 @@ export const extractTextFromUploadedFile = action({
         fileId: args.fileId,
       });
       
-      // Generate embeddings for the newly created knowledge entry
+      
+      // Generate embeddings for the newly created knowledge entries
       try {
         await ctx.runAction(internal.embeddings.generateEmbeddingsForEntries, {
-          entryIds: [knowledgeEntryId],
+          entryIds: knowledgeEntryIds,
         });
-        console.log(`Generated embeddings for knowledge entry from ${file.filename}`);
       } catch (embeddingError) {
-        console.error('Failed to generate embeddings:', embeddingError);
         // Don't fail the whole process if embedding generation fails
       }
       
       // Update file status to processed
-      await ctx.runMutation(internal.textExtraction.updateFileStatus, {
+      await ctx.runMutation(internal.knowledge.updateFileStatus, {
         fileId: args.fileId,
         status: "processed"
       });
+      
       
       return {
         success: true,
         textLength: extractedText.length,
         filename: file.filename,
+        chunksCreated: knowledgeEntryIds.length,
       };
       
     } catch (error) {
-      console.error('Text extraction failed:', error);
       
       // Update file status to error
-      await ctx.runMutation(internal.textExtraction.updateFileStatus, {
+      await ctx.runMutation(internal.knowledge.updateFileStatus, {
         fileId: args.fileId,
         status: "error"
       });

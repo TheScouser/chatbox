@@ -28,6 +28,7 @@ export default defineSchema({
       filename: v.optional(v.string()),
       url: v.optional(v.string()),
       chunkIndex: v.optional(v.number()),
+      totalChunks: v.optional(v.number()),
     })),
     embedding: v.optional(v.array(v.number())),
   }).index("agentId", ["agentId"])
