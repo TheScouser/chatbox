@@ -12,6 +12,11 @@ export default defineSchema({
     userId: v.id("users"),
     name: v.string(),
     description: v.optional(v.string()),
+    instructions: v.optional(v.string()),
+    model: v.optional(v.string()),
+    allowedDomains: v.optional(v.array(v.string())),
+    widgetSecretKey: v.optional(v.string()),
+    domainVerificationEnabled: v.optional(v.boolean()),
   }).index("userId", ["userId"]),
   
   knowledgeEntries: defineTable({

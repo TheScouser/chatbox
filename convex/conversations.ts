@@ -305,4 +305,55 @@ export const getMessagesForConversationInternal = internalQuery({
       .order("asc")
       .collect();
   },
+});
+
+export const deleteAllConversationsForAgent = mutation({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("Not authenticated");
+    }
+    
+    // Verify the agent belongs to the current user
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) {
+      throw new Error("Agent not found");
+    }
+    
+    const user = await ctx.db
+      .query("users")
+      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
+      .first();
+    
+    if (!user || agent.userId !== user._id) {
+      throw new Error("Not authorized to delete conversations for this agent");
+    }
+    
+    // Get all conversations for this agent
+    const conversations = await ctx.db
+      .query("conversations")
+      .withIndex("agentId", (q) => q.eq("agentId", args.agentId))
+      .collect();
+    
+    // Delete all messages and conversations
+    for (const conversation of conversations) {
+      // Delete all messages in this conversation
+      const messages = await ctx.db
+        .query("messages")
+        .withIndex("conversationId", (q) => q.eq("conversationId", conversation._id))
+        .collect();
+      
+      for (const message of messages) {
+        await ctx.db.delete(message._id);
+      }
+      
+      // Delete the conversation
+      await ctx.db.delete(conversation._id);
+    }
+    
+    return { deletedConversations: conversations.length };
+  },
 }); 

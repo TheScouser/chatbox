@@ -35,6 +35,7 @@ import ChatWidget from "../components/ChatWidget";
 import DashboardLayout from "../components/DashboardLayout";
 import FileUpload from "../components/FileUpload";
 import RichTextEditor from "../components/RichTextEditor";
+import SettingsPanel from "../components/SettingsPanel";
 
 export const Route = createFileRoute("/dashboard/agents/$agentId")({
 	component: AgentDetail,
@@ -1950,23 +1951,7 @@ function AgentDetail() {
 								</div>
 							)}
 
-							{activeTab === "settings" && (
-								<div className="space-y-6">
-									<div>
-										<h3 className="text-lg font-medium text-gray-900">
-											Agent Settings
-										</h3>
-										<p className="mt-1 text-sm text-gray-600">
-											Configure your agent's behavior and appearance.
-										</p>
-									</div>
-									<div className="bg-gray-50 rounded-lg p-6">
-										<p className="text-sm text-gray-600">
-											Settings panel coming soon...
-										</p>
-									</div>
-								</div>
-							)}
+							{activeTab === "settings" && <SettingsPanel agent={agent} />}
 						</div>
 					</div>
 				</div>
