@@ -25,12 +25,21 @@ import { Route as DemoKnowledgeImport } from './routes/demo.knowledge'
 import { Route as DemoFileUploadImport } from './routes/demo.file-upload'
 import { Route as DemoClerkImport } from './routes/demo.clerk'
 import { Route as DemoChatImport } from './routes/demo.chat'
+import { Route as DashboardUsageImport } from './routes/dashboard.usage'
+import { Route as DashboardSettingsImport } from './routes/dashboard.settings'
+import { Route as DashboardBillingImport } from './routes/dashboard.billing'
 import { Route as DashboardAgentsImport } from './routes/dashboard.agents'
 import { Route as ChatAgentIdImport } from './routes/chat.$agentId'
 import { Route as ApiChatImport } from './routes/api.chat'
+import { Route as DashboardSettingsIndexImport } from './routes/dashboard.settings.index'
+import { Route as DashboardBillingIndexImport } from './routes/dashboard.billing.index'
 import { Route as DashboardAgentsIndexImport } from './routes/dashboard.agents.index'
 import { Route as DemoFormSimpleImport } from './routes/demo.form.simple'
 import { Route as DemoFormAddressImport } from './routes/demo.form.address'
+import { Route as DashboardSettingsPlansImport } from './routes/dashboard.settings.plans'
+import { Route as DashboardSettingsMembersImport } from './routes/dashboard.settings.members'
+import { Route as DashboardSettingsBillingImport } from './routes/dashboard.settings.billing'
+import { Route as DashboardBillingPlansImport } from './routes/dashboard.billing.plans'
 import { Route as DashboardAgentsNewImport } from './routes/dashboard.agents.new'
 import { Route as DashboardAgentsAgentIdImport } from './routes/dashboard.agents.$agentId'
 import { Route as DashboardAgentsAgentIdIndexImport } from './routes/dashboard.agents.$agentId.index'
@@ -126,6 +135,24 @@ const DemoChatRoute = DemoChatImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const DashboardUsageRoute = DashboardUsageImport.update({
+  id: '/usage',
+  path: '/usage',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardSettingsRoute = DashboardSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardBillingRoute = DashboardBillingImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
 const DashboardAgentsRoute = DashboardAgentsImport.update({
   id: '/agents',
   path: '/agents',
@@ -144,6 +171,18 @@ const ApiChatRoute = ApiChatImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const DashboardSettingsIndexRoute = DashboardSettingsIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+
+const DashboardBillingIndexRoute = DashboardBillingIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardBillingRoute,
+} as any)
+
 const DashboardAgentsIndexRoute = DashboardAgentsIndexImport.update({
   id: '/',
   path: '/',
@@ -160,6 +199,30 @@ const DemoFormAddressRoute = DemoFormAddressImport.update({
   id: '/demo/form/address',
   path: '/demo/form/address',
   getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardSettingsPlansRoute = DashboardSettingsPlansImport.update({
+  id: '/plans',
+  path: '/plans',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+
+const DashboardSettingsMembersRoute = DashboardSettingsMembersImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+
+const DashboardSettingsBillingRoute = DashboardSettingsBillingImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => DashboardSettingsRoute,
+} as any)
+
+const DashboardBillingPlansRoute = DashboardBillingPlansImport.update({
+  id: '/plans',
+  path: '/plans',
+  getParentRoute: () => DashboardBillingRoute,
 } as any)
 
 const DashboardAgentsNewRoute = DashboardAgentsNewImport.update({
@@ -254,6 +317,27 @@ declare module '@tanstack/react-router' {
       path: '/agents'
       fullPath: '/dashboard/agents'
       preLoaderRoute: typeof DashboardAgentsImport
+      parentRoute: typeof DashboardImport
+    }
+    '/dashboard/billing': {
+      id: '/dashboard/billing'
+      path: '/billing'
+      fullPath: '/dashboard/billing'
+      preLoaderRoute: typeof DashboardBillingImport
+      parentRoute: typeof DashboardImport
+    }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsImport
+      parentRoute: typeof DashboardImport
+    }
+    '/dashboard/usage': {
+      id: '/dashboard/usage'
+      path: '/usage'
+      fullPath: '/dashboard/usage'
+      preLoaderRoute: typeof DashboardUsageImport
       parentRoute: typeof DashboardImport
     }
     '/demo/chat': {
@@ -354,6 +438,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsNewImport
       parentRoute: typeof DashboardAgentsImport
     }
+    '/dashboard/billing/plans': {
+      id: '/dashboard/billing/plans'
+      path: '/plans'
+      fullPath: '/dashboard/billing/plans'
+      preLoaderRoute: typeof DashboardBillingPlansImport
+      parentRoute: typeof DashboardBillingImport
+    }
+    '/dashboard/settings/billing': {
+      id: '/dashboard/settings/billing'
+      path: '/billing'
+      fullPath: '/dashboard/settings/billing'
+      preLoaderRoute: typeof DashboardSettingsBillingImport
+      parentRoute: typeof DashboardSettingsImport
+    }
+    '/dashboard/settings/members': {
+      id: '/dashboard/settings/members'
+      path: '/members'
+      fullPath: '/dashboard/settings/members'
+      preLoaderRoute: typeof DashboardSettingsMembersImport
+      parentRoute: typeof DashboardSettingsImport
+    }
+    '/dashboard/settings/plans': {
+      id: '/dashboard/settings/plans'
+      path: '/plans'
+      fullPath: '/dashboard/settings/plans'
+      preLoaderRoute: typeof DashboardSettingsPlansImport
+      parentRoute: typeof DashboardSettingsImport
+    }
     '/demo/form/address': {
       id: '/demo/form/address'
       path: '/demo/form/address'
@@ -374,6 +486,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/agents/'
       preLoaderRoute: typeof DashboardAgentsIndexImport
       parentRoute: typeof DashboardAgentsImport
+    }
+    '/dashboard/billing/': {
+      id: '/dashboard/billing/'
+      path: '/'
+      fullPath: '/dashboard/billing/'
+      preLoaderRoute: typeof DashboardBillingIndexImport
+      parentRoute: typeof DashboardBillingImport
+    }
+    '/dashboard/settings/': {
+      id: '/dashboard/settings/'
+      path: '/'
+      fullPath: '/dashboard/settings/'
+      preLoaderRoute: typeof DashboardSettingsIndexImport
+      parentRoute: typeof DashboardSettingsImport
     }
     '/dashboard/agents/$agentId/chat': {
       id: '/dashboard/agents/$agentId/chat'
@@ -463,13 +589,49 @@ const DashboardAgentsRouteWithChildren = DashboardAgentsRoute._addFileChildren(
   DashboardAgentsRouteChildren,
 )
 
+interface DashboardBillingRouteChildren {
+  DashboardBillingPlansRoute: typeof DashboardBillingPlansRoute
+  DashboardBillingIndexRoute: typeof DashboardBillingIndexRoute
+}
+
+const DashboardBillingRouteChildren: DashboardBillingRouteChildren = {
+  DashboardBillingPlansRoute: DashboardBillingPlansRoute,
+  DashboardBillingIndexRoute: DashboardBillingIndexRoute,
+}
+
+const DashboardBillingRouteWithChildren =
+  DashboardBillingRoute._addFileChildren(DashboardBillingRouteChildren)
+
+interface DashboardSettingsRouteChildren {
+  DashboardSettingsBillingRoute: typeof DashboardSettingsBillingRoute
+  DashboardSettingsMembersRoute: typeof DashboardSettingsMembersRoute
+  DashboardSettingsPlansRoute: typeof DashboardSettingsPlansRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+}
+
+const DashboardSettingsRouteChildren: DashboardSettingsRouteChildren = {
+  DashboardSettingsBillingRoute: DashboardSettingsBillingRoute,
+  DashboardSettingsMembersRoute: DashboardSettingsMembersRoute,
+  DashboardSettingsPlansRoute: DashboardSettingsPlansRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+}
+
+const DashboardSettingsRouteWithChildren =
+  DashboardSettingsRoute._addFileChildren(DashboardSettingsRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardAgentsRoute: typeof DashboardAgentsRouteWithChildren
+  DashboardBillingRoute: typeof DashboardBillingRouteWithChildren
+  DashboardSettingsRoute: typeof DashboardSettingsRouteWithChildren
+  DashboardUsageRoute: typeof DashboardUsageRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAgentsRoute: DashboardAgentsRouteWithChildren,
+  DashboardBillingRoute: DashboardBillingRouteWithChildren,
+  DashboardSettingsRoute: DashboardSettingsRouteWithChildren,
+  DashboardUsageRoute: DashboardUsageRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -483,6 +645,9 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/chat/$agentId': typeof ChatAgentIdRoute
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
+  '/dashboard/billing': typeof DashboardBillingRouteWithChildren
+  '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
+  '/dashboard/usage': typeof DashboardUsageRoute
   '/demo/chat': typeof DemoChatRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
@@ -497,9 +662,15 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRouteWithChildren
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
+  '/dashboard/billing/plans': typeof DashboardBillingPlansRoute
+  '/dashboard/settings/billing': typeof DashboardSettingsBillingRoute
+  '/dashboard/settings/members': typeof DashboardSettingsMembersRoute
+  '/dashboard/settings/plans': typeof DashboardSettingsPlansRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/dashboard/agents/': typeof DashboardAgentsIndexRoute
+  '/dashboard/billing/': typeof DashboardBillingIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
@@ -512,6 +683,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$agentId': typeof ChatAgentIdRoute
+  '/dashboard/usage': typeof DashboardUsageRoute
   '/demo/chat': typeof DemoChatRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
@@ -525,9 +697,15 @@ export interface FileRoutesByTo {
   '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
+  '/dashboard/billing/plans': typeof DashboardBillingPlansRoute
+  '/dashboard/settings/billing': typeof DashboardSettingsBillingRoute
+  '/dashboard/settings/members': typeof DashboardSettingsMembersRoute
+  '/dashboard/settings/plans': typeof DashboardSettingsPlansRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/dashboard/agents': typeof DashboardAgentsIndexRoute
+  '/dashboard/billing': typeof DashboardBillingIndexRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
   '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
@@ -543,6 +721,9 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/chat/$agentId': typeof ChatAgentIdRoute
   '/dashboard/agents': typeof DashboardAgentsRouteWithChildren
+  '/dashboard/billing': typeof DashboardBillingRouteWithChildren
+  '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
+  '/dashboard/usage': typeof DashboardUsageRoute
   '/demo/chat': typeof DemoChatRoute
   '/demo/clerk': typeof DemoClerkRoute
   '/demo/file-upload': typeof DemoFileUploadRoute
@@ -557,9 +738,15 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRouteWithChildren
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
+  '/dashboard/billing/plans': typeof DashboardBillingPlansRoute
+  '/dashboard/settings/billing': typeof DashboardSettingsBillingRoute
+  '/dashboard/settings/members': typeof DashboardSettingsMembersRoute
+  '/dashboard/settings/plans': typeof DashboardSettingsPlansRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/dashboard/agents/': typeof DashboardAgentsIndexRoute
+  '/dashboard/billing/': typeof DashboardBillingIndexRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
   '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
@@ -576,6 +763,9 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/chat/$agentId'
     | '/dashboard/agents'
+    | '/dashboard/billing'
+    | '/dashboard/settings'
+    | '/dashboard/usage'
     | '/demo/chat'
     | '/demo/clerk'
     | '/demo/file-upload'
@@ -590,9 +780,15 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
+    | '/dashboard/billing/plans'
+    | '/dashboard/settings/billing'
+    | '/dashboard/settings/members'
+    | '/dashboard/settings/plans'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/dashboard/agents/'
+    | '/dashboard/billing/'
+    | '/dashboard/settings/'
     | '/dashboard/agents/$agentId/chat'
     | '/dashboard/agents/$agentId/conversations'
     | '/dashboard/agents/$agentId/deploy'
@@ -604,6 +800,7 @@ export interface FileRouteTypes {
     | '/'
     | '/api/chat'
     | '/chat/$agentId'
+    | '/dashboard/usage'
     | '/demo/chat'
     | '/demo/clerk'
     | '/demo/file-upload'
@@ -617,9 +814,15 @@ export interface FileRouteTypes {
     | '/widget-demo/$agentId'
     | '/dashboard'
     | '/dashboard/agents/new'
+    | '/dashboard/billing/plans'
+    | '/dashboard/settings/billing'
+    | '/dashboard/settings/members'
+    | '/dashboard/settings/plans'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/dashboard/agents'
+    | '/dashboard/billing'
+    | '/dashboard/settings'
     | '/dashboard/agents/$agentId/chat'
     | '/dashboard/agents/$agentId/conversations'
     | '/dashboard/agents/$agentId/deploy'
@@ -633,6 +836,9 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/chat/$agentId'
     | '/dashboard/agents'
+    | '/dashboard/billing'
+    | '/dashboard/settings'
+    | '/dashboard/usage'
     | '/demo/chat'
     | '/demo/clerk'
     | '/demo/file-upload'
@@ -647,9 +853,15 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
+    | '/dashboard/billing/plans'
+    | '/dashboard/settings/billing'
+    | '/dashboard/settings/members'
+    | '/dashboard/settings/plans'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/dashboard/agents/'
+    | '/dashboard/billing/'
+    | '/dashboard/settings/'
     | '/dashboard/agents/$agentId/chat'
     | '/dashboard/agents/$agentId/conversations'
     | '/dashboard/agents/$agentId/deploy'
@@ -735,6 +947,9 @@ export const routeTree = rootRoute
       "filePath": "dashboard.tsx",
       "children": [
         "/dashboard/agents",
+        "/dashboard/billing",
+        "/dashboard/settings",
+        "/dashboard/usage",
         "/dashboard/"
       ]
     },
@@ -752,6 +967,28 @@ export const routeTree = rootRoute
         "/dashboard/agents/new",
         "/dashboard/agents/"
       ]
+    },
+    "/dashboard/billing": {
+      "filePath": "dashboard.billing.tsx",
+      "parent": "/dashboard",
+      "children": [
+        "/dashboard/billing/plans",
+        "/dashboard/billing/"
+      ]
+    },
+    "/dashboard/settings": {
+      "filePath": "dashboard.settings.tsx",
+      "parent": "/dashboard",
+      "children": [
+        "/dashboard/settings/billing",
+        "/dashboard/settings/members",
+        "/dashboard/settings/plans",
+        "/dashboard/settings/"
+      ]
+    },
+    "/dashboard/usage": {
+      "filePath": "dashboard.usage.tsx",
+      "parent": "/dashboard"
     },
     "/demo/chat": {
       "filePath": "demo.chat.tsx"
@@ -806,6 +1043,22 @@ export const routeTree = rootRoute
       "filePath": "dashboard.agents.new.tsx",
       "parent": "/dashboard/agents"
     },
+    "/dashboard/billing/plans": {
+      "filePath": "dashboard.billing.plans.tsx",
+      "parent": "/dashboard/billing"
+    },
+    "/dashboard/settings/billing": {
+      "filePath": "dashboard.settings.billing.tsx",
+      "parent": "/dashboard/settings"
+    },
+    "/dashboard/settings/members": {
+      "filePath": "dashboard.settings.members.tsx",
+      "parent": "/dashboard/settings"
+    },
+    "/dashboard/settings/plans": {
+      "filePath": "dashboard.settings.plans.tsx",
+      "parent": "/dashboard/settings"
+    },
     "/demo/form/address": {
       "filePath": "demo.form.address.tsx"
     },
@@ -815,6 +1068,14 @@ export const routeTree = rootRoute
     "/dashboard/agents/": {
       "filePath": "dashboard.agents.index.tsx",
       "parent": "/dashboard/agents"
+    },
+    "/dashboard/billing/": {
+      "filePath": "dashboard.billing.index.tsx",
+      "parent": "/dashboard/billing"
+    },
+    "/dashboard/settings/": {
+      "filePath": "dashboard.settings.index.tsx",
+      "parent": "/dashboard/settings"
     },
     "/dashboard/agents/$agentId/chat": {
       "filePath": "dashboard.agents.$agentId.chat.tsx",

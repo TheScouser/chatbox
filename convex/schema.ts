@@ -134,4 +134,66 @@ export default defineSchema({
   }).index("agentId", ["agentId"])
     .index("incidentType", ["incidentType"])
     .index("severity", ["severity"]),
+
+  // Billing and subscription tables
+  subscriptionPlans: defineTable({
+    name: v.string(),
+    stripeProductId: v.string(),
+    stripePriceId: v.string(),
+    price: v.number(), // price in cents
+    interval: v.union(v.literal("month"), v.literal("year")),
+    features: v.object({
+      // Core limits
+      maxAgents: v.number(),
+      maxKnowledgeEntries: v.number(),
+      maxMessagesPerMonth: v.number(),
+      maxFileUploads: v.number(),
+      maxFileSizeMB: v.number(),
+      
+      // Feature access
+      prioritySupport: v.boolean(),
+      customDomains: v.boolean(),
+      advancedAnalytics: v.boolean(),
+      apiAccess: v.boolean(),
+      webhookIntegrations: v.boolean(),
+      customBranding: v.boolean(),
+      ssoIntegration: v.boolean(),
+      auditLogs: v.boolean(),
+    }),
+    isActive: v.boolean(),
+    sortOrder: v.number(),
+  }).index("stripeProductId", ["stripeProductId"]),
+
+  subscriptions: defineTable({
+    userId: v.id("users"),
+    stripeCustomerId: v.string(),
+    stripeSubscriptionId: v.string(),
+    planId: v.id("subscriptionPlans"),
+    status: v.union(
+      v.literal("active"),
+      v.literal("canceled"),
+      v.literal("past_due"),
+      v.literal("unpaid"),
+      v.literal("incomplete")
+    ),
+    currentPeriodStart: v.number(),
+    currentPeriodEnd: v.number(),
+    cancelAtPeriodEnd: v.boolean(),
+  }).index("userId", ["userId"])
+    .index("stripeCustomerId", ["stripeCustomerId"])
+    .index("stripeSubscriptionId", ["stripeSubscriptionId"]),
+
+  billingUsage: defineTable({
+    userId: v.id("users"),
+    period: v.string(), // YYYY-MM format
+    metrics: v.object({
+      messagesUsed: v.number(),
+      agentsCreated: v.number(),
+      knowledgeEntriesAdded: v.number(),
+      filesUploaded: v.number(),
+      storageUsedMB: v.number(),
+      apiCallsMade: v.number(),
+    }),
+    lastUpdated: v.number(),
+  }).index("userId_period", ["userId", "period"]),
 })

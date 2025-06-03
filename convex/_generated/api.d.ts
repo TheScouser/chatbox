@@ -14,13 +14,16 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as agents from "../agents.js";
+import type * as billing from "../billing.js";
 import type * as chat from "../chat.js";
 import type * as conversations from "../conversations.js";
 import type * as embeddings from "../embeddings.js";
+import type * as featureGates from "../featureGates.js";
 import type * as files from "../files.js";
 import type * as knowledge from "../knowledge.js";
 import type * as openai from "../openai.js";
 import type * as security from "../security.js";
+import type * as seedPlans from "../seedPlans.js";
 import type * as textExtraction from "../textExtraction.js";
 import type * as users from "../users.js";
 import type * as vectorSearch from "../vectorSearch.js";
@@ -36,13 +39,16 @@ import type * as webCrawling from "../webCrawling.js";
  */
 declare const fullApi: ApiFromModules<{
   agents: typeof agents;
+  billing: typeof billing;
   chat: typeof chat;
   conversations: typeof conversations;
   embeddings: typeof embeddings;
+  featureGates: typeof featureGates;
   files: typeof files;
   knowledge: typeof knowledge;
   openai: typeof openai;
   security: typeof security;
+  seedPlans: typeof seedPlans;
   textExtraction: typeof textExtraction;
   users: typeof users;
   vectorSearch: typeof vectorSearch;

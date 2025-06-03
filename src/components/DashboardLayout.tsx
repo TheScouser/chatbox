@@ -12,6 +12,8 @@ import {
 	Bell,
 	Globe,
 	BarChart3,
+	CreditCard,
+	TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "convex/react";
@@ -33,6 +35,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	// Platform-level navigation (top header)
 	const platformNavigation = [
 		{ name: "Agents", href: "/dashboard/agents", icon: Bot },
+		{ name: "Usage", href: "/dashboard/usage", icon: TrendingUp },
+		{ name: "Settings", href: "/dashboard/settings", icon: Settings },
 	];
 
 	// Agent-specific navigation (left sidebar)
@@ -56,7 +60,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const isAgentNavActive = (navHref: string) => {
 		const currentAgent = getCurrentAgent();
 		if (!currentAgent) return false;
-		
+
 		const basePath = `/dashboard/agents/${currentAgent._id}`;
 		if (navHref === "") {
 			// Overview - exact match to agent base path
@@ -78,7 +82,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const currentAgent = getCurrentAgent();
 
 	// Filter agents based on search
-	const filteredAgents = agents?.filter(agent => 
+	const filteredAgents = agents?.filter(agent =>
 		agent.name.toLowerCase().includes(agentSearch.toLowerCase())
 	) || [];
 
@@ -111,7 +115,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 							{agentNavigation.map((item) => {
 								const Icon = item.icon;
 								const href = currentAgent ? `/dashboard/agents/${currentAgent._id}${item.href}` : '#';
-								
+
 								if (item.disabled) {
 									return (
 										<div
@@ -131,11 +135,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									<Link
 										key={item.name}
 										to={href}
-										className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-											isAgentNavActive(item.href)
-												? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-												: "text-gray-700 hover:bg-gray-50"
-										}`}
+										className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${isAgentNavActive(item.href)
+											? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
+											: "text-gray-700 hover:bg-gray-50"
+											}`}
 									>
 										<Icon className="mr-3 h-4 w-4" />
 										{item.name}
@@ -239,11 +242,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																			setShowAgentsDropdown(false);
 																			setAgentSearch("");
 																		}}
-																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
-																			currentAgent?._id === agent._id
-																				? "bg-blue-50 text-blue-700"
-																				: "hover:bg-gray-50 text-gray-700"
-																		}`}
+																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${currentAgent?._id === agent._id
+																			? "bg-blue-50 text-blue-700"
+																			: "hover:bg-gray-50 text-gray-700"
+																			}`}
 																	>
 																		<Bot className="w-4 h-4 mr-3 text-gray-400" />
 																		<div className="flex-1 min-w-0">
@@ -296,11 +298,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 											<Link
 												key={item.name}
 												to={item.href}
-												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-													isActive(item.href)
-														? "bg-blue-50 text-blue-700"
-														: "text-gray-700 hover:bg-gray-100"
-												}`}
+												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive(item.href)
+													? "bg-blue-50 text-blue-700"
+													: "text-gray-700 hover:bg-gray-100"
+													}`}
 											>
 												<Icon className="mr-1.5 h-4 w-4" />
 												{item.name}
@@ -358,11 +359,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 													<Link
 														key={item.name}
 														to={item.href}
-														className={`flex items-center px-2 py-1.5 text-xs font-medium rounded whitespace-nowrap transition-colors ${
-															isActive(item.href)
-																? "bg-blue-100 text-blue-700"
-																: "text-gray-600 hover:text-gray-900"
-														}`}
+														className={`flex items-center px-2 py-1.5 text-xs font-medium rounded whitespace-nowrap transition-colors ${isActive(item.href)
+															? "bg-blue-100 text-blue-700"
+															: "text-gray-600 hover:text-gray-900"
+															}`}
 													>
 														<Icon className="mr-1 h-3 w-3" />
 														{item.name}

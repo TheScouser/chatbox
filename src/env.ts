@@ -4,6 +4,8 @@ import { z } from "zod";
 export const env = createEnv({
 	server: {
 		SERVER_URL: z.string().url().optional(),
+		STRIPE_SECRET_KEY: z.string().optional(),
+		STRIPE_WEBHOOK_SECRET: z.string().optional(),
 	},
 
 	/**
@@ -14,6 +16,7 @@ export const env = createEnv({
 
 	client: {
 		VITE_APP_TITLE: z.string().min(1).optional(),
+		VITE_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
 	},
 
 	/**
