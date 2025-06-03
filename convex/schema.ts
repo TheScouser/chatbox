@@ -8,8 +8,67 @@ export default defineSchema({
     clerkId: v.string(),
   }).index("clerkId", ["clerkId"]),
   
-  agents: defineTable({
+  // Organizations table
+  organizations: defineTable({
+    name: v.string(),
+    slug: v.string(), // unique identifier for the organization
+    description: v.optional(v.string()),
+    plan: v.optional(v.string()), // "free", "pro", "enterprise", etc.
+    settings: v.optional(v.object({
+      allowedDomains: v.optional(v.array(v.string())),
+      requireEmailVerification: v.optional(v.boolean()),
+      defaultMemberRole: v.optional(v.string()),
+      enableAuditLogs: v.optional(v.boolean()),
+    })),
+  }).index("slug", ["slug"]),
+
+  // Organization membership table with roles
+  organizationMembers: defineTable({
     userId: v.id("users"),
+    organizationId: v.id("organizations"),
+    role: v.union(
+      v.literal("owner"),    // Full access, can delete org
+      v.literal("admin"),    // Can manage members and settings
+      v.literal("editor"),   // Can create/edit agents and content
+      v.literal("viewer")    // Read-only access
+    ),
+    invitedBy: v.optional(v.id("users")),
+    invitedAt: v.optional(v.number()),
+    joinedAt: v.number(),
+    status: v.union(
+      v.literal("active"),
+      v.literal("invited"),
+      v.literal("suspended")
+    ),
+  }).index("userId", ["userId"])
+    .index("organizationId", ["organizationId"])
+    .index("userId_organizationId", ["userId", "organizationId"]),
+
+  // Team invitations
+  organizationInvitations: defineTable({
+    organizationId: v.id("organizations"),
+    email: v.string(),
+    role: v.union(
+      v.literal("admin"),
+      v.literal("editor"), 
+      v.literal("viewer")
+    ),
+    invitedBy: v.id("users"),
+    token: v.string(), // unique invitation token
+    expiresAt: v.number(),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("accepted"),
+      v.literal("expired"),
+      v.literal("revoked")
+    ),
+  }).index("email", ["email"])
+    .index("token", ["token"])
+    .index("organizationId", ["organizationId"]),
+  
+  agents: defineTable({
+    organizationId: v.id("organizations"),
+    createdBy: v.id("users"), // Track who created the agent
     name: v.string(),
     description: v.optional(v.string()),
     instructions: v.optional(v.string()),
@@ -29,7 +88,8 @@ export default defineSchema({
     customCorsOrigins: v.optional(v.array(v.string())),
     enableFingerprinting: v.optional(v.boolean()),
     suspiciousActivityThreshold: v.optional(v.number()),
-  }).index("userId", ["userId"]),
+  }).index("organizationId", ["organizationId"])
+    .index("createdBy", ["createdBy"]),
   
   knowledgeEntries: defineTable({
     agentId: v.id("agents"),
@@ -82,9 +142,10 @@ export default defineSchema({
     ),
   }).index("agentId", ["agentId"]),
 
-  // Usage tracking and security monitoring
+  // Usage tracking and security monitoring - updated to include organizationId
   usageTracking: defineTable({
     agentId: v.id("agents"),
+    organizationId: v.id("organizations"), // Added for organization tracking
     ipAddress: v.string(),
     domain: v.optional(v.string()),
     referrer: v.optional(v.string()),
@@ -97,13 +158,15 @@ export default defineSchema({
     suspiciousActivity: v.optional(v.boolean()),
     lastActivity: v.number(), // timestamp
   }).index("agentId", ["agentId"])
+    .index("organizationId", ["organizationId"])
     .index("ipAddress", ["ipAddress"])
     .index("domain", ["domain"])
     .index("lastActivity", ["lastActivity"]),
 
-  // Rate limiting tracking
+  // Rate limiting tracking - updated to include organizationId
   rateLimits: defineTable({
     agentId: v.id("agents"),
+    organizationId: v.id("organizations"), // Added for organization tracking
     ipAddress: v.string(),
     requestCount: v.number(),
     windowStart: v.number(), // timestamp of rate limit window start
@@ -111,11 +174,13 @@ export default defineSchema({
     isBlocked: v.optional(v.boolean()),
     blockExpiry: v.optional(v.number()), // timestamp when block expires
   }).index("agentId_ip", ["agentId", "ipAddress"])
+    .index("organizationId", ["organizationId"])
     .index("windowStart", ["windowStart"]),
 
-  // Security incidents
+  // Security incidents - updated to include organizationId
   securityIncidents: defineTable({
     agentId: v.id("agents"),
+    organizationId: v.id("organizations"), // Added for organization tracking
     incidentType: v.union(
       v.literal("rate_limit_exceeded"),
       v.literal("unauthorized_domain"),
@@ -132,10 +197,11 @@ export default defineSchema({
     severity: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
     resolved: v.optional(v.boolean()),
   }).index("agentId", ["agentId"])
+    .index("organizationId", ["organizationId"])
     .index("incidentType", ["incidentType"])
     .index("severity", ["severity"]),
 
-  // Billing and subscription tables
+  // Updated subscription tables to work with organizations instead of users
   subscriptionPlans: defineTable({
     name: v.string(),
     stripeProductId: v.string(),
@@ -164,8 +230,9 @@ export default defineSchema({
     sortOrder: v.number(),
   }).index("stripeProductId", ["stripeProductId"]),
 
+  // Updated subscriptions to belong to organizations
   subscriptions: defineTable({
-    userId: v.id("users"),
+    organizationId: v.id("organizations"), // Changed from userId to organizationId
     stripeCustomerId: v.string(),
     stripeSubscriptionId: v.string(),
     planId: v.id("subscriptionPlans"),
@@ -179,12 +246,13 @@ export default defineSchema({
     currentPeriodStart: v.number(),
     currentPeriodEnd: v.number(),
     cancelAtPeriodEnd: v.boolean(),
-  }).index("userId", ["userId"])
+  }).index("organizationId", ["organizationId"])
     .index("stripeCustomerId", ["stripeCustomerId"])
     .index("stripeSubscriptionId", ["stripeSubscriptionId"]),
 
+  // Updated billing usage to track per organization
   billingUsage: defineTable({
-    userId: v.id("users"),
+    organizationId: v.id("organizations"), // Changed from userId to organizationId
     period: v.string(), // YYYY-MM format
     metrics: v.object({
       messagesUsed: v.number(),
@@ -195,5 +263,24 @@ export default defineSchema({
       apiCallsMade: v.number(),
     }),
     lastUpdated: v.number(),
-  }).index("userId_period", ["userId", "period"]),
+  }).index("organizationId_period", ["organizationId", "period"]),
+
+  // Audit logs for organization activities
+  auditLogs: defineTable({
+    organizationId: v.id("organizations"),
+    userId: v.id("users"), // Who performed the action
+    action: v.string(), // e.g., "agent.created", "member.invited", "settings.updated"
+    resourceType: v.optional(v.string()), // e.g., "agent", "user", "organization"
+    resourceId: v.optional(v.string()), // ID of the affected resource
+    details: v.optional(v.object({
+      before: v.optional(v.any()),
+      after: v.optional(v.any()),
+      metadata: v.optional(v.any()),
+    })),
+    ipAddress: v.optional(v.string()),
+    userAgent: v.optional(v.string()),
+  }).index("organizationId", ["organizationId"])
+    .index("userId", ["userId"])
+    .index("action", ["action"])
+    .index("resourceType", ["resourceType"]),
 })

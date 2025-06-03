@@ -5,6 +5,40 @@ import { internal } from "./_generated/api";
 import { embedText } from "./openai";
 import type { Doc, Id } from "./_generated/dataModel";
 
+// Helper function to get user and validate organization access (copied from agents.ts)
+async function validateOrganizationAccess(
+  ctx: any,
+  organizationId: string,
+  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
+) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (identity === null) {
+    throw new Error("Not authenticated");
+  }
+
+  const user = await ctx.db
+    .query("users")
+    .withIndex("clerkId", (q: any) => q.eq("clerkId", identity.subject))
+    .first();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Check if user has required role in organization
+  const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
+    userId: user._id,
+    organizationId: organizationId as any,
+    requiredRole,
+  });
+
+  if (!hasPermission) {
+    throw new Error(`Insufficient permissions. Required role: ${requiredRole}`);
+  }
+
+  return { user, identity };
+}
+
 // Query to perform vector search on knowledge entries
 export const searchKnowledge = query({
   args: {
@@ -13,25 +47,14 @@ export const searchKnowledge = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args): Promise<Doc<"knowledgeEntries">[]> => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    // Verify the agent belongs to the current user
+    // Get the agent
     const agent = await ctx.db.get(args.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to search this agent's knowledge");
-    }
+    // Validate user has viewer access to search knowledge
+    await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
     
     // For now, return a simple text-based search
     // This will be replaced with vector search once embeddings are generated
@@ -63,7 +86,7 @@ export const semanticSearch = action({
     if (identity === null) {
       throw new Error("Not authenticated");
     }
-    
+
     try {
       // Generate embedding for the search query
       const queryEmbedding = await embedText(args.query);
@@ -95,13 +118,24 @@ export const semanticSearch = action({
       
       // Verify authorization if we have results
       if (validEntries.length > 0) {
-        const agent = await ctx.runQuery(internal.agents.getAgentById, { agentId: args.agentId });
+        const agent = await ctx.runQuery(internal.agents.getAgentByIdInternal, { agentId: args.agentId });
         if (!agent) {
           throw new Error("Agent not found");
         }
         
         const user = await ctx.runQuery(internal.users.getUserByClerkId, { clerkId: identity.subject });
-        if (!user || agent.userId !== user._id) {
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        // Check if user has access to the agent's organization
+        const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
+          userId: user._id,
+          organizationId: agent.organizationId,
+          requiredRole: "viewer",
+        });
+
+        if (!hasPermission) {
           throw new Error("Not authorized to search this agent's knowledge");
         }
       }
@@ -134,25 +168,14 @@ export const getKnowledgeStats = query({
     entriesNeedingEmbeddings: number;
     embeddingProgress: number;
   }> => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    // Verify the agent belongs to the current user
+    // Get the agent
     const agent = await ctx.db.get(args.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to access this agent");
-    }
+    // Validate user has viewer access to see knowledge stats
+    await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
     
     // Get all knowledge entries for this agent
     const knowledgeEntries = await ctx.db

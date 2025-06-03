@@ -2,9 +2,10 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 
-// Check if user has access to a specific feature
+// Check if user has access to a specific feature (updated for organizations)
 export const checkFeatureAccess = query({
   args: { 
+    organizationId: v.id("organizations"),
     feature: v.union(
       v.literal("priority_support"),
       v.literal("custom_domains"),
@@ -31,9 +32,21 @@ export const checkFeatureAccess = query({
       return { hasAccess: false, reason: "user_not_found" };
     }
 
+    // Verify user has access to this organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("userId_organizationId", (q) => 
+        q.eq("userId", user._id).eq("organizationId", args.organizationId))
+      .filter((q) => q.eq(q.field("status"), "active"))
+      .first();
+
+    if (!membership) {
+      return { hasAccess: false, reason: "no_organization_access" };
+    }
+
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .withIndex("organizationId", (q) => q.eq("organizationId", args.organizationId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
@@ -75,9 +88,10 @@ export const checkFeatureAccess = query({
   }
 });
 
-// Check usage limits for a specific metric
+// Check usage limits for a specific metric (updated for organizations)
 export const checkUsageLimit = query({
   args: {
+    organizationId: v.id("organizations"),
     metric: v.union(
       v.literal("agents"),
       v.literal("messages"),
@@ -100,11 +114,23 @@ export const checkUsageLimit = query({
       return { allowed: false, reason: "user_not_found" };
     }
 
+    // Verify user has access to this organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("userId_organizationId", (q) => 
+        q.eq("userId", user._id).eq("organizationId", args.organizationId))
+      .filter((q) => q.eq(q.field("status"), "active"))
+      .first();
+
+    if (!membership) {
+      return { allowed: false, reason: "no_organization_access" };
+    }
+
     // Get current plan limits
     let planLimits;
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .withIndex("organizationId", (q) => q.eq("organizationId", args.organizationId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
@@ -127,7 +153,7 @@ export const checkUsageLimit = query({
     }
 
     // Get current usage
-    const currentUsage = await getCurrentUsage(ctx, user._id, args.metric);
+    const currentUsage = await getCurrentUsage(ctx, args.organizationId, args.metric);
     
     const limitMap: Record<string, keyof typeof planLimits> = {
       "agents": "maxAgents",
@@ -150,9 +176,10 @@ export const checkUsageLimit = query({
   }
 });
 
-// Track usage for billing
+// Track usage for billing (updated for organizations)
 export const trackUsage = mutation({
   args: {
+    organizationId: v.id("organizations"),
     metric: v.union(
       v.literal("messages"),
       v.literal("agents"),
@@ -178,12 +205,24 @@ export const trackUsage = mutation({
       throw new Error("User not found");
     }
 
+    // Verify user has access to this organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("userId_organizationId", (q) => 
+        q.eq("userId", user._id).eq("organizationId", args.organizationId))
+      .filter((q) => q.eq(q.field("status"), "active"))
+      .first();
+
+    if (!membership) {
+      throw new Error("No access to this organization");
+    }
+
     const currentPeriod = getCurrentPeriod();
     
     // Get or create usage record for current period
     const existingUsage = await ctx.db
       .query("billingUsage")
-      .withIndex("userId_period", (q) => q.eq("userId", user._id).eq("period", currentPeriod))
+      .withIndex("organizationId_period", (q) => q.eq("organizationId", args.organizationId).eq("period", currentPeriod))
       .first();
 
     const metricMap: Record<string, string> = {
@@ -198,22 +237,20 @@ export const trackUsage = mutation({
     const metricKey = metricMap[args.metric];
 
     if (existingUsage) {
-      // Update existing usage
+      // Update existing usage record
+      const currentMetrics = existingUsage.metrics;
       const updatedMetrics = {
-        ...existingUsage.metrics,
-        [metricKey]: (existingUsage.metrics[metricKey as keyof typeof existingUsage.metrics] || 0) + args.amount
+        ...currentMetrics,
+        [metricKey]: (currentMetrics[metricKey as keyof typeof currentMetrics] as number) + args.amount
       };
-      
+
       await ctx.db.patch(existingUsage._id, {
         metrics: updatedMetrics,
         lastUpdated: Date.now()
       });
-
-      // Check if we should send usage alert
-      await checkAndSendUsageAlert(ctx, user, args.metric, updatedMetrics[metricKey as keyof typeof updatedMetrics] as number);
     } else {
       // Create new usage record
-      const metrics = {
+      const initialMetrics = {
         messagesUsed: 0,
         agentsCreated: 0,
         knowledgeEntriesAdded: 0,
@@ -224,66 +261,53 @@ export const trackUsage = mutation({
       };
 
       await ctx.db.insert("billingUsage", {
-        userId: user._id,
+        organizationId: args.organizationId,
         period: currentPeriod,
-        metrics,
+        metrics: initialMetrics,
         lastUpdated: Date.now()
       });
+    }
 
-      // Check if we should send usage alert
-      await checkAndSendUsageAlert(ctx, user, args.metric, args.amount);
+    // Check if usage alert should be sent
+    const organization = await ctx.db.get(args.organizationId);
+    if (organization) {
+      await checkAndSendUsageAlert(ctx, args.organizationId, args.metric, 
+        existingUsage ? existingUsage.metrics[metricKey as keyof typeof existingUsage.metrics] + args.amount : args.amount);
     }
 
     return { success: true };
   },
 });
 
-// Helper functions
-async function getCurrentUsage(ctx: any, userId: string, metric: string): Promise<number> {
+// Helper function to get current usage (updated for organizations)
+async function getCurrentUsage(ctx: any, organizationId: string, metric: string): Promise<number> {
   const currentPeriod = getCurrentPeriod();
   
   if (metric === "agents") {
-    // Count current agents
+    // Count current agents for organization
     const agents = await ctx.db
       .query("agents")
-      .withIndex("userId", (q: any) => q.eq("userId", userId))
+      .withIndex("organizationId", (q: any) => q.eq("organizationId", organizationId))
       .collect();
     return agents.length;
   }
-
-  if (metric === "knowledge_entries") {
-    // Count knowledge entries across all user's agents
-    const agents = await ctx.db
-      .query("agents")
-      .withIndex("userId", (q: any) => q.eq("userId", userId))
-      .collect();
-    
-    let totalEntries = 0;
-    for (const agent of agents) {
-      const entries = await ctx.db
-        .query("knowledgeEntries")
-        .withIndex("agentId", (q: any) => q.eq("agentId", agent._id))
-        .collect();
-      totalEntries += entries.length;
-    }
-    return totalEntries;
-  }
-
-  // For time-based metrics, check billing usage
+  
+  // For other metrics, get from billing usage
   const usage = await ctx.db
     .query("billingUsage")
-    .withIndex("userId_period", (q: any) => q.eq("userId", userId).eq("period", currentPeriod))
+    .withIndex("organizationId_period", (q: any) => q.eq("organizationId", organizationId).eq("period", currentPeriod))
     .first();
-
+  
   if (!usage) return 0;
-
+  
   const metricMap: Record<string, keyof typeof usage.metrics> = {
     "messages": "messagesUsed",
+    "knowledge_entries": "knowledgeEntriesAdded",
     "file_uploads": "filesUploaded"
   };
-
+  
   const metricKey = metricMap[metric];
-  return usage.metrics[metricKey] || 0;
+  return usage.metrics[metricKey] as number || 0;
 }
 
 function getCurrentPeriod(): string {
@@ -293,81 +317,96 @@ function getCurrentPeriod(): string {
 
 function getSuggestedUpgrade(feature: string): string {
   const upgradeMap: Record<string, string> = {
-    "priority_support": "standard",
-    "custom_domains": "starter", 
-    "advanced_analytics": "standard",
-    "api_access": "standard",
-    "webhook_integrations": "standard",
-    "custom_branding": "pro",
-    "sso_integration": "pro",
-    "audit_logs": "pro"
+    "priority_support": "pro",
+    "custom_domains": "pro", 
+    "advanced_analytics": "pro",
+    "api_access": "pro",
+    "webhook_integrations": "enterprise",
+    "custom_branding": "enterprise",
+    "sso_integration": "enterprise",
+    "audit_logs": "enterprise"
   };
-
-  return upgradeMap[feature] || "starter";
+  
+  return upgradeMap[feature] || "pro";
 }
 
-// Helper function to check and send usage alerts
-async function checkAndSendUsageAlert(ctx: any, user: any, metric: string, currentUsage: number) {
-  // Get user's current plan limits
-  let planLimits;
+// Updated to work with organizations
+async function checkAndSendUsageAlert(ctx: any, organizationId: string, metric: string, currentUsage: number) {
+  // Get organization's plan limits
   const subscription = await ctx.db
     .query("subscriptions")
-    .withIndex("userId", (q: any) => q.eq("userId", user._id))
+    .withIndex("organizationId", (q: any) => q.eq("organizationId", organizationId))
     .filter((q: any) => q.eq(q.field("status"), "active"))
     .first();
 
+  let limit: number;
+  let planName: string;
+  
   if (subscription) {
     const plan = await ctx.db.get(subscription.planId);
-    planLimits = plan?.features;
-  } else {
-    // Free plan limits
-    planLimits = {
-      maxAgents: 1,
-      maxKnowledgeEntries: 50,
-      maxMessagesPerMonth: 500,
-      maxFileUploads: 5,
-      maxFileSizeMB: 2,
+    if (!plan) return;
+    
+    planName = plan.name;
+    const limitMap: Record<string, keyof typeof plan.features> = {
+      "messages": "maxMessagesPerMonth",
+      "agents": "maxAgents", 
+      "knowledge_entries": "maxKnowledgeEntries",
+      "file_uploads": "maxFileUploads"
     };
+    
+    const limitKey = limitMap[metric];
+    limit = plan.features[limitKey] as number;
+  } else {
+    // Free plan
+    planName = "Free";
+    const freeLimits: Record<string, number> = {
+      "messages": 500,
+      "agents": 1,
+      "knowledge_entries": 50,
+      "file_uploads": 5
+    };
+    limit = freeLimits[metric] || 0;
   }
-
-  if (!planLimits) return;
-
-  const limitMap: Record<string, keyof typeof planLimits> = {
-    "agents": "maxAgents",
-    "messages": "maxMessagesPerMonth",
-    "knowledge_entries": "maxKnowledgeEntries", 
-    "file_uploads": "maxFileUploads"
-  };
-
-  const limitKey = limitMap[metric];
-  if (!limitKey) return;
-
-  const limit = planLimits[limitKey] as number;
+  
   const percentUsed = (currentUsage / limit) * 100;
+  
+  // Send alert if at 75% or 90% usage
+  if (percentUsed >= 75 && percentUsed < 90) {
+    await sendUsageAlert(ctx, organizationId, metric, currentUsage, limit, percentUsed, planName, "warning");
+  } else if (percentUsed >= 90) {
+    await sendUsageAlert(ctx, organizationId, metric, currentUsage, limit, percentUsed, planName, "critical");
+  }
+}
 
-  // Send alerts at 80% and 95% thresholds
-  if (percentUsed >= 80 && user.email) {
-    // Check if we've already sent an alert for this metric/period
-    const alertKey = `usage_alert_${metric}_${getCurrentPeriod()}_${percentUsed >= 95 ? '95' : '80'}`;
-    
-    // In a real implementation, you'd want to track sent alerts in the database
-    // For now, we'll send the alert and log it
-    const planName = subscription ? (await ctx.db.get(subscription.planId))?.name || "Free" : "Free";
-    
-    try {
+async function sendUsageAlert(ctx: any, organizationId: string, metric: string, currentUsage: number, limit: number, percentUsed: number, planName: string, severity: string) {
+  // Get organization owners and admins to send alerts to
+  const memberships = await ctx.db
+    .query("organizationMembers")
+    .withIndex("organizationId", (q: any) => q.eq("organizationId", organizationId))
+    .filter((q: any) => 
+      q.and(
+        q.eq(q.field("status"), "active"),
+        q.or(
+          q.eq(q.field("role"), "owner"),
+          q.eq(q.field("role"), "admin")
+        )
+      )
+    )
+    .collect();
+
+  // Send alert to each admin/owner
+  for (const membership of memberships) {
+    const user = await ctx.db.get(membership.userId);
+    if (user && user.email && user.name) {
       await ctx.scheduler.runAfter(0, internal.emails.sendUsageAlert, {
         to: user.email,
-        name: user.name || "Customer",
-        metric: metric.replace('_', ' '),
+        name: user.name,
+        metric,
         currentUsage,
         limit,
         percentUsed,
         planName,
       });
-      
-      console.log(`Sent usage alert for ${metric} at ${percentUsed.toFixed(1)}% to ${user.email}`);
-    } catch (error) {
-      console.error("Failed to schedule usage alert email:", error);
     }
   }
 } 

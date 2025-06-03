@@ -1,30 +1,54 @@
 import { query, mutation, internalQuery, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
+
+// Helper function to get user and validate organization access (copied from agents.ts)
+async function validateOrganizationAccess(
+  ctx: any,
+  organizationId: string,
+  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
+) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (identity === null) {
+    throw new Error("Not authenticated");
+  }
+
+  const user = await ctx.db
+    .query("users")
+    .withIndex("clerkId", (q: any) => q.eq("clerkId", identity.subject))
+    .first();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Check if user has required role in organization
+  const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
+    userId: user._id,
+    organizationId: organizationId as any,
+    requiredRole,
+  });
+
+  if (!hasPermission) {
+    throw new Error(`Insufficient permissions. Required role: ${requiredRole}`);
+  }
+
+  return { user, identity };
+}
 
 export const getConversationsForAgent = query({
   args: {
     agentId: v.id("agents"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    // Verify the agent belongs to the current user
+    // Get the agent first
     const agent = await ctx.db.get(args.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to access this agent");
-    }
+    // Validate user has access to the agent's organization
+    await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
     
     // Get all conversations for this agent
     const conversations = await ctx.db
@@ -42,38 +66,27 @@ export const getMessagesForConversation = query({
     conversationId: v.id("conversations"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    // Verify the conversation belongs to an agent owned by the current user
+    // Get the conversation and agent
     const conversation = await ctx.db.get(args.conversationId);
     if (!conversation) {
       throw new Error("Conversation not found");
     }
-    
+
     const agent = await ctx.db.get(conversation.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
-    
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to access this conversation");
-    }
-    
+
+    // Validate user has access to the agent's organization
+    await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
+
     // Get all messages for this conversation
     const messages = await ctx.db
       .query("messages")
       .withIndex("conversationId", (q) => q.eq("conversationId", args.conversationId))
       .order("asc")
       .collect();
-    
+
     return messages;
   },
 });
@@ -84,33 +97,22 @@ export const createConversation = mutation({
     title: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    // Verify the agent belongs to the current user
+    // Get the agent
     const agent = await ctx.db.get(args.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
-    
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to access this agent");
-    }
-    
+
+    // Validate user has access to the agent's organization (editor role needed to create)
+    await validateOrganizationAccess(ctx, agent.organizationId, "editor");
+
     // Create new conversation
     const conversationId = await ctx.db.insert("conversations", {
       agentId: args.agentId,
       title: args.title || `Conversation ${new Date().toLocaleString()}`,
       isActive: true,
     });
-    
+
     return conversationId;
   },
 });
@@ -127,37 +129,26 @@ export const addMessage = mutation({
     })),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    // Verify the conversation belongs to an agent owned by the current user
+    // Get the conversation and agent
     const conversation = await ctx.db.get(args.conversationId);
     if (!conversation) {
       throw new Error("Conversation not found");
     }
-    
+
     const agent = await ctx.db.get(conversation.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
-    
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to access this conversation");
-    }
-    
+
+    // Validate user has access to the agent's organization
+    const { identity } = await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
+
     // Add user ID to metadata for user messages
     const metadata = args.metadata || {};
     if (args.role === "user") {
       metadata.userId = identity.subject;
     }
-    
+
     // Create new message
     const messageId = await ctx.db.insert("messages", {
       conversationId: args.conversationId,
@@ -165,7 +156,7 @@ export const addMessage = mutation({
       content: args.content,
       metadata,
     });
-    
+
     return messageId;
   },
 });
@@ -177,32 +168,40 @@ export const getConversationsForUser = query({
     if (identity === null) {
       throw new Error("Not authenticated");
     }
-    
+
     const user = await ctx.db
       .query("users")
       .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
       .first();
-    
+
     if (!user) {
       throw new Error("User not found");
     }
-    
-    // Get all agents for this user
-    const agents = await ctx.db
-      .query("agents")
+
+    // Get user's organization memberships
+    const memberships = await ctx.db
+      .query("organizationMembers")
       .withIndex("userId", (q) => q.eq("userId", user._id))
+      .filter((q) => q.eq(q.field("status"), "active"))
       .collect();
-    
-    // Get all conversations for all user's agents
+
+    // Get all conversations for all organization agents
     const allConversations = [];
-    for (const agent of agents) {
-      const conversations = await ctx.db
-        .query("conversations")
-        .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+    for (const membership of memberships) {
+      const agents = await ctx.db
+        .query("agents")
+        .withIndex("organizationId", (q) => q.eq("organizationId", membership.organizationId))
         .collect();
-      allConversations.push(...conversations);
+      
+      for (const agent of agents) {
+        const conversations = await ctx.db
+          .query("conversations")
+          .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+          .collect();
+        allConversations.push(...conversations);
+      }
     }
-    
+
     return allConversations;
   },
 });
@@ -214,32 +213,40 @@ export const getMessagesForUser = query({
     if (identity === null) {
       throw new Error("Not authenticated");
     }
-    
+
     const user = await ctx.db
       .query("users")
       .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
       .first();
-    
+
     if (!user) {
       throw new Error("User not found");
     }
-    
-    // Get all agents for this user
-    const agents = await ctx.db
-      .query("agents")
+
+    // Get user's organization memberships
+    const memberships = await ctx.db
+      .query("organizationMembers")
       .withIndex("userId", (q) => q.eq("userId", user._id))
+      .filter((q) => q.eq(q.field("status"), "active"))
       .collect();
-    
-    // Get all conversations for all user's agents
+
+    // Get all conversations for all organization agents
     const allConversations = [];
-    for (const agent of agents) {
-      const conversations = await ctx.db
-        .query("conversations")
-        .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+    for (const membership of memberships) {
+      const agents = await ctx.db
+        .query("agents")
+        .withIndex("organizationId", (q) => q.eq("organizationId", membership.organizationId))
         .collect();
-      allConversations.push(...conversations);
+      
+      for (const agent of agents) {
+        const conversations = await ctx.db
+          .query("conversations")
+          .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+          .collect();
+        allConversations.push(...conversations);
+      }
     }
-    
+
     // Get all messages for all conversations
     const allMessages = [];
     for (const conversation of allConversations) {
@@ -249,7 +256,7 @@ export const getMessagesForUser = query({
         .collect();
       allMessages.push(...messages);
     }
-    
+
     return allMessages;
   },
 });
@@ -312,25 +319,14 @@ export const deleteAllConversationsForAgent = mutation({
     agentId: v.id("agents"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    // Verify the agent belongs to the current user
+    // Get the agent
     const agent = await ctx.db.get(args.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to delete conversations for this agent");
-    }
+    // Validate user has admin access to delete conversations
+    await validateOrganizationAccess(ctx, agent.organizationId, "admin");
     
     // Get all conversations for this agent
     const conversations = await ctx.db

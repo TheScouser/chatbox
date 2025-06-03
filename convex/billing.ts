@@ -22,10 +22,10 @@ export const getSubscriptionPlans = query({
   },
 });
 
-// Get user's current subscription
+// Get user's current subscription (updated for organizations)
 export const getUserSubscription = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { organizationId: v.optional(v.id("organizations")) },
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
       throw new Error("Not authenticated");
@@ -40,9 +40,40 @@ export const getUserSubscription = query({
       return null;
     }
 
+    // If organizationId is provided, check subscription for that organization
+    // Otherwise, get subscription for user's default organization
+    let targetOrgId = args.organizationId;
+    
+    if (!targetOrgId) {
+      // Get user's first organization (for backward compatibility)
+      const membership = await ctx.db
+        .query("organizationMembers")
+        .withIndex("userId", (q) => q.eq("userId", user._id))
+        .filter((q) => q.eq(q.field("status"), "active"))
+        .first();
+      
+      if (!membership) {
+        return null;
+      }
+      
+      targetOrgId = membership.organizationId;
+    }
+
+    // Verify user has access to this organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("userId_organizationId", (q) => 
+        q.eq("userId", user._id).eq("organizationId", targetOrgId))
+      .filter((q) => q.eq(q.field("status"), "active"))
+      .first();
+
+    if (!membership) {
+      throw new Error("Not authorized to access this organization's subscription");
+    }
+
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .withIndex("organizationId", (q) => q.eq("organizationId", targetOrgId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
@@ -58,10 +89,10 @@ export const getUserSubscription = query({
   },
 });
 
-// Get user's current plan (includes free plan)
+// Get user's current plan (includes free plan) - updated for organizations
 export const getUserPlan = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { organizationId: v.optional(v.id("organizations")) },
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
       throw new Error("Not authenticated");
@@ -76,9 +107,40 @@ export const getUserPlan = query({
       return null;
     }
 
+    // If organizationId is provided, check plan for that organization
+    // Otherwise, get plan for user's default organization
+    let targetOrgId = args.organizationId;
+    
+    if (!targetOrgId) {
+      // Get user's first organization (for backward compatibility)
+      const membership = await ctx.db
+        .query("organizationMembers")
+        .withIndex("userId", (q) => q.eq("userId", user._id))
+        .filter((q) => q.eq(q.field("status"), "active"))
+        .first();
+      
+      if (!membership) {
+        return getFreePlanFeatures();
+      }
+      
+      targetOrgId = membership.organizationId;
+    }
+
+    // Verify user has access to this organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("userId_organizationId", (q) => 
+        q.eq("userId", user._id).eq("organizationId", targetOrgId))
+      .filter((q) => q.eq(q.field("status"), "active"))
+      .first();
+
+    if (!membership) {
+      throw new Error("Not authorized to access this organization's plan");
+    }
+
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .withIndex("organizationId", (q) => q.eq("organizationId", targetOrgId))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
@@ -88,32 +150,37 @@ export const getUserPlan = query({
     }
 
     // Return free plan features if no subscription
-    return {
-      name: "Free",
-      price: 0,
-      features: {
-        maxAgents: 1,
-        maxKnowledgeEntries: 50,
-        maxMessagesPerMonth: 500,
-        maxFileUploads: 5,
-        maxFileSizeMB: 2,
-        prioritySupport: false,
-        customDomains: false,
-        advancedAnalytics: false,
-        apiAccess: false,
-        webhookIntegrations: false,
-        customBranding: false,
-        ssoIntegration: false,
-        auditLogs: false,
-      },
-    };
+    return getFreePlanFeatures();
   },
 });
 
-// Create Stripe customer
+// Helper function to get free plan features
+function getFreePlanFeatures() {
+  return {
+    name: "Free",
+    price: 0,
+    features: {
+      maxAgents: 1,
+      maxKnowledgeEntries: 50,
+      maxMessagesPerMonth: 500,
+      maxFileUploads: 5,
+      maxFileSizeMB: 2,
+      prioritySupport: false,
+      customDomains: false,
+      advancedAnalytics: false,
+      apiAccess: false,
+      webhookIntegrations: false,
+      customBranding: false,
+      ssoIntegration: false,
+      auditLogs: false,
+    },
+  };
+}
+
+// Create Stripe customer (updated for organizations)
 export const createStripeCustomer = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: { organizationId: v.id("organizations") },
+  handler: async (ctx, args) => {
     if (!stripe) {
       throw new Error("Stripe not configured");
     }
@@ -132,21 +199,40 @@ export const createStripeCustomer = mutation({
       throw new Error("User not found");
     }
 
+    // Verify user has admin access to this organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("userId_organizationId", (q) => 
+        q.eq("userId", user._id).eq("organizationId", args.organizationId))
+      .filter((q) => q.eq(q.field("status"), "active"))
+      .first();
+
+    if (!membership || (membership.role !== "admin" && membership.role !== "owner")) {
+      throw new Error("Not authorized to manage billing for this organization");
+    }
+
     // Check if customer already exists
     const existingSubscription = await ctx.db
       .query("subscriptions")
-      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .withIndex("organizationId", (q) => q.eq("organizationId", args.organizationId))
       .first();
 
     if (existingSubscription) {
       return existingSubscription.stripeCustomerId;
     }
 
+    // Get organization details
+    const organization = await ctx.db.get(args.organizationId);
+    if (!organization) {
+      throw new Error("Organization not found");
+    }
+
     // Create Stripe customer
     const customer = await stripe.customers.create({
       email: identity.email,
-      name: identity.name,
+      name: organization.name,
       metadata: {
+        organizationId: args.organizationId,
         userId: user._id,
         clerkId: identity.subject,
       },
@@ -156,9 +242,10 @@ export const createStripeCustomer = mutation({
   },
 });
 
-// Create checkout session
+// Create checkout session (updated for organizations)
 export const createCheckoutSession = mutation({
   args: {
+    organizationId: v.id("organizations"),
     planId: v.id("subscriptionPlans"),
     successUrl: v.string(),
     cancelUrl: v.string(),
@@ -182,16 +269,33 @@ export const createCheckoutSession = mutation({
       throw new Error("User not found");
     }
 
+    // Verify user has admin access to this organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("userId_organizationId", (q) => 
+        q.eq("userId", user._id).eq("organizationId", args.organizationId))
+      .filter((q) => q.eq(q.field("status"), "active"))
+      .first();
+
+    if (!membership || (membership.role !== "admin" && membership.role !== "owner")) {
+      throw new Error("Not authorized to manage billing for this organization");
+    }
+
     const plan = await ctx.db.get(args.planId);
     if (!plan) {
       throw new Error("Plan not found");
+    }
+
+    const organization = await ctx.db.get(args.organizationId);
+    if (!organization) {
+      throw new Error("Organization not found");
     }
 
     // Get or create Stripe customer
     let customerId: string;
     const existingSubscription = await ctx.db
       .query("subscriptions")
-      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .withIndex("organizationId", (q) => q.eq("organizationId", args.organizationId))
       .first();
 
     if (existingSubscription) {
@@ -199,8 +303,9 @@ export const createCheckoutSession = mutation({
     } else {
       const customer = await stripe.customers.create({
         email: identity.email,
-        name: identity.name,
+        name: organization.name,
         metadata: {
+          organizationId: args.organizationId,
           userId: user._id,
           clerkId: identity.subject,
         },
@@ -222,7 +327,7 @@ export const createCheckoutSession = mutation({
       success_url: args.successUrl,
       cancel_url: args.cancelUrl,
       metadata: {
-        userId: user._id,
+        organizationId: args.organizationId,
         planId: args.planId,
       },
     });
@@ -231,9 +336,10 @@ export const createCheckoutSession = mutation({
   },
 });
 
-// Create portal session for subscription management
+// Create portal session for subscription management (updated for organizations)
 export const createPortalSession = mutation({
   args: {
+    organizationId: v.id("organizations"),
     returnUrl: v.string(),
   },
   handler: async (ctx, args) => {
@@ -255,9 +361,21 @@ export const createPortalSession = mutation({
       throw new Error("User not found");
     }
 
+    // Verify user has admin access to this organization
+    const membership = await ctx.db
+      .query("organizationMembers")
+      .withIndex("userId_organizationId", (q) => 
+        q.eq("userId", user._id).eq("organizationId", args.organizationId))
+      .filter((q) => q.eq(q.field("status"), "active"))
+      .first();
+
+    if (!membership || (membership.role !== "admin" && membership.role !== "owner")) {
+      throw new Error("Not authorized to manage billing for this organization");
+    }
+
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .withIndex("organizationId", (q) => q.eq("organizationId", args.organizationId))
       .first();
 
     if (!subscription) {

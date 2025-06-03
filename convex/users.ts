@@ -45,6 +45,14 @@ export const createUser = internalMutation({
       name: args.name,
     });
 
+    // Create default organization for the user
+    const defaultOrgName = args.name ? `${args.name}'s Team` : `${args.email.split('@')[0]}'s Team`;
+    const orgId = await ctx.scheduler.runAfter(0, internal.organizations.createOrganization, {
+      name: defaultOrgName,
+      createdBy: userId,
+      isDefault: true,
+    });
+
     // Send welcome email
     if (args.email && args.name) {
       try {

@@ -4,6 +4,36 @@ import { internal } from "./_generated/api";
 import { generateChatCompletion, embedText } from "./openai";
 import type { Doc, Id } from "./_generated/dataModel";
 
+// Helper function to get user and validate organization access (modified for action context)
+async function validateOrganizationAccess(
+  ctx: any,
+  organizationId: string,
+  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
+) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (identity === null) {
+    throw new Error("Not authenticated");
+  }
+
+  const user = await ctx.runQuery(internal.users.getUserByClerkId, { clerkId: identity.subject });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Check if user has required role in organization
+  const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
+    userId: user._id,
+    organizationId: organizationId as any,
+    requiredRole,
+  });
+
+  if (!hasPermission) {
+    throw new Error(`Insufficient permissions. Required role: ${requiredRole}`);
+  }
+
+  return { user, identity };
+}
+
 // Action to generate AI response for a user message
 export const generateAIResponse = action({
   args: {
@@ -31,10 +61,8 @@ export const generateAIResponse = action({
       throw new Error("Agent not found");
     }
 
-    const user = await ctx.runQuery(internal.users.getUserByClerkId, { clerkId: identity.subject });
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to access this conversation");
-    }
+    // Validate user has viewer access to use the agent
+    await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
 
     // First, add the user message
     const userMessageId = await ctx.runMutation(internal.conversations.addMessageInternal, {
@@ -243,21 +271,14 @@ export const startConversation = action({
     initialMessage: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<{ conversationId: Id<"conversations">; messageId?: Id<"messages"> }> => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-
     // Verify user has access to this agent
     const agent = await ctx.runQuery(internal.agents.getAgentByIdInternal, { agentId: args.agentId });
     if (!agent) {
       throw new Error("Agent not found");
     }
 
-    const user = await ctx.runQuery(internal.users.getUserByClerkId, { clerkId: identity.subject });
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to access this agent");
-    }
+    // Validate user has viewer access to start conversations with the agent
+    await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
 
     // Create new conversation
     const conversationId = await ctx.runMutation(internal.conversations.createConversationInternal, {

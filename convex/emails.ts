@@ -165,6 +165,42 @@ export const sendGeneralNotification = action({
   },
 });
 
+// Send organization invitation email
+export const sendOrganizationInvitationEmail = internalAction({
+  args: {
+    to: v.string(),
+    organizationName: v.string(),
+    inviterName: v.string(),
+    role: v.string(),
+    invitationToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    if (!resend) {
+      console.warn("Resend not configured, skipping organization invitation");
+      return { success: false, error: "Email service not configured" };
+    }
+
+    try {
+      const { data, error } = await resend.emails.send({
+        from: "AI Agent Platform <invitations@yourdomain.com>",
+        to: [args.to],
+        subject: `You've been invited to join ${args.organizationName}`,
+        html: generateOrganizationInvitationHTML(args),
+      });
+
+      if (error) {
+        console.error("Failed to send organization invitation:", error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, messageId: data?.id };
+    } catch (error) {
+      console.error("Error sending organization invitation:", error);
+      return { success: false, error: "Failed to send email" };
+    }
+  },
+});
+
 // Helper functions for generating email content
 
 function generateWelcomeEmailHTML(name: string): string {
@@ -462,4 +498,89 @@ function getBillingEmailSubject(type: string): string {
   };
   
   return subjects[type as keyof typeof subjects] || "Billing Notification - AI Agent Platform";
+}
+
+function generateOrganizationInvitationHTML(args: any): string {
+  const { organizationName, inviterName, role, invitationToken } = args;
+  const invitationUrl = `${process.env.SERVER_URL || 'https://yourapp.com'}/invitations/accept?token=${invitationToken}`;
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Organization Invitation</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f9fafb; }
+        .container { max-width: 600px; margin: 0 auto; background-color: white; }
+        .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; padding: 40px 30px; text-align: center; }
+        .content { padding: 40px 30px; }
+        .button { display: inline-block; background-color: #3b82f6; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; margin: 20px 0; text-align: center; }
+        .footer { background-color: #f3f4f6; padding: 20px 30px; text-align: center; color: #6b7280; font-size: 14px; }
+        .invitation-box { background-color: #eff6ff; border: 2px solid #3b82f6; padding: 24px; border-radius: 12px; margin: 24px 0; text-align: center; }
+        .role-badge { display: inline-block; background-color: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; text-transform: capitalize; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1 style="margin: 0; font-size: 28px;">🤝 You're Invited!</h1>
+          <p style="margin: 10px 0 0 0; opacity: 0.9;">Join an organization on AI Agent Platform</p>
+        </div>
+        
+        <div class="content">
+          <h2>Hi there! 👋</h2>
+          
+          <p><strong>${inviterName}</strong> has invited you to join the <strong>${organizationName}</strong> organization on AI Agent Platform.</p>
+          
+          <div class="invitation-box">
+            <h3 style="margin-top: 0; color: #1e40af;">Organization: ${organizationName}</h3>
+            <p style="margin: 10px 0;">Your role: <span class="role-badge">${role}</span></p>
+            <p style="color: #6b7280; font-size: 14px; margin-bottom: 0;">You'll be able to collaborate with your team and access shared AI agents.</p>
+          </div>
+          
+          <div style="text-align: center;">
+            <a href="${invitationUrl}" class="button">Accept Invitation</a>
+          </div>
+          
+          <p style="color: #6b7280; font-size: 14px;">
+            <strong>Note:</strong> This invitation will expire in 7 days. If you don't have an account yet, you'll be prompted to create one when you accept the invitation.
+          </p>
+          
+          <h3>What you can do as a ${role}:</h3>
+          <ul>
+            ${role === 'admin' ? `
+              <li>Manage organization members and settings</li>
+              <li>Create and edit AI agents</li>
+              <li>Access all organization data and analytics</li>
+              <li>Invite new team members</li>
+            ` : role === 'editor' ? `
+              <li>Create and edit AI agents</li>
+              <li>Access organization data and analytics</li>
+              <li>Collaborate with team members</li>
+            ` : `
+              <li>View AI agents and analytics</li>
+              <li>Collaborate with team members</li>
+              <li>Access shared resources (read-only)</li>
+            `}
+          </ul>
+          
+          <p>Questions about this invitation? Feel free to reach out to ${inviterName} or our support team.</p>
+          
+          <p>Best regards,<br>
+          The AI Agent Platform Team</p>
+        </div>
+        
+        <div class="footer">
+          <p>Questions? Contact us at support@yourdomain.com</p>
+          <p>AI Agent Platform | San Francisco, CA</p>
+          <p style="margin-top: 12px; font-size: 12px;">
+            If you didn't expect this invitation, you can safely ignore this email.
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
 } 

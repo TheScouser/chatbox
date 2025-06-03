@@ -1,6 +1,41 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalQuery, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
+import { internal } from "./_generated/api";
+
+// Helper function to get user and validate organization access (copied from agents.ts)
+async function validateOrganizationAccess(
+  ctx: any,
+  organizationId: string,
+  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
+) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (identity === null) {
+    throw new Error("Not authenticated");
+  }
+
+  const user = await ctx.db
+    .query("users")
+    .withIndex("clerkId", (q: any) => q.eq("clerkId", identity.subject))
+    .first();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Check if user has required role in organization
+  const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
+    userId: user._id,
+    organizationId: organizationId as any,
+    requiredRole,
+  });
+
+  if (!hasPermission) {
+    throw new Error(`Insufficient permissions. Required role: ${requiredRole}`);
+  }
+
+  return { user, identity };
+}
 
 // Rate limiting check
 export const checkRateLimit = mutation({
@@ -42,6 +77,7 @@ export const checkRateLimit = mutation({
       } else {
         await ctx.db.insert("rateLimits", {
           agentId: args.agentId,
+          organizationId: agent.organizationId,
           ipAddress: args.ipAddress,
           requestCount: 1,
           windowStart: minuteStart,
@@ -78,6 +114,7 @@ export const checkRateLimit = mutation({
       } else {
         await ctx.db.insert("rateLimits", {
           agentId: args.agentId,
+          organizationId: agent.organizationId,
           ipAddress: args.ipAddress,
           requestCount: 1,
           windowStart: dayStart,
@@ -102,6 +139,9 @@ export const trackUsage = mutation({
     tokensUsed: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) return;
+
     const now = Date.now();
     
     // Find existing usage record for this IP/domain combination
@@ -130,6 +170,7 @@ export const trackUsage = mutation({
       // Create new usage record
       await ctx.db.insert("usageTracking", {
         agentId: args.agentId,
+        organizationId: agent.organizationId,
         ipAddress: args.ipAddress,
         domain: args.domain,
         referrer: args.referrer,
@@ -163,8 +204,12 @@ export const logSecurityIncident = mutation({
     severity: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
   },
   handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) return;
+
     await ctx.db.insert("securityIncidents", {
       agentId: args.agentId,
+      organizationId: agent.organizationId,
       incidentType: args.incidentType,
       ipAddress: args.ipAddress,
       domain: args.domain,
@@ -184,21 +229,12 @@ export const getUsageAnalytics = query({
     timeRange: v.optional(v.union(v.literal("24h"), v.literal("7d"), v.literal("30d"))),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
-    // Verify agent ownership
+    // Get the agent
     const agent = await ctx.db.get(args.agentId);
     if (!agent) throw new Error("Agent not found");
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized");
-    }
+    // Validate user has viewer access to see analytics
+    await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
 
     const timeRange = args.timeRange || "24h";
     const now = Date.now();
@@ -261,20 +297,12 @@ export const blockIP = mutation({
     reason: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
-
+    // Get the agent
     const agent = await ctx.db.get(args.agentId);
     if (!agent) throw new Error("Agent not found");
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized");
-    }
+    // Validate user has admin access to block IPs
+    await validateOrganizationAccess(ctx, agent.organizationId, "admin");
 
     const blockedIPs = agent.blockedIPs || [];
     if (!blockedIPs.includes(args.ipAddress)) {
@@ -285,6 +313,7 @@ export const blockIP = mutation({
       // Log the blocking action
       await ctx.db.insert("securityIncidents", {
         agentId: args.agentId,
+        organizationId: agent.organizationId,
         incidentType: "blocked_ip",
         ipAddress: args.ipAddress,
         details: `IP manually blocked: ${args.reason || "No reason provided"}`,

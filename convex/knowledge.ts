@@ -1,31 +1,55 @@
 import { query, mutation, internalQuery, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
+import { internal } from "./_generated/api";
+
+// Helper function to get user and validate organization access (copied from agents.ts)
+async function validateOrganizationAccess(
+  ctx: any,
+  organizationId: string,
+  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
+) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (identity === null) {
+    throw new Error("Not authenticated");
+  }
+
+  const user = await ctx.db
+    .query("users")
+    .withIndex("clerkId", (q: any) => q.eq("clerkId", identity.subject))
+    .first();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Check if user has required role in organization
+  const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
+    userId: user._id,
+    organizationId: organizationId as any,
+    requiredRole,
+  });
+
+  if (!hasPermission) {
+    throw new Error(`Insufficient permissions. Required role: ${requiredRole}`);
+  }
+
+  return { user, identity };
+}
 
 export const getKnowledgeForAgent = query({
   args: {
     agentId: v.id("agents"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    // Verify the agent belongs to the current user
+    // Get the agent
     const agent = await ctx.db.get(args.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to access this agent");
-    }
+    // Validate user has viewer access to see knowledge
+    await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
     
     // Get all knowledge entries for this agent
     const knowledgeEntries = await ctx.db
@@ -50,25 +74,14 @@ export const createKnowledgeEntry = mutation({
     })),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    // Verify the agent belongs to the current user
+    // Get the agent
     const agent = await ctx.db.get(args.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to access this agent");
-    }
+    // Validate user has editor access to add knowledge
+    await validateOrganizationAccess(ctx, agent.organizationId, "editor");
     
     // Create new knowledge entry
     const knowledgeEntryId = await ctx.db.insert("knowledgeEntries", {
@@ -91,31 +104,20 @@ export const updateKnowledgeEntry = mutation({
     content: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
     // Get the knowledge entry
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
       throw new Error("Knowledge entry not found");
     }
     
-    // Verify the agent belongs to the current user
+    // Get the agent
     const agent = await ctx.db.get(entry.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to update this knowledge entry");
-    }
+    // Validate user has editor access to update knowledge
+    await validateOrganizationAccess(ctx, agent.organizationId, "editor");
     
     // Update the knowledge entry
     await ctx.db.patch(args.entryId, {
@@ -132,31 +134,20 @@ export const deleteKnowledgeEntry = mutation({
     entryId: v.id("knowledgeEntries"),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
     // Get the knowledge entry
     const entry = await ctx.db.get(args.entryId);
     if (!entry) {
       throw new Error("Knowledge entry not found");
     }
     
-    // Verify the agent belongs to the current user
+    // Get the agent
     const agent = await ctx.db.get(entry.agentId);
     if (!agent) {
       throw new Error("Agent not found");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-    
-    if (!user || agent.userId !== user._id) {
-      throw new Error("Not authorized to delete this knowledge entry");
-    }
+    // Validate user has editor access to delete knowledge
+    await validateOrganizationAccess(ctx, agent.organizationId, "editor");
     
     // Delete the knowledge entry
     await ctx.db.delete(args.entryId);
@@ -182,20 +173,28 @@ export const getKnowledgeForUser = query({
       throw new Error("User not found");
     }
     
-    // Get all agents for this user
-    const agents = await ctx.db
-      .query("agents")
+    // Get user's organization memberships
+    const memberships = await ctx.db
+      .query("organizationMembers")
       .withIndex("userId", (q) => q.eq("userId", user._id))
+      .filter((q) => q.eq(q.field("status"), "active"))
       .collect();
-    
-    // Get all knowledge entries for all user's agents
+
+    // Get all knowledge entries from all organization agents
     const allKnowledgeEntries = [];
-    for (const agent of agents) {
-      const knowledgeEntries = await ctx.db
-        .query("knowledgeEntries")
-        .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+    for (const membership of memberships) {
+      const agents = await ctx.db
+        .query("agents")
+        .withIndex("organizationId", (q) => q.eq("organizationId", membership.organizationId))
         .collect();
-      allKnowledgeEntries.push(...knowledgeEntries);
+      
+      for (const agent of agents) {
+        const knowledgeEntries = await ctx.db
+          .query("knowledgeEntries")
+          .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+          .collect();
+        allKnowledgeEntries.push(...knowledgeEntries);
+      }
     }
     
     return allKnowledgeEntries;
@@ -314,5 +313,110 @@ export const updateFileStatus = internalMutation({
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.fileId, { status: args.status });
+  },
+});
+
+export const addKnowledgeEntry = mutation({
+  args: {
+    agentId: v.id("agents"),
+    title: v.optional(v.string()),
+    content: v.string(),
+    source: v.string(),
+    sourceMetadata: v.optional(v.object({
+      filename: v.optional(v.string()),
+      url: v.optional(v.string()),
+      chunkIndex: v.optional(v.number()),
+      totalChunks: v.optional(v.number()),
+    })),
+  },
+  handler: async (ctx, args) => {
+    // Get the agent
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) {
+      throw new Error("Agent not found");
+    }
+    
+    // Validate user has editor access to add knowledge
+    await validateOrganizationAccess(ctx, agent.organizationId, "editor");
+    
+    // Create the knowledge entry
+    const entryId = await ctx.db.insert("knowledgeEntries", {
+      agentId: args.agentId,
+      title: args.title,
+      content: args.content,
+      source: args.source,
+      sourceMetadata: args.sourceMetadata,
+    });
+    
+    return entryId;
+  },
+});
+
+export const getKnowledgeEntries = query({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    // Get the agent
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) {
+      throw new Error("Agent not found");
+    }
+    
+    // Validate user has viewer access to see knowledge
+    await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
+    
+    // Get all knowledge entries for this agent
+    const entries = await ctx.db
+      .query("knowledgeEntries")
+      .withIndex("agentId", (q) => q.eq("agentId", args.agentId))
+      .collect();
+    
+    return entries;
+  },
+});
+
+export const getKnowledgeEntriesForUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
+      .first();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Get user's organization memberships
+    const memberships = await ctx.db
+      .query("organizationMembers")
+      .withIndex("userId", (q) => q.eq("userId", user._id))
+      .filter((q) => q.eq(q.field("status"), "active"))
+      .collect();
+
+    // Get all knowledge entries from all organization agents
+    const allEntries = [];
+    for (const membership of memberships) {
+      const agents = await ctx.db
+        .query("agents")
+        .withIndex("organizationId", (q) => q.eq("organizationId", membership.organizationId))
+        .collect();
+      
+      for (const agent of agents) {
+        const entries = await ctx.db
+          .query("knowledgeEntries")
+          .withIndex("agentId", (q) => q.eq("agentId", agent._id))
+          .collect();
+        allEntries.push(...entries);
+      }
+    }
+
+    return allEntries;
   },
 }); 

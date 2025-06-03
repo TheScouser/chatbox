@@ -23,6 +23,7 @@ import type * as featureGates from "../featureGates.js";
 import type * as files from "../files.js";
 import type * as knowledge from "../knowledge.js";
 import type * as openai from "../openai.js";
+import type * as organizations from "../organizations.js";
 import type * as security from "../security.js";
 import type * as seedPlans from "../seedPlans.js";
 import type * as textExtraction from "../textExtraction.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   knowledge: typeof knowledge;
   openai: typeof openai;
+  organizations: typeof organizations;
   security: typeof security;
   seedPlans: typeof seedPlans;
   textExtraction: typeof textExtraction;
