@@ -401,7 +401,7 @@ function HomePage() {
 							}
 						].map((step, index) => (
 							<div key={index} className="relative">
-								<div className="text-center">
+		<div className="text-center">
 									<div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6">
 										{step.step}
 									</div>
