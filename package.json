@@ -13,6 +13,7 @@
     "check": "biome check --fix"
   },
   "dependencies": {
+    "@auth/core": "^0.39.1",
     "@clerk/clerk-react": "^5.22.13",
     "@convex-dev/react-query": "0.0.0-alpha.8",
     "@faker-js/faker": "^9.6.0",
@@ -47,6 +48,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.3",
+    "resend": "^4.5.1",
     "stripe": "^18.2.1",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.6",

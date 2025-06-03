@@ -17,6 +17,7 @@ import type * as agents from "../agents.js";
 import type * as billing from "../billing.js";
 import type * as chat from "../chat.js";
 import type * as conversations from "../conversations.js";
+import type * as emails from "../emails.js";
 import type * as embeddings from "../embeddings.js";
 import type * as featureGates from "../featureGates.js";
 import type * as files from "../files.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   billing: typeof billing;
   chat: typeof chat;
   conversations: typeof conversations;
+  emails: typeof emails;
   embeddings: typeof embeddings;
   featureGates: typeof featureGates;
   files: typeof files;

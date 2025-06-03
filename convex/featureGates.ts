@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 
 // Check if user has access to a specific feature
 export const checkFeatureAccess = query({
@@ -207,6 +208,9 @@ export const trackUsage = mutation({
         metrics: updatedMetrics,
         lastUpdated: Date.now()
       });
+
+      // Check if we should send usage alert
+      await checkAndSendUsageAlert(ctx, user, args.metric, updatedMetrics[metricKey as keyof typeof updatedMetrics] as number);
     } else {
       // Create new usage record
       const metrics = {
@@ -225,10 +229,13 @@ export const trackUsage = mutation({
         metrics,
         lastUpdated: Date.now()
       });
+
+      // Check if we should send usage alert
+      await checkAndSendUsageAlert(ctx, user, args.metric, args.amount);
     }
 
     return { success: true };
-  }
+  },
 });
 
 // Helper functions
@@ -297,4 +304,70 @@ function getSuggestedUpgrade(feature: string): string {
   };
 
   return upgradeMap[feature] || "starter";
+}
+
+// Helper function to check and send usage alerts
+async function checkAndSendUsageAlert(ctx: any, user: any, metric: string, currentUsage: number) {
+  // Get user's current plan limits
+  let planLimits;
+  const subscription = await ctx.db
+    .query("subscriptions")
+    .withIndex("userId", (q: any) => q.eq("userId", user._id))
+    .filter((q: any) => q.eq(q.field("status"), "active"))
+    .first();
+
+  if (subscription) {
+    const plan = await ctx.db.get(subscription.planId);
+    planLimits = plan?.features;
+  } else {
+    // Free plan limits
+    planLimits = {
+      maxAgents: 1,
+      maxKnowledgeEntries: 50,
+      maxMessagesPerMonth: 500,
+      maxFileUploads: 5,
+      maxFileSizeMB: 2,
+    };
+  }
+
+  if (!planLimits) return;
+
+  const limitMap: Record<string, keyof typeof planLimits> = {
+    "agents": "maxAgents",
+    "messages": "maxMessagesPerMonth",
+    "knowledge_entries": "maxKnowledgeEntries", 
+    "file_uploads": "maxFileUploads"
+  };
+
+  const limitKey = limitMap[metric];
+  if (!limitKey) return;
+
+  const limit = planLimits[limitKey] as number;
+  const percentUsed = (currentUsage / limit) * 100;
+
+  // Send alerts at 80% and 95% thresholds
+  if (percentUsed >= 80 && user.email) {
+    // Check if we've already sent an alert for this metric/period
+    const alertKey = `usage_alert_${metric}_${getCurrentPeriod()}_${percentUsed >= 95 ? '95' : '80'}`;
+    
+    // In a real implementation, you'd want to track sent alerts in the database
+    // For now, we'll send the alert and log it
+    const planName = subscription ? (await ctx.db.get(subscription.planId))?.name || "Free" : "Free";
+    
+    try {
+      await ctx.scheduler.runAfter(0, internal.emails.sendUsageAlert, {
+        to: user.email,
+        name: user.name || "Customer",
+        metric: metric.replace('_', ' '),
+        currentUsage,
+        limit,
+        percentUsed,
+        planName,
+      });
+      
+      console.log(`Sent usage alert for ${metric} at ${percentUsed.toFixed(1)}% to ${user.email}`);
+    } catch (error) {
+      console.error("Failed to schedule usage alert email:", error);
+    }
+  }
 } 

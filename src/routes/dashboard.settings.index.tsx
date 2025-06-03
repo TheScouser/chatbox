@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { EmailTestComponent } from "@/components/EmailTestComponent"
 import { useQuery } from "convex/react"
 import { api } from "../../convex/_generated/api"
 
@@ -124,6 +125,9 @@ function GeneralSettings() {
                     </div>
                 </CardContent>
             </Card>
+
+            {/* Email Testing */}
+            <EmailTestComponent />
 
             {/* Account Actions */}
             <Card>

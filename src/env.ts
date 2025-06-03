@@ -6,6 +6,7 @@ export const env = createEnv({
 		SERVER_URL: z.string().url().optional(),
 		STRIPE_SECRET_KEY: z.string().optional(),
 		STRIPE_WEBHOOK_SECRET: z.string().optional(),
+		RESEND_API_KEY: z.string().optional(),
 	},
 
 	/**
