@@ -33,6 +33,12 @@ import { Route as DemoFormSimpleImport } from './routes/demo.form.simple'
 import { Route as DemoFormAddressImport } from './routes/demo.form.address'
 import { Route as DashboardAgentsNewImport } from './routes/dashboard.agents.new'
 import { Route as DashboardAgentsAgentIdImport } from './routes/dashboard.agents.$agentId'
+import { Route as DashboardAgentsAgentIdIndexImport } from './routes/dashboard.agents.$agentId.index'
+import { Route as DashboardAgentsAgentIdSettingsImport } from './routes/dashboard.agents.$agentId.settings'
+import { Route as DashboardAgentsAgentIdKnowledgeImport } from './routes/dashboard.agents.$agentId.knowledge'
+import { Route as DashboardAgentsAgentIdDeployImport } from './routes/dashboard.agents.$agentId.deploy'
+import { Route as DashboardAgentsAgentIdConversationsImport } from './routes/dashboard.agents.$agentId.conversations'
+import { Route as DashboardAgentsAgentIdChatImport } from './routes/dashboard.agents.$agentId.chat'
 
 // Create/Update Routes
 
@@ -167,6 +173,49 @@ const DashboardAgentsAgentIdRoute = DashboardAgentsAgentIdImport.update({
   path: '/$agentId',
   getParentRoute: () => DashboardAgentsRoute,
 } as any)
+
+const DashboardAgentsAgentIdIndexRoute =
+  DashboardAgentsAgentIdIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAgentsAgentIdRoute,
+  } as any)
+
+const DashboardAgentsAgentIdSettingsRoute =
+  DashboardAgentsAgentIdSettingsImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => DashboardAgentsAgentIdRoute,
+  } as any)
+
+const DashboardAgentsAgentIdKnowledgeRoute =
+  DashboardAgentsAgentIdKnowledgeImport.update({
+    id: '/knowledge',
+    path: '/knowledge',
+    getParentRoute: () => DashboardAgentsAgentIdRoute,
+  } as any)
+
+const DashboardAgentsAgentIdDeployRoute =
+  DashboardAgentsAgentIdDeployImport.update({
+    id: '/deploy',
+    path: '/deploy',
+    getParentRoute: () => DashboardAgentsAgentIdRoute,
+  } as any)
+
+const DashboardAgentsAgentIdConversationsRoute =
+  DashboardAgentsAgentIdConversationsImport.update({
+    id: '/conversations',
+    path: '/conversations',
+    getParentRoute: () => DashboardAgentsAgentIdRoute,
+  } as any)
+
+const DashboardAgentsAgentIdChatRoute = DashboardAgentsAgentIdChatImport.update(
+  {
+    id: '/chat',
+    path: '/chat',
+    getParentRoute: () => DashboardAgentsAgentIdRoute,
+  } as any,
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -326,19 +375,86 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsIndexImport
       parentRoute: typeof DashboardAgentsImport
     }
+    '/dashboard/agents/$agentId/chat': {
+      id: '/dashboard/agents/$agentId/chat'
+      path: '/chat'
+      fullPath: '/dashboard/agents/$agentId/chat'
+      preLoaderRoute: typeof DashboardAgentsAgentIdChatImport
+      parentRoute: typeof DashboardAgentsAgentIdImport
+    }
+    '/dashboard/agents/$agentId/conversations': {
+      id: '/dashboard/agents/$agentId/conversations'
+      path: '/conversations'
+      fullPath: '/dashboard/agents/$agentId/conversations'
+      preLoaderRoute: typeof DashboardAgentsAgentIdConversationsImport
+      parentRoute: typeof DashboardAgentsAgentIdImport
+    }
+    '/dashboard/agents/$agentId/deploy': {
+      id: '/dashboard/agents/$agentId/deploy'
+      path: '/deploy'
+      fullPath: '/dashboard/agents/$agentId/deploy'
+      preLoaderRoute: typeof DashboardAgentsAgentIdDeployImport
+      parentRoute: typeof DashboardAgentsAgentIdImport
+    }
+    '/dashboard/agents/$agentId/knowledge': {
+      id: '/dashboard/agents/$agentId/knowledge'
+      path: '/knowledge'
+      fullPath: '/dashboard/agents/$agentId/knowledge'
+      preLoaderRoute: typeof DashboardAgentsAgentIdKnowledgeImport
+      parentRoute: typeof DashboardAgentsAgentIdImport
+    }
+    '/dashboard/agents/$agentId/settings': {
+      id: '/dashboard/agents/$agentId/settings'
+      path: '/settings'
+      fullPath: '/dashboard/agents/$agentId/settings'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSettingsImport
+      parentRoute: typeof DashboardAgentsAgentIdImport
+    }
+    '/dashboard/agents/$agentId/': {
+      id: '/dashboard/agents/$agentId/'
+      path: '/'
+      fullPath: '/dashboard/agents/$agentId/'
+      preLoaderRoute: typeof DashboardAgentsAgentIdIndexImport
+      parentRoute: typeof DashboardAgentsAgentIdImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardAgentsAgentIdRouteChildren {
+  DashboardAgentsAgentIdChatRoute: typeof DashboardAgentsAgentIdChatRoute
+  DashboardAgentsAgentIdConversationsRoute: typeof DashboardAgentsAgentIdConversationsRoute
+  DashboardAgentsAgentIdDeployRoute: typeof DashboardAgentsAgentIdDeployRoute
+  DashboardAgentsAgentIdKnowledgeRoute: typeof DashboardAgentsAgentIdKnowledgeRoute
+  DashboardAgentsAgentIdSettingsRoute: typeof DashboardAgentsAgentIdSettingsRoute
+  DashboardAgentsAgentIdIndexRoute: typeof DashboardAgentsAgentIdIndexRoute
+}
+
+const DashboardAgentsAgentIdRouteChildren: DashboardAgentsAgentIdRouteChildren =
+  {
+    DashboardAgentsAgentIdChatRoute: DashboardAgentsAgentIdChatRoute,
+    DashboardAgentsAgentIdConversationsRoute:
+      DashboardAgentsAgentIdConversationsRoute,
+    DashboardAgentsAgentIdDeployRoute: DashboardAgentsAgentIdDeployRoute,
+    DashboardAgentsAgentIdKnowledgeRoute: DashboardAgentsAgentIdKnowledgeRoute,
+    DashboardAgentsAgentIdSettingsRoute: DashboardAgentsAgentIdSettingsRoute,
+    DashboardAgentsAgentIdIndexRoute: DashboardAgentsAgentIdIndexRoute,
+  }
+
+const DashboardAgentsAgentIdRouteWithChildren =
+  DashboardAgentsAgentIdRoute._addFileChildren(
+    DashboardAgentsAgentIdRouteChildren,
+  )
+
 interface DashboardAgentsRouteChildren {
-  DashboardAgentsAgentIdRoute: typeof DashboardAgentsAgentIdRoute
+  DashboardAgentsAgentIdRoute: typeof DashboardAgentsAgentIdRouteWithChildren
   DashboardAgentsNewRoute: typeof DashboardAgentsNewRoute
   DashboardAgentsIndexRoute: typeof DashboardAgentsIndexRoute
 }
 
 const DashboardAgentsRouteChildren: DashboardAgentsRouteChildren = {
-  DashboardAgentsAgentIdRoute: DashboardAgentsAgentIdRoute,
+  DashboardAgentsAgentIdRoute: DashboardAgentsAgentIdRouteWithChildren,
   DashboardAgentsNewRoute: DashboardAgentsNewRoute,
   DashboardAgentsIndexRoute: DashboardAgentsIndexRoute,
 }
@@ -379,11 +495,17 @@ export interface FileRoutesByFullPath {
   '/embed/$agentId': typeof EmbedAgentIdRoute
   '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
+  '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRouteWithChildren
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/dashboard/agents/': typeof DashboardAgentsIndexRoute
+  '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
+  '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
+  '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
+  '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRoute
+  '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRoute
+  '/dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -402,11 +524,16 @@ export interface FileRoutesByTo {
   '/embed/$agentId': typeof EmbedAgentIdRoute
   '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/dashboard/agents': typeof DashboardAgentsIndexRoute
+  '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
+  '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
+  '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
+  '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRoute
+  '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRoute
+  '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdIndexRoute
 }
 
 export interface FileRoutesById {
@@ -428,11 +555,17 @@ export interface FileRoutesById {
   '/embed/$agentId': typeof EmbedAgentIdRoute
   '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRoute
+  '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdRouteWithChildren
   '/dashboard/agents/new': typeof DashboardAgentsNewRoute
   '/demo/form/address': typeof DemoFormAddressRoute
   '/demo/form/simple': typeof DemoFormSimpleRoute
   '/dashboard/agents/': typeof DashboardAgentsIndexRoute
+  '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
+  '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
+  '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
+  '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRoute
+  '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRoute
+  '/dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -460,6 +593,12 @@ export interface FileRouteTypes {
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/dashboard/agents/'
+    | '/dashboard/agents/$agentId/chat'
+    | '/dashboard/agents/$agentId/conversations'
+    | '/dashboard/agents/$agentId/deploy'
+    | '/dashboard/agents/$agentId/knowledge'
+    | '/dashboard/agents/$agentId/settings'
+    | '/dashboard/agents/$agentId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -477,11 +616,16 @@ export interface FileRouteTypes {
     | '/embed/$agentId'
     | '/widget-demo/$agentId'
     | '/dashboard'
-    | '/dashboard/agents/$agentId'
     | '/dashboard/agents/new'
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/dashboard/agents'
+    | '/dashboard/agents/$agentId/chat'
+    | '/dashboard/agents/$agentId/conversations'
+    | '/dashboard/agents/$agentId/deploy'
+    | '/dashboard/agents/$agentId/knowledge'
+    | '/dashboard/agents/$agentId/settings'
+    | '/dashboard/agents/$agentId'
   id:
     | '__root__'
     | '/'
@@ -506,6 +650,12 @@ export interface FileRouteTypes {
     | '/demo/form/address'
     | '/demo/form/simple'
     | '/dashboard/agents/'
+    | '/dashboard/agents/$agentId/chat'
+    | '/dashboard/agents/$agentId/conversations'
+    | '/dashboard/agents/$agentId/deploy'
+    | '/dashboard/agents/$agentId/knowledge'
+    | '/dashboard/agents/$agentId/settings'
+    | '/dashboard/agents/$agentId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -642,7 +792,15 @@ export const routeTree = rootRoute
     },
     "/dashboard/agents/$agentId": {
       "filePath": "dashboard.agents.$agentId.tsx",
-      "parent": "/dashboard/agents"
+      "parent": "/dashboard/agents",
+      "children": [
+        "/dashboard/agents/$agentId/chat",
+        "/dashboard/agents/$agentId/conversations",
+        "/dashboard/agents/$agentId/deploy",
+        "/dashboard/agents/$agentId/knowledge",
+        "/dashboard/agents/$agentId/settings",
+        "/dashboard/agents/$agentId/"
+      ]
     },
     "/dashboard/agents/new": {
       "filePath": "dashboard.agents.new.tsx",
@@ -657,6 +815,30 @@ export const routeTree = rootRoute
     "/dashboard/agents/": {
       "filePath": "dashboard.agents.index.tsx",
       "parent": "/dashboard/agents"
+    },
+    "/dashboard/agents/$agentId/chat": {
+      "filePath": "dashboard.agents.$agentId.chat.tsx",
+      "parent": "/dashboard/agents/$agentId"
+    },
+    "/dashboard/agents/$agentId/conversations": {
+      "filePath": "dashboard.agents.$agentId.conversations.tsx",
+      "parent": "/dashboard/agents/$agentId"
+    },
+    "/dashboard/agents/$agentId/deploy": {
+      "filePath": "dashboard.agents.$agentId.deploy.tsx",
+      "parent": "/dashboard/agents/$agentId"
+    },
+    "/dashboard/agents/$agentId/knowledge": {
+      "filePath": "dashboard.agents.$agentId.knowledge.tsx",
+      "parent": "/dashboard/agents/$agentId"
+    },
+    "/dashboard/agents/$agentId/settings": {
+      "filePath": "dashboard.agents.$agentId.settings.tsx",
+      "parent": "/dashboard/agents/$agentId"
+    },
+    "/dashboard/agents/$agentId/": {
+      "filePath": "dashboard.agents.$agentId.index.tsx",
+      "parent": "/dashboard/agents/$agentId"
     }
   }
 }
