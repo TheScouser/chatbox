@@ -8,7 +8,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Authenticated, useAction, useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import {
 	ArrowLeft,
 	BookOpen,
@@ -32,7 +32,6 @@ import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import ChatWidget from "../components/ChatWidget";
-import DashboardLayout from "../components/DashboardLayout";
 import FileUpload from "../components/FileUpload";
 import RichTextEditor from "../components/RichTextEditor";
 import SettingsPanel from "../components/SettingsPanel";
@@ -934,1028 +933,996 @@ function AgentDetail() {
 
 	if (agents === undefined) {
 		return (
-			<Authenticated>
-				<DashboardLayout>
-					<div className="animate-pulse">
-						<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-						<div className="h-64 bg-gray-200 rounded"></div>
-					</div>
-				</DashboardLayout>
-			</Authenticated>
+			<div className="animate-pulse">
+				<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+				<div className="h-64 bg-gray-200 rounded"></div>
+			</div>
 		);
 	}
 
 	if (!agent) {
 		return (
-			<Authenticated>
-				<DashboardLayout>
-					<div className="text-center py-12">
-						<Bot className="mx-auto h-12 w-12 text-gray-400" />
-						<h3 className="mt-2 text-sm font-medium text-gray-900">
-							Agent not found
-						</h3>
-						<p className="mt-1 text-sm text-gray-500">
-							The agent you're looking for doesn't exist or you don't have
-							access to it.
-						</p>
-						<div className="mt-6">
-							<button
-								onClick={() => navigate({ to: "/dashboard/agents" })}
-								className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-							>
-								<ArrowLeft className="mr-2 h-4 w-4" />
-								Back to Agents
-							</button>
-						</div>
-					</div>
-				</DashboardLayout>
-			</Authenticated>
+			<div className="text-center py-12">
+				<Bot className="mx-auto h-12 w-12 text-gray-400" />
+				<h3 className="mt-2 text-sm font-medium text-gray-900">
+					Agent not found
+				</h3>
+				<p className="mt-1 text-sm text-gray-500">
+					The agent you're looking for doesn't exist or you don't have
+					access to it.
+				</p>
+				<div className="mt-6">
+					<button
+						onClick={() => navigate({ to: "/dashboard/agents" })}
+						className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+					>
+						<ArrowLeft className="mr-2 h-4 w-4" />
+						Back to Agents
+					</button>
+				</div>
+			</div>
 		);
 	}
 
 	return (
-		<Authenticated>
-			<DashboardLayout>
-				<div className="space-y-6">
-					{/* Header */}
-					<div className="flex items-center justify-between">
-						<div className="flex items-center space-x-4">
-							<button
-								onClick={() => navigate({ to: "/dashboard/agents" })}
-								className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
-							>
-								<ArrowLeft className="h-4 w-4 mr-1" />
-								Back to Agents
-							</button>
+		<div className="space-y-6">
+			{/* Header */}
+			<div className="flex items-center justify-between">
+				<div className="flex items-center space-x-4">
+					<button
+						onClick={() => navigate({ to: "/dashboard/agents" })}
+						className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
+					>
+						<ArrowLeft className="h-4 w-4 mr-1" />
+						Back to Agents
+					</button>
+				</div>
+			</div>
+
+			{/* Agent Header */}
+			{/* <div className="bg-white shadow rounded-lg">
+				<div className="px-6 py-4">
+					<div className="flex items-center">
+						<div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+							<Bot className="h-7 w-7 text-blue-600" />
 						</div>
-					</div>
-
-					{/* Agent Header */}
-					<div className="bg-white shadow rounded-lg">
-						<div className="px-6 py-4">
-							<div className="flex items-center">
-								<div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-									<Bot className="h-7 w-7 text-blue-600" />
-								</div>
-								<div className="flex-1">
-									<h1 className="text-2xl font-bold text-gray-900">
-										{agent.name}
-									</h1>
-									<p className="text-sm text-gray-600 mt-1">
-										{agent.description || "No description provided"}
-									</p>
-									<p className="text-xs text-gray-500 mt-1">
-										Created {new Date(agent._creationTime).toLocaleDateString()}{" "}
-										• Last updated{" "}
-										{new Date(agent._creationTime).toLocaleDateString()}
-									</p>
-								</div>
-								<div className="flex items-center space-x-2">
-									<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-										Active
-									</span>
-								</div>
-							</div>
+						<div className="flex-1">
+							<h1 className="text-2xl font-bold text-gray-900">
+								{agent.name}
+							</h1>
+							<p className="text-sm text-gray-600 mt-1">
+								{agent.description || "No description provided"}
+							</p>
+							<p className="text-xs text-gray-500 mt-1">
+								Created {new Date(agent._creationTime).toLocaleDateString()}{" "}
+								• Last updated{" "}
+								{new Date(agent._creationTime).toLocaleDateString()}
+							</p>
 						</div>
-					</div>
-
-					{/* Tabs */}
-					<div className="bg-white shadow rounded-lg">
-						<div className="border-b border-gray-200">
-							<nav className="-mb-px flex space-x-8 px-6">
-								{tabs.map((tab) => {
-									const Icon = tab.icon;
-									return (
-										<button
-											key={tab.id}
-											onClick={() => setActiveTab(tab.id)}
-											className={`group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm ${
-												activeTab === tab.id
-													? "border-blue-500 text-blue-600"
-													: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-											}`}
-										>
-											<Icon
-												className={`mr-2 h-5 w-5 ${
-													activeTab === tab.id
-														? "text-blue-500"
-														: "text-gray-400 group-hover:text-gray-500"
-												}`}
-											/>
-											{tab.name}
-										</button>
-									);
-								})}
-							</nav>
-						</div>
-
-						{/* Tab Content */}
-						<div className="p-6">
-							{activeTab === "overview" && (
-								<div className="space-y-6">
-									<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-										<div className="bg-gray-50 rounded-lg p-4">
-											<div className="flex items-center">
-												<BookOpen className="h-8 w-8 text-blue-500" />
-												<div className="ml-3">
-													<p className="text-sm font-medium text-gray-500">
-														Knowledge Entries
-													</p>
-													<p className="text-2xl font-semibold text-gray-900">
-														{knowledgeEntries?.length || 0}
-													</p>
-												</div>
-											</div>
-										</div>
-										<div className="bg-gray-50 rounded-lg p-4">
-											<div className="flex items-center">
-												<MessageSquare className="h-8 w-8 text-green-500" />
-												<div className="ml-3">
-													<p className="text-sm font-medium text-gray-500">
-														Conversations
-													</p>
-													<p className="text-2xl font-semibold text-gray-900">
-														{conversations?.length || 0}
-													</p>
-												</div>
-											</div>
-										</div>
-										<div className="bg-gray-50 rounded-lg p-4">
-											<div className="flex items-center">
-												<Brain className="h-8 w-8 text-purple-500" />
-												<div className="ml-3">
-													<p className="text-sm font-medium text-gray-500">
-														Training Progress
-													</p>
-													<p className="text-2xl font-semibold text-gray-900">
-														{knowledgeStats
-															? Math.round(knowledgeStats.embeddingProgress)
-															: 0}
-														%
-													</p>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									{/* Training Status */}
-									{knowledgeStats && (
-										<div className="bg-white border border-gray-200 rounded-lg p-6">
-											<h3 className="text-lg font-medium text-gray-900 mb-4">
-												Knowledge Base Status
-											</h3>
-											<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-												<div className="text-center">
-													<div className="text-2xl font-bold text-blue-600">
-														{knowledgeStats.totalEntries}
-													</div>
-													<div className="text-sm text-gray-500">
-														Total Sources
-													</div>
-												</div>
-												<div className="text-center">
-													<div className="text-2xl font-bold text-green-600">
-														{knowledgeStats.entriesWithEmbeddings}
-													</div>
-													<div className="text-sm text-gray-500">Trained</div>
-												</div>
-												<div className="text-center">
-													<div className="text-2xl font-bold text-orange-600">
-														{knowledgeStats.entriesNeedingEmbeddings}
-													</div>
-													<div className="text-sm text-gray-500">
-														Need Training
-													</div>
-												</div>
-												<div className="text-center">
-													<div className="text-2xl font-bold text-purple-600">
-														{Math.round(knowledgeStats.embeddingProgress)}%
-													</div>
-													<div className="text-sm text-gray-500">Complete</div>
-												</div>
-											</div>
-											{knowledgeStats.entriesNeedingEmbeddings > 0 && (
-												<div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-													<p className="text-sm text-orange-800">
-														<strong>Action needed:</strong>{" "}
-														{knowledgeStats.entriesNeedingEmbeddings} knowledge
-														sources need training. Go to the Knowledge Base tab
-														and click "Train Agent" to improve response quality.
-													</p>
-												</div>
-											)}
-										</div>
-									)}
-
-									<div className="bg-gray-50 rounded-lg p-6">
-										<h3 className="text-lg font-medium text-gray-900 mb-4">
-											Quick Actions
-										</h3>
-										<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-											<button
-												onClick={() => setActiveTab("chat")}
-												className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
-											>
-												<MessageSquare className="h-6 w-6 text-green-500 mb-2" />
-												<h4 className="font-medium text-gray-900">
-													Test Agent
-												</h4>
-												<p className="text-sm text-gray-600">
-													Chat with your agent in the playground
-												</p>
-											</button>
-											<button
-												onClick={() => setActiveTab("knowledge")}
-												className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
-											>
-												<BookOpen className="h-6 w-6 text-blue-500 mb-2" />
-												<h4 className="font-medium text-gray-900">
-													Add Knowledge
-												</h4>
-												<p className="text-sm text-gray-600">
-													Upload documents or add text content
-												</p>
-											</button>
-											<button
-												onClick={() => setActiveTab("deploy")}
-												className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
-											>
-												<Globe className="h-6 w-6 text-purple-500 mb-2" />
-												<h4 className="font-medium text-gray-900">
-													Deploy Agent
-												</h4>
-												<p className="text-sm text-gray-600">
-													Get embed code for your website
-												</p>
-											</button>
-										</div>
-									</div>
-								</div>
-							)}
-
-							{activeTab === "knowledge" && (
-								<KnowledgeTab agentId={agent._id} />
-							)}
-
-							{activeTab === "chat" && (
-								<div className="space-y-6">
-									<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-										<div className="flex items-start">
-											<MessageSquare className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
-											<div>
-												<h3 className="text-sm font-medium text-blue-800">
-													Chat Playground
-												</h3>
-												<p className="text-sm text-blue-700 mt-1">
-													Test your agent by chatting with it directly. This is
-													exactly how customers will interact with your agent
-													when deployed.
-												</p>
-											</div>
-										</div>
-									</div>
-
-									<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-										<div className="lg:col-span-3">
-											<ChatWidget
-												agentId={agent._id as any}
-												conversationId={currentConversationId}
-												onConversationCreate={handleConversationCreate}
-												height="700px"
-												className="border border-gray-200 rounded-lg"
-											/>
-										</div>
-
-										<div className="space-y-4">
-											<div className="bg-white border border-gray-200 rounded-lg p-4">
-												<h4 className="text-sm font-medium text-gray-900 mb-3">
-													Testing Tips
-												</h4>
-												<ul className="text-sm text-gray-600 space-y-2">
-													<li className="flex items-start">
-														<span className="text-green-500 mr-2">•</span>
-														Ask questions related to your knowledge base
-													</li>
-													<li className="flex items-start">
-														<span className="text-green-500 mr-2">•</span>
-														Test edge cases and unclear queries
-													</li>
-													<li className="flex items-start">
-														<span className="text-green-500 mr-2">•</span>
-														Check if responses are accurate and helpful
-													</li>
-													<li className="flex items-start">
-														<span className="text-green-500 mr-2">•</span>
-														Verify knowledge sources are being used
-													</li>
-												</ul>
-											</div>
-
-											<div className="bg-white border border-gray-200 rounded-lg p-4">
-												<h4 className="text-sm font-medium text-gray-900 mb-3">
-													Quick Actions
-												</h4>
-												<div className="space-y-2">
-													<button
-														onClick={() => setCurrentConversationId(undefined)}
-														className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
-													>
-														🔄 Start New Conversation
-													</button>
-													<button
-														onClick={() => setActiveTab("knowledge")}
-														className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
-													>
-														📚 Add More Knowledge
-													</button>
-													<button
-														onClick={() => setActiveTab("deploy")}
-														className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
-													>
-														🚀 Deploy Agent
-													</button>
-												</div>
-											</div>
-
-											{currentConversationId && (
-												<div className="bg-green-50 border border-green-200 rounded-lg p-4">
-													<h4 className="text-sm font-medium text-green-800 mb-2">
-														Active Conversation
-													</h4>
-													<p className="text-xs text-green-700">
-														Conversation ID: {currentConversationId}
-													</p>
-												</div>
-											)}
-										</div>
-									</div>
-								</div>
-							)}
-
-							{activeTab === "conversations" && (
-								<div className="space-y-8">
-									<div className="flex items-center justify-between">
-										<div>
-											<h3 className="text-xl font-medium text-gray-900">
-												Chat Logs
-											</h3>
-											<p className="mt-1 text-sm text-gray-600">
-												View and manage all conversations with your agent.
-											</p>
-										</div>
-										<div className="flex items-center gap-3">
-											<button className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-												<svg
-													className="h-4 w-4 mr-2"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth={2}
-														d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-													/>
-												</svg>
-												Refresh
-											</button>
-											<button className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-												<svg
-													className="h-4 w-4 mr-2"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth={2}
-														d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"
-													/>
-												</svg>
-												Filter
-											</button>
-											<button className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-												<svg
-													className="h-4 w-4 mr-2"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth={2}
-														d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-													/>
-												</svg>
-												Export
-											</button>
-										</div>
-									</div>
-
-									{conversations === undefined ? (
-										<div className="animate-pulse">
-											<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[700px]">
-												<div className="bg-gray-100 rounded-lg"></div>
-												<div className="lg:col-span-3 bg-gray-100 rounded-lg"></div>
-											</div>
-										</div>
-									) : conversations.length === 0 ? (
-										<div className="text-center py-16">
-											<MessageSquare className="mx-auto h-16 w-16 text-gray-400" />
-											<h3 className="mt-4 text-lg font-medium text-gray-900">
-												No conversations yet
-											</h3>
-											<p className="mt-2 text-sm text-gray-500 max-w-sm mx-auto">
-												Conversations will appear here once users start chatting
-												with your agent.
-											</p>
-											<div className="mt-8">
-												<button
-													onClick={() => setActiveTab("chat")}
-													className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-													style={{ marginTop: "1rem" }}
-												>
-													<MessageSquare className="mr-2 h-4 w-4" />
-													Test Your Agent
-												</button>
-											</div>
-										</div>
-									) : (
-										<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[700px]">
-											{/* Conversations List */}
-											<div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-												<div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-													<h4 className="text-base font-medium text-gray-900 flex items-center gap-2">
-														<MessageSquare className="h-5 w-5 text-purple-600" />
-														Chat Logs
-													</h4>
-												</div>
-												<div className="overflow-y-auto h-full">
-													{conversations.map((conversation, index) => {
-														const isSelected =
-															currentConversationId === conversation._id;
-														const timeAgo = new Date(
-															conversation._creationTime,
-														);
-														const now = new Date();
-														const diffInMinutes = Math.floor(
-															(now.getTime() - timeAgo.getTime()) / (1000 * 60),
-														);
-														const diffInHours = Math.floor(diffInMinutes / 60);
-														const diffInDays = Math.floor(diffInHours / 24);
-
-														let timeDisplay = "";
-														if (diffInMinutes < 60) {
-															timeDisplay = `${diffInMinutes} minutes ago`;
-														} else if (diffInHours < 24) {
-															timeDisplay = `${diffInHours} hours ago`;
-														} else {
-															timeDisplay = `${diffInDays} days ago`;
-														}
-
-														return (
-															<div
-																key={conversation._id}
-																onClick={() =>
-																	setCurrentConversationId(conversation._id)
-																}
-																className={`p-5 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-																	isSelected
-																		? "bg-blue-50 border-l-4 border-l-blue-500"
-																		: ""
-																}`}
-															>
-																<div className="flex justify-between items-start mb-3">
-																	<p className="text-sm font-medium text-gray-900 truncate pr-2 leading-relaxed">
-																		{conversation.title ||
-																			"Untitled Conversation"}
-																	</p>
-																	<button
-																		onClick={(e) => {
-																			e.stopPropagation();
-																			// TODO: Implement delete
-																			console.log(
-																				"Delete conversation:",
-																				conversation._id,
-																			);
-																		}}
-																		className="text-gray-400 hover:text-red-600 transition-colors flex-shrink-0"
-																	>
-																		<svg
-																			className="h-4 w-4"
-																			fill="none"
-																			stroke="currentColor"
-																			viewBox="0 0 24 24"
-																		>
-																			<path
-																				strokeLinecap="round"
-																				strokeLinejoin="round"
-																				strokeWidth={2}
-																				d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-																			/>
-																		</svg>
-																	</button>
-																</div>
-																<p className="text-xs text-gray-500 mb-3">
-																	{timeDisplay}
-																</p>
-																<div className="flex items-center gap-2">
-																	<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-																		Source: Playground
-																	</span>
-																</div>
-															</div>
-														);
-													})}
-												</div>
-											</div>
-
-											{/* Conversation Content */}
-											<div className="lg:col-span-3 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-												{currentConversationId ? (
-													<div className="h-full flex flex-col">
-														<div className="bg-gray-50 px-6 py-5 border-b border-gray-200">
-															<div className="flex items-center justify-between">
-																<div>
-																	<h4 className="text-xl font-medium text-gray-900">
-																		{conversations.find(
-																			(c) => c._id === currentConversationId,
-																		)?.title || "Conversation Details"}
-																	</h4>
-																	<p className="text-sm text-gray-500 mt-1">
-																		Started{" "}
-																		{new Date(
-																			conversations.find(
-																				(c) => c._id === currentConversationId,
-																			)?._creationTime || 0,
-																		).toLocaleString()}
-																	</p>
-																</div>
-																<div className="flex items-center gap-2">
-																	<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-																		Active
-																	</span>
-																</div>
-															</div>
-														</div>
-														<div className="flex-1 overflow-hidden">
-															<ChatWidget
-																agentId={agent._id as any}
-																conversationId={currentConversationId}
-																onConversationCreate={handleConversationCreate}
-																height="100%"
-																className="border-0 h-full"
-															/>
-														</div>
-													</div>
-												) : (
-													<div className="h-full flex items-center justify-center">
-														<div className="text-center">
-															<MessageSquare className="mx-auto h-20 w-20 text-gray-400" />
-															<h3 className="mt-6 text-xl font-medium text-gray-900">
-																Select a conversation
-															</h3>
-															<p className="mt-3 text-sm text-gray-500 max-w-sm">
-																Choose a conversation from the list to view its
-																details and chat history.
-															</p>
-														</div>
-													</div>
-												)}
-											</div>
-										</div>
-									)}
-
-									{/* Conversation Stats */}
-									{conversations && conversations.length > 0 && (
-										<div className="bg-gray-50 border border-gray-200 rounded-lg p-8">
-											<h4 className="text-lg font-medium text-gray-900 mb-6">
-												Conversation Statistics
-											</h4>
-											<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-												<div className="text-center">
-													<div className="text-3xl font-bold text-blue-600">
-														{conversations.length}
-													</div>
-													<div className="text-sm text-gray-500 mt-1">
-														Total Conversations
-													</div>
-												</div>
-												<div className="text-center">
-													<div className="text-3xl font-bold text-green-600">
-														{
-															conversations.filter((c) => {
-																const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
-																return c._creationTime > dayAgo;
-															}).length
-														}
-													</div>
-													<div className="text-sm text-gray-500 mt-1">
-														Last 24 Hours
-													</div>
-												</div>
-												<div className="text-center">
-													<div className="text-3xl font-bold text-purple-600">
-														{
-															conversations.filter((c) => {
-																const weekAgo =
-																	Date.now() - 7 * 24 * 60 * 60 * 1000;
-																return c._creationTime > weekAgo;
-															}).length
-														}
-													</div>
-													<div className="text-sm text-gray-500 mt-1">
-														Last 7 Days
-													</div>
-												</div>
-											</div>
-										</div>
-									)}
-								</div>
-							)}
-
-							{activeTab === "deploy" && (
-								<div className="space-y-8">
-									<div>
-										<h3 className="text-lg font-medium text-gray-900">
-											Deploy Your Agent
-										</h3>
-										<p className="mt-1 text-sm text-gray-600">
-											Share your agent with the world using these deployment
-											options.
-										</p>
-									</div>
-
-									{/* Chat Bubble Widget */}
-									<div className="bg-white border border-gray-200 rounded-lg p-6">
-										<div className="flex items-start justify-between">
-											<div className="flex items-start gap-3">
-												<MessageSquare className="h-5 w-5 text-blue-600 mt-0.5" />
-												<div>
-													<h4 className="text-sm font-medium text-gray-900">
-														Chat Bubble Widget
-														<span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-															Recommended
-														</span>
-													</h4>
-													<p className="text-sm text-gray-600 mt-1">
-														Floating chat bubble that appears on your website.
-														Easy one-line installation.
-													</p>
-												</div>
-											</div>
-											<a
-												href={`${baseUrl}/widget-demo/${agent._id}`}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="text-sm text-blue-600 hover:text-blue-800"
-											>
-												Preview →
-											</a>
-										</div>
-										<div className="mt-4">
-											<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 whitespace-pre-wrap">
-												{`<script>
-(function(){
-  if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
-    window.ChatboxWidget=(...arguments)=>{
-      if(!window.ChatboxWidget.q){window.ChatboxWidget.q=[]}
-      window.ChatboxWidget.q.push(arguments)
-    };
-    window.ChatboxWidget=new Proxy(window.ChatboxWidget,{
-      get(target,prop){
-        if(prop==="q"){return target.q}
-        return(...args)=>target(prop,...args)
-      }
-    })
-  }
-  const onLoad=function(){
-    const script=document.createElement("script");
-    script.src="${baseUrl}/widget.min.js";
-    script.id="${agent._id}";
-    script.domain="${new URL(baseUrl).hostname}";
-    document.body.appendChild(script)
-  };
-  if(document.readyState==="complete"){onLoad()}
-  else{window.addEventListener("load",onLoad)}
-})();
-</script>`}
-											</div>
-											<button
-												onClick={() =>
-													copyToClipboard(
-														`<script>
-(function(){
-  if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
-    window.ChatboxWidget=(...arguments)=>{
-      if(!window.ChatboxWidget.q){window.ChatboxWidget.q=[]}
-      window.ChatboxWidget.q.push(arguments)
-    };
-    window.ChatboxWidget=new Proxy(window.ChatboxWidget,{
-      get(target,prop){
-        if(prop==="q"){return target.q}
-        return(...args)=>target(prop,...args)
-      }
-    })
-  }
-  const onLoad=function(){
-    const script=document.createElement("script");
-    script.src="${baseUrl}/widget.min.js";
-    script.id="${agent._id}";
-    script.domain="${new URL(baseUrl).hostname}";
-    document.body.appendChild(script)
-  };
-  if(document.readyState==="complete"){onLoad()}
-  else{window.addEventListener("load",onLoad)}
-})();
-</script>`,
-														"bubble",
-													)
-												}
-												className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
-											>
-												{copiedCode === "bubble" ? (
-													<>
-														<Check className="h-4 w-4" />
-														Copied!
-													</>
-												) : (
-													<>
-														<Copy className="h-4 w-4" />
-														Copy Widget Code
-													</>
-												)}
-											</button>
-										</div>
-									</div>
-
-									{/* Public Chat Link */}
-									<div className="bg-white border border-gray-200 rounded-lg p-6">
-										<div className="flex items-start justify-between">
-											<div className="flex items-start gap-3">
-												<ExternalLink className="h-5 w-5 text-green-600 mt-0.5" />
-												<div>
-													<h4 className="text-sm font-medium text-gray-900">
-														Public Chat Link
-													</h4>
-													<p className="text-sm text-gray-600 mt-1">
-														Direct link for users to chat with your agent
-													</p>
-												</div>
-											</div>
-											<a
-												href={publicChatUrl}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="text-sm text-blue-600 hover:text-blue-800"
-											>
-												Preview →
-											</a>
-										</div>
-										<div className="mt-4">
-											<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 break-all">
-												{publicChatUrl}
-											</div>
-											<button
-												onClick={() => copyToClipboard(publicChatUrl, "public")}
-												className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-											>
-												{copiedCode === "public" ? (
-													<>
-														<Check className="h-4 w-4 text-green-600" />
-														Copied!
-													</>
-												) : (
-													<>
-														<Copy className="h-4 w-4" />
-														Copy Link
-													</>
-												)}
-											</button>
-										</div>
-									</div>
-
-									{/* Iframe Embed */}
-									<div className="bg-white border border-gray-200 rounded-lg p-6">
-										<div className="flex items-start justify-between">
-											<div className="flex items-start gap-3">
-												<Globe className="h-5 w-5 text-purple-600 mt-0.5" />
-												<div>
-													<h4 className="text-sm font-medium text-gray-900">
-														Website Embed Code
-													</h4>
-													<p className="text-sm text-gray-600 mt-1">
-														Embed the chat widget directly on your website
-													</p>
-												</div>
-											</div>
-											<a
-												href={embedUrl}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="text-sm text-blue-600 hover:text-blue-800"
-											>
-												Preview →
-											</a>
-										</div>
-										<div className="mt-4">
-											<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 whitespace-pre-wrap">
-												{iframeCode}
-											</div>
-											<button
-												onClick={() => copyToClipboard(iframeCode, "iframe")}
-												className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-											>
-												{copiedCode === "iframe" ? (
-													<>
-														<Check className="h-4 w-4 text-green-600" />
-														Copied!
-													</>
-												) : (
-													<>
-														<Copy className="h-4 w-4" />
-														Copy Embed Code
-													</>
-												)}
-											</button>
-										</div>
-									</div>
-
-									{/* Customization Options */}
-									<div className="bg-white border border-gray-200 rounded-lg p-6">
-										<div className="flex items-start gap-3 mb-6">
-											<Settings className="h-5 w-5 text-blue-600 mt-0.5" />
-											<div>
-												<h4 className="text-sm font-medium text-gray-900">
-													Customize Widget
-												</h4>
-												<p className="text-sm text-gray-600 mt-1">
-													Adjust the appearance and size of your chat widget
-												</p>
-											</div>
-										</div>
-
-										<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-											{/* Width */}
-											<div className="space-y-2">
-												<Label htmlFor="width" className="text-sm font-medium">
-													Width
-												</Label>
-												<Select
-													value={embedWidth}
-													onValueChange={setEmbedWidth}
-												>
-													<SelectTrigger>
-														<SelectValue />
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem value="300">300px</SelectItem>
-														<SelectItem value="400">400px</SelectItem>
-														<SelectItem value="500">500px</SelectItem>
-														<SelectItem value="100%">100%</SelectItem>
-													</SelectContent>
-												</Select>
-											</div>
-
-											{/* Height */}
-											<div className="space-y-2">
-												<Label htmlFor="height" className="text-sm font-medium">
-													Height
-												</Label>
-												<Select
-													value={embedHeight}
-													onValueChange={setEmbedHeight}
-												>
-													<SelectTrigger>
-														<SelectValue />
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem value="400">400px</SelectItem>
-														<SelectItem value="500">500px</SelectItem>
-														<SelectItem value="600">600px</SelectItem>
-														<SelectItem value="700">700px</SelectItem>
-													</SelectContent>
-												</Select>
-											</div>
-
-											{/* Primary Color */}
-											<div className="space-y-2">
-												<Label htmlFor="color" className="text-sm font-medium">
-													Primary Color
-												</Label>
-												<div className="flex gap-2">
-													<Input
-														type="color"
-														value={primaryColor}
-														onChange={(e) => setPrimaryColor(e.target.value)}
-														className="w-12 h-10 p-1 border rounded"
-													/>
-													<Input
-														type="text"
-														value={primaryColor}
-														onChange={(e) => setPrimaryColor(e.target.value)}
-														placeholder="#2563eb"
-														className="flex-1"
-													/>
-												</div>
-											</div>
-										</div>
-
-										{/* Preview */}
-										<div className="mt-6 p-4 bg-gray-50 rounded-lg">
-											<h5 className="text-sm font-medium text-gray-900 mb-2">
-												Preview
-											</h5>
-											<div className="text-xs text-gray-600 mb-3">
-												Widget size: {embedWidth} × {embedHeight}
-											</div>
-											<div
-												className="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm"
-												style={{
-													width:
-														embedWidth === "100%" ? "100%" : `${embedWidth}px`,
-													height: "120px",
-													maxWidth: "100%",
-												}}
-											>
-												<div className="text-center">
-													<Bot
-														className="h-6 w-6 mx-auto mb-1"
-														style={{ color: primaryColor }}
-													/>
-													<div>Chat Widget Preview</div>
-													<div className="text-xs">
-														{embedWidth} × {embedHeight}
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									{/* Usage Tips */}
-									<div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-										<div className="flex items-start gap-3">
-											<Settings className="h-5 w-5 text-blue-600 mt-0.5" />
-											<div>
-												<h4 className="text-sm font-medium text-blue-800">
-													Usage Tips
-												</h4>
-												<div className="mt-3 text-sm text-blue-700 space-y-2">
-													<p>
-														<strong>Responsive Design:</strong> Use 100% width
-														for mobile-friendly widgets
-													</p>
-													<p>
-														<strong>Color Matching:</strong> Choose a primary
-														color that matches your brand
-													</p>
-													<p>
-														<strong>Size Guidelines:</strong>
-													</p>
-													<ul className="mt-1 space-y-1 ml-4">
-														<li>• Desktop sidebar: 300-400px wide</li>
-														<li>• Full-width mobile: 100% × 500px</li>
-														<li>• Popup/modal: 400-500px × 600px</li>
-													</ul>
-												</div>
-											</div>
-										</div>
-									</div>
-
-									{/* Integration Instructions */}
-									<div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-										<h4 className="text-sm font-medium text-gray-900 mb-3">
-											Integration Instructions
-										</h4>
-										<div className="space-y-3 text-sm text-gray-600">
-											<div>
-												<strong>1. Copy the embed code</strong> from above
-											</div>
-											<div>
-												<strong>2. Paste it into your website's HTML</strong>{" "}
-												where you want the chat widget to appear
-											</div>
-											<div>
-												<strong>3. Adjust the width and height</strong> as
-												needed for your layout
-											</div>
-											<div>
-												<strong>4. Test the integration</strong> to ensure it
-												works correctly
-											</div>
-										</div>
-									</div>
-								</div>
-							)}
-
-							{activeTab === "settings" && <SettingsPanel agent={agent} />}
+						<div className="flex items-center space-x-2">
+							<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+								Active
+							</span>
 						</div>
 					</div>
 				</div>
-			</DashboardLayout>
-		</Authenticated>
+			</div> */}
+
+			{/* Tabs */}
+			<div className="bg-white shadow rounded-lg">
+				<div className="border-b border-gray-200">
+					<nav className="-mb-px flex space-x-8 px-6">
+						{tabs.map((tab) => {
+							const Icon = tab.icon;
+							return (
+								<button
+									key={tab.id}
+									onClick={() => setActiveTab(tab.id)}
+									className={`group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm ${
+										activeTab === tab.id
+											? "border-blue-500 text-blue-600"
+											: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+									}`}
+								>
+									<Icon
+										className={`mr-2 h-5 w-5 ${
+											activeTab === tab.id
+												? "text-blue-500"
+												: "text-gray-400 group-hover:text-gray-500"
+										}`}
+									/>
+									{tab.name}
+								</button>
+							);
+						})}
+					</nav>
+				</div>
+
+				{/* Tab Content */}
+				<div className="p-6">
+					{activeTab === "overview" && (
+						<div className="space-y-6">
+							<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+								<div className="bg-gray-50 rounded-lg p-4">
+									<div className="flex items-center">
+										<BookOpen className="h-8 w-8 text-blue-500" />
+										<div className="ml-3">
+											<p className="text-sm font-medium text-gray-500">
+												Knowledge Entries
+											</p>
+											<p className="text-2xl font-semibold text-gray-900">
+												{knowledgeEntries?.length || 0}
+											</p>
+										</div>
+									</div>
+								</div>
+								<div className="bg-gray-50 rounded-lg p-4">
+									<div className="flex items-center">
+										<MessageSquare className="h-8 w-8 text-green-500" />
+										<div className="ml-3">
+											<p className="text-sm font-medium text-gray-500">
+												Conversations
+											</p>
+											<p className="text-2xl font-semibold text-gray-900">
+												{conversations?.length || 0}
+											</p>
+										</div>
+									</div>
+								</div>
+								<div className="bg-gray-50 rounded-lg p-4">
+									<div className="flex items-center">
+										<Brain className="h-8 w-8 text-purple-500" />
+										<div className="ml-3">
+											<p className="text-sm font-medium text-gray-500">
+												Training Progress
+											</p>
+											<p className="text-2xl font-semibold text-gray-900">
+												{knowledgeStats
+													? Math.round(knowledgeStats.embeddingProgress)
+													: 0}
+												%
+											</p>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							{/* Training Status */}
+							{knowledgeStats && (
+								<div className="bg-white border border-gray-200 rounded-lg p-6">
+									<h3 className="text-lg font-medium text-gray-900 mb-4">
+										Knowledge Base Status
+									</h3>
+									<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+										<div className="text-center">
+											<div className="text-2xl font-bold text-blue-600">
+												{knowledgeStats.totalEntries}
+											</div>
+											<div className="text-sm text-gray-500">
+												Total Sources
+											</div>
+										</div>
+										<div className="text-center">
+											<div className="text-2xl font-bold text-green-600">
+												{knowledgeStats.entriesWithEmbeddings}
+											</div>
+											<div className="text-sm text-gray-500">Trained</div>
+										</div>
+										<div className="text-center">
+											<div className="text-2xl font-bold text-orange-600">
+												{knowledgeStats.entriesNeedingEmbeddings}
+											</div>
+											<div className="text-sm text-gray-500">
+												Need Training
+											</div>
+										</div>
+										<div className="text-center">
+											<div className="text-2xl font-bold text-purple-600">
+												{Math.round(knowledgeStats.embeddingProgress)}%
+											</div>
+											<div className="text-sm text-gray-500">Complete</div>
+										</div>
+									</div>
+									{knowledgeStats.entriesNeedingEmbeddings > 0 && (
+										<div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+											<p className="text-sm text-orange-800">
+												<strong>Action needed:</strong>{" "}
+												{knowledgeStats.entriesNeedingEmbeddings} knowledge
+												sources need training. Go to the Knowledge Base tab
+												and click "Train Agent" to improve response quality.
+											</p>
+										</div>
+									)}
+								</div>
+							)}
+
+							<div className="bg-gray-50 rounded-lg p-6">
+								<h3 className="text-lg font-medium text-gray-900 mb-4">
+									Quick Actions
+								</h3>
+								<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+									<button
+										onClick={() => setActiveTab("chat")}
+										className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+									>
+										<MessageSquare className="h-6 w-6 text-green-500 mb-2" />
+										<h4 className="font-medium text-gray-900">
+											Test Agent
+										</h4>
+										<p className="text-sm text-gray-600">
+											Chat with your agent in the playground
+										</p>
+									</button>
+									<button
+										onClick={() => setActiveTab("knowledge")}
+										className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+									>
+										<BookOpen className="h-6 w-6 text-blue-500 mb-2" />
+										<h4 className="font-medium text-gray-900">
+											Add Knowledge
+										</h4>
+										<p className="text-sm text-gray-600">
+											Upload documents or add text content
+										</p>
+									</button>
+									<button
+										onClick={() => setActiveTab("deploy")}
+										className="text-left p-4 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+									>
+										<Globe className="h-6 w-6 text-purple-500 mb-2" />
+										<h4 className="font-medium text-gray-900">
+											Deploy Agent
+										</h4>
+										<p className="text-sm text-gray-600">
+											Get embed code for your website
+										</p>
+									</button>
+								</div>
+							</div>
+						</div>
+					)}
+
+					{activeTab === "knowledge" && (
+						<KnowledgeTab agentId={agent._id} />
+					)}
+
+					{activeTab === "chat" && (
+						<div className="space-y-6">
+							<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+								<div className="flex items-start">
+									<MessageSquare className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
+									<div>
+										<h3 className="text-sm font-medium text-blue-800">
+											Chat Playground
+										</h3>
+										<p className="text-sm text-blue-700 mt-1">
+											Test your agent by chatting with it directly. This is
+											exactly how customers will interact with your agent
+											when deployed.
+										</p>
+									</div>
+								</div>
+							</div>
+
+							<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+								<div className="lg:col-span-3">
+									<ChatWidget
+										agentId={agent._id as any}
+										conversationId={currentConversationId}
+										onConversationCreate={handleConversationCreate}
+										height="700px"
+										className="border border-gray-200 rounded-lg"
+									/>
+								</div>
+
+								<div className="space-y-4">
+									<div className="bg-white border border-gray-200 rounded-lg p-4">
+										<h4 className="text-sm font-medium text-gray-900 mb-3">
+											Testing Tips
+										</h4>
+										<ul className="text-sm text-gray-600 space-y-2">
+											<li className="flex items-start">
+												<span className="text-green-500 mr-2">•</span>
+												Ask questions related to your knowledge base
+											</li>
+											<li className="flex items-start">
+												<span className="text-green-500 mr-2">•</span>
+												Test edge cases and unclear queries
+											</li>
+											<li className="flex items-start">
+												<span className="text-green-500 mr-2">•</span>
+												Check if responses are accurate and helpful
+											</li>
+											<li className="flex items-start">
+												<span className="text-green-500 mr-2">•</span>
+												Verify knowledge sources are being used
+											</li>
+										</ul>
+									</div>
+
+									<div className="bg-white border border-gray-200 rounded-lg p-4">
+										<h4 className="text-sm font-medium text-gray-900 mb-3">
+											Quick Actions
+										</h4>
+										<div className="space-y-2">
+											<button
+												onClick={() => setCurrentConversationId(undefined)}
+												className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
+											>
+												🔄 Start New Conversation
+											</button>
+											<button
+												onClick={() => setActiveTab("knowledge")}
+												className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
+											>
+												📚 Add More Knowledge
+											</button>
+											<button
+												onClick={() => setActiveTab("deploy")}
+												className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md border border-gray-200"
+											>
+												🚀 Deploy Agent
+											</button>
+										</div>
+									</div>
+
+									{currentConversationId && (
+										<div className="bg-green-50 border border-green-200 rounded-lg p-4">
+											<h4 className="text-sm font-medium text-green-800 mb-2">
+												Active Conversation
+											</h4>
+											<p className="text-xs text-green-700">
+												Conversation ID: {currentConversationId}
+											</p>
+										</div>
+									)}
+								</div>
+							</div>
+						</div>
+					)}
+
+					{activeTab === "conversations" && (
+						<div className="space-y-8">
+							<div className="flex items-center justify-between">
+								<div>
+									<h3 className="text-xl font-medium text-gray-900">
+										Chat Logs
+									</h3>
+									<p className="mt-1 text-sm text-gray-600">
+										View and manage all conversations with your agent.
+									</p>
+								</div>
+								<div className="flex items-center gap-3">
+									<button className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+										<svg
+											className="h-4 w-4 mr-2"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+											/>
+										</svg>
+										Refresh
+									</button>
+									<button className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+										<svg
+											className="h-4 w-4 mr-2"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"
+											/>
+										</svg>
+										Filter
+									</button>
+									<button className="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+										<svg
+											className="h-4 w-4 mr-2"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+											/>
+										</svg>
+										Export
+									</button>
+								</div>
+							</div>
+
+							{conversations === undefined ? (
+								<div className="animate-pulse">
+									<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[700px]">
+										<div className="bg-gray-100 rounded-lg"></div>
+										<div className="lg:col-span-3 bg-gray-100 rounded-lg"></div>
+									</div>
+								</div>
+							) : conversations.length === 0 ? (
+								<div className="text-center py-16">
+									<MessageSquare className="mx-auto h-16 w-16 text-gray-400" />
+									<h3 className="mt-4 text-lg font-medium text-gray-900">
+										No conversations yet
+									</h3>
+									<p className="mt-2 text-sm text-gray-500 max-w-sm mx-auto">
+										Conversations will appear here once users start chatting
+										with your agent.
+									</p>
+									<div className="mt-8">
+										<button
+											onClick={() => setActiveTab("chat")}
+											className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+											style={{ marginTop: "1rem" }}
+										>
+											<MessageSquare className="mr-2 h-4 w-4" />
+											Test Your Agent
+										</button>
+									</div>
+								</div>
+							) : (
+								<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[700px]">
+									{/* Conversations List */}
+									<div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+										<div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+											<h4 className="text-base font-medium text-gray-900 flex items-center gap-2">
+												<MessageSquare className="h-5 w-5 text-purple-600" />
+												Chat Logs
+											</h4>
+										</div>
+										<div className="overflow-y-auto h-full">
+											{conversations.map((conversation, index) => {
+												const isSelected =
+													currentConversationId === conversation._id;
+												const timeAgo = new Date(
+													conversation._creationTime,
+												);
+												const now = new Date();
+												const diffInMinutes = Math.floor(
+													(now.getTime() - timeAgo.getTime()) / (1000 * 60),
+												);
+												const diffInHours = Math.floor(diffInMinutes / 60);
+												const diffInDays = Math.floor(diffInHours / 24);
+
+												let timeDisplay = "";
+												if (diffInMinutes < 60) {
+													timeDisplay = `${diffInMinutes} minutes ago`;
+												} else if (diffInHours < 24) {
+													timeDisplay = `${diffInHours} hours ago`;
+												} else {
+													timeDisplay = `${diffInDays} days ago`;
+												}
+
+												return (
+													<div
+														key={conversation._id}
+														onClick={() =>
+															setCurrentConversationId(conversation._id)
+														}
+														className={`p-5 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+															isSelected
+																? "bg-blue-50 border-l-4 border-l-blue-500"
+																: ""
+														}`}
+													>
+														<div className="flex justify-between items-start mb-3">
+															<p className="text-sm font-medium text-gray-900 truncate pr-2 leading-relaxed">
+																{conversation.title ||
+																	"Untitled Conversation"}
+															</p>
+															<button
+																onClick={(e) => {
+																	e.stopPropagation();
+																	// TODO: Implement delete
+																	console.log(
+																		"Delete conversation:",
+																		conversation._id,
+																	);
+																}}
+																className="text-gray-400 hover:text-red-600 transition-colors flex-shrink-0"
+															>
+																<svg
+																	className="h-4 w-4"
+																	fill="none"
+																	stroke="currentColor"
+																	viewBox="0 0 24 24"
+																>
+																	<path
+																		strokeLinecap="round"
+																		strokeLinejoin="round"
+																		strokeWidth={2}
+																		d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+																	/>
+																</svg>
+															</button>
+														</div>
+														<p className="text-xs text-gray-500 mb-3">
+															{timeDisplay}
+														</p>
+														<div className="flex items-center gap-2">
+															<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+																Source: Playground
+															</span>
+														</div>
+													</div>
+												);
+											})}
+										</div>
+									</div>
+
+									{/* Conversation Content */}
+									<div className="lg:col-span-3 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+										{currentConversationId ? (
+											<div className="h-full flex flex-col">
+												<div className="bg-gray-50 px-6 py-5 border-b border-gray-200">
+													<div className="flex items-center justify-between">
+														<div>
+															<h4 className="text-xl font-medium text-gray-900">
+																{conversations.find(
+																	(c) => c._id === currentConversationId,
+																)?.title || "Conversation Details"}
+															</h4>
+															<p className="text-sm text-gray-500 mt-1">
+																Started{" "}
+																{new Date(
+																	conversations.find(
+																		(c) => c._id === currentConversationId,
+																	)?._creationTime || 0,
+																).toLocaleString()}
+															</p>
+														</div>
+														<div className="flex items-center gap-2">
+															<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+																Active
+															</span>
+														</div>
+													</div>
+												</div>
+												<div className="flex-1 overflow-hidden">
+													<ChatWidget
+														agentId={agent._id as any}
+														conversationId={currentConversationId}
+														onConversationCreate={handleConversationCreate}
+														height="100%"
+														className="border-0 h-full"
+													/>
+												</div>
+											</div>
+										) : (
+											<div className="h-full flex items-center justify-center">
+												<div className="text-center">
+													<MessageSquare className="mx-auto h-20 w-20 text-gray-400" />
+													<h3 className="mt-6 text-xl font-medium text-gray-900">
+														Select a conversation
+													</h3>
+													<p className="mt-3 text-sm text-gray-500 max-w-sm">
+														Choose a conversation from the list to view its
+														details and chat history.
+													</p>
+												</div>
+											</div>
+										)}
+									</div>
+								</div>
+							)}
+
+							{/* Conversation Stats */}
+							{conversations && conversations.length > 0 && (
+								<div className="bg-gray-50 border border-gray-200 rounded-lg p-8">
+									<h4 className="text-lg font-medium text-gray-900 mb-6">
+										Conversation Statistics
+									</h4>
+									<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+										<div className="text-center">
+											<div className="text-3xl font-bold text-blue-600">
+												{conversations.length}
+											</div>
+											<div className="text-sm text-gray-500 mt-1">
+												Total Conversations
+											</div>
+										</div>
+										<div className="text-center">
+											<div className="text-3xl font-bold text-green-600">
+												{
+													conversations.filter((c) => {
+														const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
+														return c._creationTime > dayAgo;
+													}).length
+												}
+											</div>
+											<div className="text-sm text-gray-500 mt-1">
+												Last 24 Hours
+											</div>
+										</div>
+										<div className="text-center">
+											<div className="text-3xl font-bold text-purple-600">
+												{
+													conversations.filter((c) => {
+														const weekAgo =
+															Date.now() - 7 * 24 * 60 * 60 * 1000;
+														return c._creationTime > weekAgo;
+													}).length
+												}
+											</div>
+											<div className="text-sm text-gray-500 mt-1">
+												Last 7 Days
+											</div>
+										</div>
+									</div>
+								</div>
+							)}
+						</div>
+					)}
+
+					{activeTab === "deploy" && (
+						<div className="space-y-8">
+							<div>
+								<h3 className="text-lg font-medium text-gray-900">
+									Deploy Your Agent
+								</h3>
+								<p className="mt-1 text-sm text-gray-600">
+									Share your agent with the world using these deployment
+									options.
+								</p>
+							</div>
+
+							{/* Chat Bubble Widget */}
+							<div className="bg-white border border-gray-200 rounded-lg p-6">
+								<div className="flex items-start justify-between">
+									<div className="flex items-start gap-3">
+										<MessageSquare className="h-5 w-5 text-blue-600 mt-0.5" />
+										<div>
+											<h4 className="text-sm font-medium text-gray-900">
+												Chat Bubble Widget
+												<span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+													Recommended
+												</span>
+											</h4>
+											<p className="text-sm text-gray-600 mt-1">
+												Floating chat bubble that appears on your website.
+												Easy one-line installation.
+											</p>
+										</div>
+									</div>
+									<a
+										href={`${baseUrl}/widget-demo/${agent._id}`}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-sm text-blue-600 hover:text-blue-800"
+									>
+										Preview →
+									</a>
+								</div>
+								<div className="mt-4">
+									<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 whitespace-pre-wrap">
+										{`<script>
+(function(){
+  if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
+    var l=document.createElement("script");
+    l.src="${baseUrl}/widget.js";
+    l.onload=function(){
+      ChatboxWidget.init({
+        agentId: "${agent._id}",
+        primaryColor: "${primaryColor}"
+      });
+    };
+    document.head.appendChild(l);
+  }
+})();
+</script>`}
+									</div>
+									<button
+										onClick={() =>
+											copyToClipboard(
+												`<script>
+(function(){
+  if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
+    var l=document.createElement("script");
+    l.src="${baseUrl}/widget.js";
+    l.onload=function(){
+      ChatboxWidget.init({
+        agentId: "${agent._id}",
+        primaryColor: "${primaryColor}"
+      });
+    };
+    document.head.appendChild(l);
+  }
+})();
+</script>`,
+												"bubble",
+											)
+										}
+										className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+									>
+										{copiedCode === "bubble" ? (
+											<>
+												<Check className="h-4 w-4" />
+												Copied!
+											</>
+										) : (
+											<>
+												<Copy className="h-4 w-4" />
+												Copy Widget Code
+											</>
+										)}
+									</button>
+								</div>
+							</div>
+
+							{/* Public Chat Link */}
+							<div className="bg-white border border-gray-200 rounded-lg p-6">
+								<div className="flex items-start justify-between">
+									<div className="flex items-start gap-3">
+										<ExternalLink className="h-5 w-5 text-green-600 mt-0.5" />
+										<div>
+											<h4 className="text-sm font-medium text-gray-900">
+												Public Chat Link
+											</h4>
+											<p className="text-sm text-gray-600 mt-1">
+												Direct link for users to chat with your agent
+											</p>
+										</div>
+									</div>
+									<a
+										href={publicChatUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-sm text-blue-600 hover:text-blue-800"
+									>
+										Preview →
+									</a>
+								</div>
+								<div className="mt-4">
+									<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 break-all">
+										{publicChatUrl}
+									</div>
+									<button
+										onClick={() => copyToClipboard(publicChatUrl, "public")}
+										className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+									>
+										{copiedCode === "public" ? (
+											<>
+												<Check className="h-4 w-4 text-green-600" />
+												Copied!
+											</>
+										) : (
+											<>
+												<Copy className="h-4 w-4" />
+												Copy Link
+											</>
+										)}
+									</button>
+								</div>
+							</div>
+
+							{/* Iframe Embed */}
+							<div className="bg-white border border-gray-200 rounded-lg p-6">
+								<div className="flex items-start justify-between">
+									<div className="flex items-start gap-3">
+										<Globe className="h-5 w-5 text-purple-600 mt-0.5" />
+										<div>
+											<h4 className="text-sm font-medium text-gray-900">
+												Website Embed Code
+											</h4>
+											<p className="text-sm text-gray-600 mt-1">
+												Embed the chat widget directly on your website
+											</p>
+										</div>
+									</div>
+									<a
+										href={embedUrl}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-sm text-blue-600 hover:text-blue-800"
+									>
+										Preview →
+									</a>
+								</div>
+								<div className="mt-4">
+									<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 whitespace-pre-wrap">
+										{iframeCode}
+									</div>
+									<button
+										onClick={() => copyToClipboard(iframeCode, "iframe")}
+										className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+									>
+										{copiedCode === "iframe" ? (
+											<>
+												<Check className="h-4 w-4 text-green-600" />
+												Copied!
+											</>
+										) : (
+											<>
+												<Copy className="h-4 w-4" />
+												Copy Embed Code
+											</>
+										)}
+									</button>
+								</div>
+							</div>
+
+							{/* Customization Options */}
+							<div className="bg-white border border-gray-200 rounded-lg p-6">
+								<div className="flex items-start gap-3 mb-6">
+									<Settings className="h-5 w-5 text-blue-600 mt-0.5" />
+									<div>
+										<h4 className="text-sm font-medium text-gray-900">
+											Customize Widget
+										</h4>
+										<p className="text-sm text-gray-600 mt-1">
+											Adjust the appearance and size of your chat widget
+										</p>
+									</div>
+								</div>
+
+								<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+									{/* Width */}
+									<div className="space-y-2">
+										<Label htmlFor="width" className="text-sm font-medium">
+											Width
+										</Label>
+										<Select
+											value={embedWidth}
+											onValueChange={setEmbedWidth}
+										>
+											<SelectTrigger>
+												<SelectValue />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="300">300px</SelectItem>
+												<SelectItem value="400">400px</SelectItem>
+												<SelectItem value="500">500px</SelectItem>
+												<SelectItem value="100%">100%</SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+
+									{/* Height */}
+									<div className="space-y-2">
+										<Label htmlFor="height" className="text-sm font-medium">
+											Height
+										</Label>
+										<Select
+											value={embedHeight}
+											onValueChange={setEmbedHeight}
+										>
+											<SelectTrigger>
+												<SelectValue />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="400">400px</SelectItem>
+												<SelectItem value="500">500px</SelectItem>
+												<SelectItem value="600">600px</SelectItem>
+												<SelectItem value="700">700px</SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+
+									{/* Primary Color */}
+									<div className="space-y-2">
+										<Label htmlFor="color" className="text-sm font-medium">
+											Primary Color
+										</Label>
+										<div className="flex gap-2">
+											<Input
+												type="color"
+												value={primaryColor}
+												onChange={(e) => setPrimaryColor(e.target.value)}
+												className="w-12 h-10 p-1 border rounded"
+											/>
+											<Input
+												type="text"
+												value={primaryColor}
+												onChange={(e) => setPrimaryColor(e.target.value)}
+												placeholder="#2563eb"
+												className="flex-1"
+											/>
+										</div>
+									</div>
+								</div>
+
+								{/* Preview */}
+								<div className="mt-6 p-4 bg-gray-50 rounded-lg">
+									<h5 className="text-sm font-medium text-gray-900 mb-2">
+										Preview
+									</h5>
+									<div className="text-xs text-gray-600 mb-3">
+										Widget size: {embedWidth} × {embedHeight}
+									</div>
+									<div
+										className="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm"
+										style={{
+											width:
+												embedWidth === "100%" ? "100%" : `${embedWidth}px`,
+											height: "120px",
+											maxWidth: "100%",
+										}}
+									>
+										<div className="text-center">
+											<Bot
+												className="h-6 w-6 mx-auto mb-1"
+												style={{ color: primaryColor }}
+											/>
+											<div>Chat Widget Preview</div>
+											<div className="text-xs">
+												{embedWidth} × {embedHeight}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							{/* Usage Tips */}
+							<div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+								<div className="flex items-start gap-3">
+									<Settings className="h-5 w-5 text-blue-600 mt-0.5" />
+									<div>
+										<h4 className="text-sm font-medium text-blue-800">
+											Usage Tips
+										</h4>
+										<div className="mt-3 text-sm text-blue-700 space-y-2">
+											<p>
+												<strong>Responsive Design:</strong> Use 100% width
+												for mobile-friendly widgets
+											</p>
+											<p>
+												<strong>Color Matching:</strong> Choose a primary
+												color that matches your brand
+											</p>
+											<p>
+												<strong>Size Guidelines:</strong>
+											</p>
+											<ul className="mt-1 space-y-1 ml-4">
+												<li>• Desktop sidebar: 300-400px wide</li>
+												<li>• Full-width mobile: 100% × 500px</li>
+												<li>• Popup/modal: 400-500px × 600px</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							{/* Integration Instructions */}
+							<div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+								<h4 className="text-sm font-medium text-gray-900 mb-3">
+									Integration Instructions
+								</h4>
+								<div className="space-y-3 text-sm text-gray-600">
+									<div>
+										<strong>1. Copy the embed code</strong> from above
+									</div>
+									<div>
+										<strong>2. Paste it into your website's HTML</strong>{" "}
+										where you want the chat widget to appear
+									</div>
+									<div>
+										<strong>3. Adjust the width and height</strong> as
+										needed for your layout
+									</div>
+									<div>
+										<strong>4. Test the integration</strong> to ensure it
+										works correctly
+									</div>
+								</div>
+							</div>
+						</div>
+					)}
+
+					{activeTab === "settings" && <SettingsPanel agent={agent} />}
+				</div>
+			</div>
+		</div>
 	);
 }
