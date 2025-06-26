@@ -66,12 +66,19 @@ export const createKnowledgeEntry = mutation({
     agentId: v.id("agents"),
     title: v.optional(v.string()),
     content: v.string(),
-    source: v.string(),
-    sourceMetadata: v.optional(v.object({
-      filename: v.optional(v.string()),
-      url: v.optional(v.string()),
-      chunkIndex: v.optional(v.number()),
-    })),
+    source: v.union(
+      v.literal("text"),
+      v.literal("document"),
+      v.literal("url"),
+      v.literal("qna"),
+    ),
+    sourceMetadata: v.optional(
+      v.object({
+        filename: v.optional(v.string()),
+        url: v.optional(v.string()),
+        chunkIndex: v.optional(v.number()),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
     // Get the agent
@@ -262,7 +269,7 @@ export const createKnowledgeFromText = internalMutation({
   args: {
     agentId: v.id("agents"),
     text: v.string(),
-    source: v.string(),
+    source: v.union(v.literal("text"), v.literal("document"), v.literal("url")),
     sourceMetadata: v.object({
       filename: v.optional(v.string()),
     }),
@@ -277,15 +284,17 @@ export const createKnowledgeFromText = internalMutation({
     
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
-      const title = chunks.length > 1 
-        ? `${args.sourceMetadata.filename} (Part ${i + 1}/${chunks.length})`
-        : `Document: ${args.sourceMetadata.filename}`;
+      const title =
+        chunks.length > 1
+          ? `${args.sourceMetadata.filename} (Part ${i + 1}/${chunks.length})`
+          : `Document: ${args.sourceMetadata.filename}`;
       
       const knowledgeEntryId = await ctx.db.insert("knowledgeEntries", {
         agentId: args.agentId,
         title,
         content: chunk,
         source: args.source,
+        fileId: args.fileId,
         sourceMetadata: {
           ...args.sourceMetadata,
           chunkIndex: chunks.length > 1 ? i : undefined,
@@ -321,13 +330,20 @@ export const addKnowledgeEntry = mutation({
     agentId: v.id("agents"),
     title: v.optional(v.string()),
     content: v.string(),
-    source: v.string(),
-    sourceMetadata: v.optional(v.object({
-      filename: v.optional(v.string()),
-      url: v.optional(v.string()),
-      chunkIndex: v.optional(v.number()),
-      totalChunks: v.optional(v.number()),
-    })),
+    source: v.union(
+      v.literal("text"),
+      v.literal("document"),
+      v.literal("url"),
+      v.literal("qna"),
+    ),
+    sourceMetadata: v.optional(
+      v.object({
+        filename: v.optional(v.string()),
+        url: v.optional(v.string()),
+        chunkIndex: v.optional(v.number()),
+        totalChunks: v.optional(v.number()),
+      }),
+    ),
   },
   handler: async (ctx, args) => {
     // Get the agent
@@ -418,5 +434,55 @@ export const getKnowledgeEntriesForUser = query({
     }
 
     return allEntries;
+  },
+});
+
+// Migration function to fix knowledge entries missing fileId
+export const fixMissingFileIds = mutation({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    // Get the agent
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) {
+      throw new Error("Agent not found");
+    }
+    
+    // Validate user has editor access
+    await validateOrganizationAccess(ctx, agent.organizationId, "editor");
+    
+    // Get all files for this agent
+    const files = await ctx.db
+      .query("files")
+      .withIndex("agentId", (q) => q.eq("agentId", args.agentId))
+      .collect();
+    
+    // Get all knowledge entries for this agent that are missing fileId
+    const knowledgeEntries = await ctx.db
+      .query("knowledgeEntries")
+      .withIndex("agentId", (q) => q.eq("agentId", args.agentId))
+      .filter((q) => q.eq(q.field("source"), "document"))
+      .collect();
+    
+    let fixed = 0;
+    
+    for (const entry of knowledgeEntries) {
+      // Skip if already has fileId
+      if (entry.fileId) continue;
+      
+      // Find matching file by filename
+      const filename = entry.sourceMetadata?.filename;
+      if (!filename) continue;
+      
+      const matchingFile = files.find(file => file.filename === filename);
+      if (matchingFile) {
+        await ctx.db.patch(entry._id, { fileId: matchingFile._id });
+        fixed++;
+        console.log(`Fixed knowledge entry ${entry._id} with fileId ${matchingFile._id}`);
+      }
+    }
+    
+    return { message: `Fixed ${fixed} knowledge entries`, fixed };
   },
 }); 

@@ -29,10 +29,10 @@ function AgentDeploy() {
 	const { agentId } = Route.useParams();
 	const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-	// Customization options
+	// Customization state
+	const [primaryColor, setPrimaryColor] = useState("#3B82F6");
 	const [embedWidth, setEmbedWidth] = useState("400");
 	const [embedHeight, setEmbedHeight] = useState("600");
-	const [primaryColor, setPrimaryColor] = useState("#2563eb");
 
 	// Get agent data
 	const agents = useQuery(api.agents.getAgentsForUser);
@@ -84,47 +84,46 @@ function AgentDeploy() {
 	}
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-4">
 			<div>
-				<h3 className="text-2xl font-bold text-gray-900">
+				<h3 className="text-xl font-semibold text-gray-900">
 					Deploy Your Agent
 				</h3>
-				<p className="mt-1 text-gray-600">
-					Share your agent with the world using these deployment
-					options.
+				<p className="mt-1 text-sm text-gray-600">
+					Share your agent with the world using these deployment options.
 				</p>
 			</div>
 
-			{/* Chat Bubble Widget */}
-			<div className="bg-white shadow rounded-lg p-6">
-				<div className="flex items-start justify-between">
-					<div className="flex items-start gap-3">
-						<MessageSquare className="h-5 w-5 text-blue-600 mt-0.5" />
-						<div>
-							<h4 className="text-sm font-medium text-gray-900">
-								Chat Bubble Widget
-								<span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+			{/* Embed */}
+			<div className="space-y-3">
+				<h4 className="text-base font-medium text-gray-900">Embed</h4>
+				<div className="flex gap-4">
+					{/* Chat Bubble Widget */}
+					<div className="flex-1 min-w-0 bg-white border rounded-lg p-4 border-blue-500">
+						<div className="flex items-center justify-between mb-3">
+							<div className="flex items-center gap-2">
+								{/* <input type="radio" name="embed-type" defaultChecked className="w-4 h-4 text-blue-600" /> */}
+								<span className="text-sm font-medium">Embed a chat bubble</span>
+								<span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
 									Recommended
 								</span>
-							</h4>
-							<p className="text-sm text-gray-600 mt-1">
-								Floating chat bubble that appears on your website.
-								Easy one-line installation.
-							</p>
+							</div>
+							<a
+								href={`${baseUrl}/widget-demo/${agent._id}`}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-xs text-blue-600 hover:text-blue-800"
+							>
+								Preview →
+							</a>
 						</div>
-					</div>
-					<a
-						href={`${baseUrl}/widget-demo/${agent._id}`}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="text-sm text-blue-600 hover:text-blue-800"
-					>
-						Preview →
-					</a>
-				</div>
-				<div className="mt-4">
-					<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 whitespace-pre-wrap">
-						{`<script>
+						<p className="text-xs text-gray-600 mb-3">
+							Embed a chat bubble on your website. Allows you to use all the advanced features of the agent. Explore the{" "}
+							<a href="#" className="text-blue-600 hover:underline">docs.</a>
+						</p>
+						<div className="bg-gray-50 rounded p-2 mb-2 h-16 overflow-x-auto overflow-y-hidden">
+							<code className="text-xs text-gray-800 font-mono whitespace-nowrap">
+								{`<script>
 (function(){
   if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
     window.ChatboxWidget=(...arguments)=>{
@@ -149,11 +148,12 @@ function AgentDeploy() {
   else{window.addEventListener("load",onLoad)}
 })();
 </script>`}
-					</div>
-					<button
-						onClick={() =>
-							copyToClipboard(
-								`<script>
+							</code>
+						</div>
+						<button
+							onClick={() =>
+								copyToClipboard(
+									`<script>
 (function(){
   if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
     window.ChatboxWidget=(...arguments)=>{
@@ -178,279 +178,120 @@ function AgentDeploy() {
   else{window.addEventListener("load",onLoad)}
 })();
 </script>`,
-								"bubble",
-							)
-						}
-						className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
-					>
-						{copiedCode === "bubble" ? (
-							<>
-								<Check className="h-4 w-4" />
-								Copied!
-							</>
-						) : (
-							<>
-								<Copy className="h-4 w-4" />
-								Copy Widget Code
-							</>
-						)}
-					</button>
-				</div>
-			</div>
+									"bubble",
+								)
+							}
+							className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-gray-900 rounded hover:bg-gray-800"
+						>
+							{copiedCode === "bubble" ? (
+								<>
+									<Check className="h-3 w-3" />
+									Copied!
+								</>
+							) : (
+								<>
+									<Copy className="h-3 w-3" />
+									Copy
+								</>
+							)}
+						</button>
+					</div>
 
-			{/* Public Chat Link */}
-			<div className="bg-white shadow rounded-lg p-6">
-				<div className="flex items-start justify-between">
-					<div className="flex items-start gap-3">
-						<ExternalLink className="h-5 w-5 text-green-600 mt-0.5" />
-						<div>
-							<h4 className="text-sm font-medium text-gray-900">
-								Public Chat Link
-							</h4>
-							<p className="text-sm text-gray-600 mt-1">
-								Direct link for users to chat with your agent
-							</p>
+					{/* Iframe Embed */}
+					<div className="flex-1 min-w-0 bg-white border rounded-lg p-4">
+						<div className="flex items-center justify-between mb-3">
+							<div className="flex items-center gap-2">
+								{/* <input type="radio" name="embed-type" className="w-4 h-4 text-blue-600" /> */}
+								<span className="text-sm font-medium">Embed the iframe directly</span>
+							</div>
+							<a
+								href={embedUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-xs text-blue-600 hover:text-blue-800"
+							>
+								Preview →
+							</a>
 						</div>
-					</div>
-					<a
-						href={publicChatUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="text-sm text-blue-600 hover:text-blue-800"
-					>
-						Preview →
-					</a>
-				</div>
-				<div className="mt-4">
-					<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 break-all">
-						{publicChatUrl}
-					</div>
-					<button
-						onClick={() => copyToClipboard(publicChatUrl, "public")}
-						className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-					>
-						{copiedCode === "public" ? (
-							<>
-								<Check className="h-4 w-4 text-green-600" />
-								Copied!
-							</>
-						) : (
-							<>
-								<Copy className="h-4 w-4" />
-								Copy Link
-							</>
-						)}
-					</button>
-				</div>
-			</div>
-
-			{/* Iframe Embed */}
-			<div className="bg-white shadow rounded-lg p-6">
-				<div className="flex items-start justify-between">
-					<div className="flex items-start gap-3">
-						<Globe className="h-5 w-5 text-purple-600 mt-0.5" />
-						<div>
-							<h4 className="text-sm font-medium text-gray-900">
-								Website Embed Code
-							</h4>
-							<p className="text-sm text-gray-600 mt-1">
-								Embed the chat widget directly on your website
-							</p>
-						</div>
-					</div>
-					<a
-						href={embedUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="text-sm text-blue-600 hover:text-blue-800"
-					>
-						Preview →
-					</a>
-				</div>
-				<div className="mt-4">
-					<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 whitespace-pre-wrap">
-						{iframeCode}
-					</div>
-					<button
-						onClick={() => copyToClipboard(iframeCode, "iframe")}
-						className="mt-3 inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-					>
-						{copiedCode === "iframe" ? (
-							<>
-								<Check className="h-4 w-4 text-green-600" />
-								Copied!
-							</>
-						) : (
-							<>
-								<Copy className="h-4 w-4" />
-								Copy Embed Code
-							</>
-						)}
-					</button>
-				</div>
-			</div>
-
-			{/* Customization Options */}
-			<div className="bg-white shadow rounded-lg p-6">
-				<div className="flex items-start gap-3 mb-6">
-					<Settings className="h-5 w-5 text-blue-600 mt-0.5" />
-					<div>
-						<h4 className="text-sm font-medium text-gray-900">
-							Customize Widget
-						</h4>
-						<p className="text-sm text-gray-600 mt-1">
-							Adjust the appearance and size of your chat widget
+						<p className="text-xs text-gray-600 mb-3">
+							Add the agent anywhere on your website
 						</p>
+						<div className="bg-gray-50 rounded p-2 mb-2 h-16 overflow-x-auto overflow-y-hidden">
+							<code className="text-xs text-gray-800 font-mono whitespace-nowrap">
+								{iframeCode}
+							</code>
+						</div>
+						<button
+							onClick={() => copyToClipboard(iframeCode, "iframe")}
+							className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-gray-900 rounded hover:bg-gray-800"
+						>
+							{copiedCode === "iframe" ? (
+								<>
+									<Check className="h-3 w-3" />
+									Copied!
+								</>
+							) : (
+								<>
+									<Copy className="h-3 w-3" />
+									Copy
+								</>
+							)}
+						</button>
 					</div>
 				</div>
+			</div>
 
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-					{/* Width */}
-					<div className="space-y-2">
-						<Label htmlFor="width" className="text-sm font-medium">
-							Width
-						</Label>
-						<Select
-							value={embedWidth}
-							onValueChange={setEmbedWidth}
-						>
-							<SelectTrigger>
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="300">300px</SelectItem>
-								<SelectItem value="400">400px</SelectItem>
-								<SelectItem value="500">500px</SelectItem>
-								<SelectItem value="100%">100%</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
+			{/* Configuration */}
+			<div className="space-y-3">
+				<h4 className="text-base font-medium text-gray-900">Configuration</h4>
 
-					{/* Height */}
-					<div className="space-y-2">
-						<Label htmlFor="height" className="text-sm font-medium">
-							Height
-						</Label>
-						<Select
-							value={embedHeight}
-							onValueChange={setEmbedHeight}
-						>
-							<SelectTrigger>
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="400">400px</SelectItem>
-								<SelectItem value="500">500px</SelectItem>
-								<SelectItem value="600">600px</SelectItem>
-								<SelectItem value="700">700px</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-
-					{/* Primary Color */}
-					<div className="space-y-2">
-						<Label htmlFor="color" className="text-sm font-medium">
-							Primary Color
-						</Label>
-						<div className="flex gap-2">
-							<Input
-								type="color"
-								value={primaryColor}
-								onChange={(e) => setPrimaryColor(e.target.value)}
-								className="w-12 h-10 p-1 border rounded"
-							/>
-							<Input
-								type="text"
-								value={primaryColor}
-								onChange={(e) => setPrimaryColor(e.target.value)}
-								placeholder="#2563eb"
-								className="flex-1"
-							/>
+				<div className="bg-white border rounded-lg p-4 space-y-4">
+					<div>
+						<h5 className="text-sm font-medium text-gray-700 mb-2">On the site</h5>
+						<div className="text-xs text-gray-600 font-mono bg-gray-50 p-2 rounded">
+							{new URL(baseUrl).hostname}
 						</div>
 					</div>
-				</div>
 
-				{/* Preview */}
-				<div className="mt-6 p-4 bg-gray-50 rounded-lg">
-					<h5 className="text-sm font-medium text-gray-900 mb-2">
-						Preview
-					</h5>
-					<div className="text-xs text-gray-600 mb-3">
-						Widget size: {embedWidth} × {embedHeight}
-					</div>
-					<div
-						className="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm"
-						style={{
-							width:
-								embedWidth === "100%" ? "100%" : `${embedWidth}px`,
-							height: "120px",
-							maxWidth: "100%",
-						}}
-					>
-						<div className="text-center">
-							<Bot
-								className="h-6 w-6 mx-auto mb-1"
-								style={{ color: primaryColor }}
-							/>
-							<div>Chat Widget Preview</div>
-							<div className="text-xs">
-								{embedWidth} × {embedHeight}
+					<div className="space-y-3">
+						<div className="flex items-center gap-4">
+							<div className="flex-1">
+								<Label htmlFor="width" className="text-xs text-gray-600">Width</Label>
+								<Input
+									id="width"
+									value={embedWidth}
+									onChange={(e) => setEmbedWidth(e.target.value)}
+									className="h-8 text-xs"
+								/>
+							</div>
+							<div className="flex-1">
+								<Label htmlFor="height" className="text-xs text-gray-600">Height</Label>
+								<Input
+									id="height"
+									value={embedHeight}
+									onChange={(e) => setEmbedHeight(e.target.value)}
+									className="h-8 text-xs"
+								/>
 							</div>
 						</div>
-					</div>
-				</div>
-			</div>
 
-			{/* Usage Tips */}
-			<div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-				<div className="flex items-start gap-3">
-					<Settings className="h-5 w-5 text-blue-600 mt-0.5" />
-					<div>
-						<h4 className="text-sm font-medium text-blue-800">
-							Usage Tips
-						</h4>
-						<div className="mt-3 text-sm text-blue-700 space-y-2">
-							<p>
-								<strong>Responsive Design:</strong> Use 100% width
-								for mobile-friendly widgets
-							</p>
-							<p>
-								<strong>Color Matching:</strong> Choose a primary
-								color that matches your brand
-							</p>
-							<p>
-								<strong>Size Guidelines:</strong>
-							</p>
-							<ul className="mt-1 space-y-1 ml-4">
-								<li>• Desktop sidebar: 300-400px wide</li>
-								<li>• Full-width mobile: 100% × 500px</li>
-								<li>• Popup/modal: 400-500px × 600px</li>
-							</ul>
+						<div>
+							<Label htmlFor="color" className="text-xs text-gray-600">Primary Color</Label>
+							<div className="flex items-center gap-2">
+								<Input
+									id="color"
+									type="color"
+									value={primaryColor}
+									onChange={(e) => setPrimaryColor(e.target.value)}
+									className="h-8 w-16"
+								/>
+								<Input
+									value={primaryColor}
+									onChange={(e) => setPrimaryColor(e.target.value)}
+									className="h-8 text-xs flex-1"
+								/>
+							</div>
 						</div>
-					</div>
-				</div>
-			</div>
-
-			{/* Integration Instructions */}
-			<div className="bg-white shadow rounded-lg p-6">
-				<h4 className="text-sm font-medium text-gray-900 mb-3">
-					Integration Instructions
-				</h4>
-				<div className="space-y-3 text-sm text-gray-600">
-					<div>
-						<strong>1. Copy the embed code</strong> from above
-					</div>
-					<div>
-						<strong>2. Paste it into your website's HTML</strong>{" "}
-						where you want the chat widget to appear
-					</div>
-					<div>
-						<strong>3. Adjust the width and height</strong> as
-						needed for your layout
-					</div>
-					<div>
-						<strong>4. Test the integration</strong> to ensure it
-						works correctly
 					</div>
 				</div>
 			</div>

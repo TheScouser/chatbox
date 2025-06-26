@@ -95,7 +95,12 @@ export default defineSchema({
     agentId: v.id("agents"),
     title: v.optional(v.string()),
     content: v.string(),
-    source: v.string(), // "text", "document", "url"
+    source: v.union(
+      v.literal("text"),
+      v.literal("document"),
+      v.literal("url"),
+      v.literal("qna"),
+    ),
     sourceMetadata: v.optional(v.object({
       filename: v.optional(v.string()),
       url: v.optional(v.string()),
@@ -103,6 +108,7 @@ export default defineSchema({
       totalChunks: v.optional(v.number()),
     })),
     embedding: v.optional(v.array(v.number())),
+    fileId: v.optional(v.id("files")),
   }).index("agentId", ["agentId"])
     .vectorIndex("byEmbedding", {
       vectorField: "embedding",

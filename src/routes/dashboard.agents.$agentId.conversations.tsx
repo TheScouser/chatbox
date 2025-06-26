@@ -179,11 +179,10 @@ function AgentConversations() {
 										onClick={() =>
 											setCurrentConversationId(conversation._id)
 										}
-										className={`p-5 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-											isSelected
+										className={`p-5 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${isSelected
 												? "bg-blue-50 border-l-4 border-l-blue-500"
 												: ""
-										}`}
+											}`}
 									>
 										<div className="flex justify-between items-start mb-3">
 											<p className="text-sm font-medium text-gray-900 truncate pr-2 leading-relaxed">
@@ -282,52 +281,6 @@ function AgentConversations() {
 								</div>
 							</div>
 						)}
-					</div>
-				</div>
-			)}
-
-			{/* Conversation Stats */}
-			{conversations && conversations.length > 0 && (
-				<div className="bg-white shadow rounded-lg p-6">
-					<h4 className="text-lg font-medium text-gray-900 mb-6">
-						Conversation Statistics
-					</h4>
-					<div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-						<div className="text-center">
-							<div className="text-3xl font-bold text-blue-600">
-								{conversations.length}
-							</div>
-							<div className="text-sm text-gray-500 mt-1">
-								Total Conversations
-							</div>
-						</div>
-						<div className="text-center">
-							<div className="text-3xl font-bold text-green-600">
-								{
-									conversations.filter((c) => {
-										const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
-										return c._creationTime > dayAgo;
-									}).length
-								}
-							</div>
-							<div className="text-sm text-gray-500 mt-1">
-								Last 24 Hours
-							</div>
-						</div>
-						<div className="text-center">
-							<div className="text-3xl font-bold text-purple-600">
-								{
-									conversations.filter((c) => {
-										const weekAgo =
-											Date.now() - 7 * 24 * 60 * 60 * 1000;
-										return c._creationTime > weekAgo;
-									}).length
-								}
-							</div>
-							<div className="text-sm text-gray-500 mt-1">
-								Last 7 Days
-							</div>
-						</div>
 					</div>
 				</div>
 			)}

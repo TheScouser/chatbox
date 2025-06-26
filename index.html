@@ -6,10 +6,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="/favicon.ico" />
   <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Web site created using create-tsrouter-app" />
+  <meta name="description" content="Chatbox - Chat with your data" />
   <link rel="apple-touch-icon" href="/logo192.png" />
   <link rel="manifest" href="/manifest.json" />
-  <title>Create TanStack App - chatbox</title>
+  <title>Chatbox</title>
+  <script>
+    (function () {
+      if (!window.ChatboxWidget || window.ChatboxWidget("getState") !== "initialized") {
+        window.ChatboxWidget = (...arguments) => {
+          if (!window.ChatboxWidget.q) { window.ChatboxWidget.q = [] }
+          window.ChatboxWidget.q.push(arguments)
+        };
+        window.ChatboxWidget = new Proxy(window.ChatboxWidget, {
+          get(target, prop) {
+            if (prop === "q") { return target.q }
+            return (...args) => target(prop, ...args)
+          }
+        })
+      }
+      const onLoad = function () {
+        const script = document.createElement("script");
+        script.src = "http://localhost:3000/widget.min.js";
+        script.id = "jd78n9wcg26t5rwf0ha12mt9md7h3hxs";
+        script.domain = "localhost";
+        document.body.appendChild(script)
+      };
+      if (document.readyState === "complete") { onLoad() }
+      else { window.addEventListener("load", onLoad) }
+    })();
+  </script>
 </head>
 
 <body>
