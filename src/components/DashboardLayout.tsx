@@ -14,10 +14,12 @@ import {
 	BarChart3,
 	CreditCard,
 	TrendingUp,
+	Building2,
 } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { useOrganization } from "../contexts/OrganizationContext";
 
 interface DashboardLayoutProps {
 	children: React.ReactNode;
@@ -27,7 +29,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [showAgentsDropdown, setShowAgentsDropdown] = useState(false);
+	const [showOrganizationsDropdown, setShowOrganizationsDropdown] = useState(false);
 	const [agentSearch, setAgentSearch] = useState("");
+	const [organizationSearch, setOrganizationSearch] = useState("");
+
+	// Use organization context
+	const {
+		selectedOrganizationId,
+		setSelectedOrganizationId,
+		currentOrganization,
+		organizations
+	} = useOrganization();
 
 	// Fetch agents for the selector
 	const agents = useQuery(api.agents.getAgentsForUser);
@@ -74,17 +86,40 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 		const agentIdMatch = location.pathname.match(/\/dashboard\/agents\/([^\/]+)/);
 		if (agentIdMatch && agents) {
 			const agentId = agentIdMatch[1];
-			return agents.find(agent => agent._id === agentId);
+			return agents.find((agent: any) => agent._id === agentId);
 		}
 		return null;
 	};
 
 	const currentAgent = getCurrentAgent();
 
-	// Filter agents based on search
-	const filteredAgents = agents?.filter(agent =>
-		agent.name.toLowerCase().includes(agentSearch.toLowerCase())
+	// Update organization selection logic for agent context
+	const getOrganizationForAgent = () => {
+		const currentAgent = getCurrentAgent();
+		if (currentAgent && organizations) {
+			const agentOrg = organizations.find((org: any) => org._id === currentAgent.organizationId);
+			if (agentOrg && agentOrg._id !== selectedOrganizationId) {
+				// Auto-switch to agent's organization if we're viewing an agent from a different org
+				setSelectedOrganizationId(agentOrg._id);
+				return agentOrg;
+			}
+		}
+		return currentOrganization;
+	};
+
+	const displayOrganization = getOrganizationForAgent();
+
+	// Filter organizations based on search
+	const filteredOrganizations = organizations?.filter((org: any) =>
+		org.name.toLowerCase().includes(organizationSearch.toLowerCase())
 	) || [];
+
+	// Filter agents based on search and current organization
+	const filteredAgents = agents?.filter((agent: any) => {
+		const matchesSearch = agent.name.toLowerCase().includes(agentSearch.toLowerCase());
+		const matchesOrg = displayOrganization ? agent.organizationId === displayOrganization._id : true;
+		return matchesSearch && matchesOrg;
+	}) || [];
 
 	// Check if we're on an agent page to show the sidebar
 	const showAgentSidebar = location.pathname.includes('/dashboard/agents/') && currentAgent;
@@ -167,7 +202,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 				<header className="bg-white shadow-sm border-b sticky top-0 z-50">
 					<div className="mx-auto max-w-full px-4 lg:px-6">
 						<div className="flex h-14 items-center justify-between">
-							{/* Logo and Agent Selector */}
+							{/* Logo and Selectors */}
 							<div className="flex items-center space-x-4">
 								<Link
 									to="/dashboard"
@@ -178,6 +213,113 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									</div>
 									<span>AI Agent Platform</span>
 								</Link>
+
+								{/* Organization Selector */}
+								<div className="relative">
+									<button
+										onClick={() => setShowOrganizationsDropdown(!showOrganizationsDropdown)}
+										className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors min-w-[180px] justify-between"
+									>
+										<div className="flex items-center">
+											<Building2 className="w-4 h-4 mr-2 text-gray-500" />
+											<span className="truncate">
+												{displayOrganization ? displayOrganization.name : "Select Organization"}
+											</span>
+										</div>
+										<ChevronDown className="w-4 h-4 text-gray-400" />
+									</button>
+
+									{/* Organization Selector Dropdown */}
+									{showOrganizationsDropdown && (
+										<div className="absolute top-full left-0 mt-1 w-80 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+											<div className="p-3">
+												{/* Search Input */}
+												<div className="relative mb-3">
+													<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+													<input
+														type="text"
+														placeholder="Search organizations..."
+														value={organizationSearch}
+														onChange={(e) => setOrganizationSearch(e.target.value)}
+														className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+													/>
+												</div>
+
+												{/* Organizations Section */}
+												<div className="mb-2">
+													<h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+														Organizations
+													</h4>
+													<div className="max-h-48 overflow-y-auto">
+														{organizations === undefined ? (
+															<div className="space-y-2">
+																{[...Array(3)].map((_, i) => (
+																	<div
+																		key={i}
+																		className="flex items-center px-3 py-2 rounded-lg animate-pulse"
+																	>
+																		<div className="w-4 h-4 bg-gray-200 rounded mr-3"></div>
+																		<div className="h-4 bg-gray-200 rounded flex-1"></div>
+																	</div>
+																))}
+															</div>
+														) : filteredOrganizations.length === 0 ? (
+															<div className="px-3 py-4 text-sm text-gray-500 text-center">
+																{organizationSearch ? "No organizations found" : "No organizations yet"}
+															</div>
+														) : (
+															<div className="space-y-1">
+																{filteredOrganizations.map((org: any) => (
+																	<button
+																		key={org._id}
+																		onClick={() => {
+																			// Use context to change organization
+																			setSelectedOrganizationId(org._id);
+																			setShowOrganizationsDropdown(false);
+																			setOrganizationSearch("");
+																		}}
+																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${displayOrganization?._id === org._id
+																			? "bg-blue-50 text-blue-700"
+																			: "hover:bg-gray-50 text-gray-700"
+																			}`}
+																	>
+																		<Building2 className="w-4 h-4 mr-3 text-gray-400" />
+																		<div className="flex-1 min-w-0">
+																			<div className="font-medium truncate">
+																				{org.name}
+																			</div>
+																			<div className="text-xs text-gray-500 capitalize">
+																				{org.memberRole} • {org.plan}
+																			</div>
+																		</div>
+																		{displayOrganization?._id === org._id && (
+																			<div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+																		)}
+																	</button>
+																))}
+															</div>
+														)}
+													</div>
+												</div>
+
+												{/* Create Organization Button */}
+												<div className="border-t border-gray-100 pt-2">
+													<button
+														onClick={() => {
+															navigate({ to: "/dashboard/settings" }); // Navigate to settings instead since org creation route doesn't exist yet
+															setShowOrganizationsDropdown(false);
+															setOrganizationSearch("");
+														}}
+														className="w-full flex items-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+													>
+														<Plus className="w-4 h-4 mr-3" />
+														<span className="font-medium">Create organization</span>
+													</button>
+												</div>
+											</div>
+										</div>
+									)}
+								</div>
 
 								{/* Agent Selector */}
 								<div className="relative">
@@ -210,6 +352,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 													/>
 												</div>
 
+												{/* Current Organization Filter */}
+												{displayOrganization && (
+													<div className="mb-3 px-3 py-2 bg-blue-50 rounded-lg">
+														<div className="text-xs text-blue-600 font-medium">
+															Showing agents from: {displayOrganization.name}
+														</div>
+													</div>
+												)}
+
 												{/* Agents Section */}
 												<div className="mb-2">
 													<h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
@@ -230,11 +381,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 															</div>
 														) : filteredAgents.length === 0 ? (
 															<div className="px-3 py-4 text-sm text-gray-500 text-center">
-																{agentSearch ? "No agents found" : "No agents yet"}
+																{agentSearch ? "No agents found" : displayOrganization ? `No agents in ${displayOrganization.name}` : "No agents yet"}
 															</div>
 														) : (
 															<div className="space-y-1">
-																{filteredAgents.map((agent) => (
+																{filteredAgents.map((agent: any) => (
 																	<button
 																		key={agent._id}
 																		onClick={() => {

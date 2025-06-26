@@ -1,30 +1,63 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { useOrganization } from "../contexts/OrganizationContext";
+import { useMemo } from "react";
 
 export const Route = createFileRoute("/dashboard/")({
 	component: DashboardOverview,
 });
 
 function DashboardOverview() {
-	// Fetch real data from Convex
-	const agents = useQuery(api.agents.getAgentsForUser);
-	const conversations = useQuery(api.conversations.getConversationsForUser);
-	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForUser);
-	const messages = useQuery(api.conversations.getMessagesForUser);
+	// Get organization context
+	const { currentOrganization } = useOrganization();
+
+	// Fetch data from Convex
+	const allAgents = useQuery(api.agents.getAgentsForUser);
+	const allConversations = useQuery(api.conversations.getConversationsForUser);
+	const allKnowledgeEntries = useQuery(api.knowledge.getKnowledgeForUser);
+	const allMessages = useQuery(api.conversations.getMessagesForUser);
+
+	// Filter data by current organization
+	const { agents, conversations, knowledgeEntries, messages } = useMemo(() => {
+		if (!currentOrganization) {
+			return {
+				agents: allAgents || [],
+				conversations: allConversations || [],
+				knowledgeEntries: allKnowledgeEntries || [],
+				messages: allMessages || [],
+			};
+		}
+
+		const orgAgents = allAgents?.filter((agent: any) => agent.organizationId === currentOrganization._id) || [];
+		const agentIds = new Set(orgAgents.map((agent: any) => agent._id));
+
+		const orgConversations = allConversations?.filter((conv: any) => agentIds.has(conv.agentId)) || [];
+		const conversationIds = new Set(orgConversations.map((conv: any) => conv._id));
+
+		const orgKnowledge = allKnowledgeEntries?.filter((entry: any) => agentIds.has(entry.agentId)) || [];
+		const orgMessages = allMessages?.filter((msg: any) => conversationIds.has(msg.conversationId)) || [];
+
+		return {
+			agents: orgAgents,
+			conversations: orgConversations,
+			knowledgeEntries: orgKnowledge,
+			messages: orgMessages,
+		};
+	}, [currentOrganization, allAgents, allConversations, allKnowledgeEntries, allMessages]);
 
 	// Calculate stats
-	const agentCount = agents?.length ?? 0;
-	const conversationCount = conversations?.length ?? 0;
-	const knowledgeCount = knowledgeEntries?.length ?? 0;
-	const messageCount = messages?.length ?? 0;
+	const agentCount = agents.length;
+	const conversationCount = conversations.length;
+	const knowledgeCount = knowledgeEntries.length;
+	const messageCount = messages.length;
 
 	// Loading state
 	const isLoading =
-		agents === undefined ||
-		conversations === undefined ||
-		knowledgeEntries === undefined ||
-		messages === undefined;
+		allAgents === undefined ||
+		allConversations === undefined ||
+		allKnowledgeEntries === undefined ||
+		allMessages === undefined;
 
 	return (
 		<div className="space-y-6">
@@ -32,10 +65,36 @@ function DashboardOverview() {
 			<div className="border-b border-gray-200 pb-4">
 				<h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
 				<p className="mt-1 text-sm text-gray-600">
-					Welcome to your AI Agent Platform. Manage your agents, conversations,
-					and knowledge base.
+					{currentOrganization ? (
+						<>Welcome to <span className="font-medium">{currentOrganization.name}</span>. Manage your agents, conversations, and knowledge base.</>
+					) : (
+						"Welcome to your AI Agent Platform. Manage your agents, conversations, and knowledge base."
+					)}
 				</p>
 			</div>
+
+			{/* Organization Context Indicator */}
+			{currentOrganization && (
+				<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+					<div className="flex items-center">
+						<div className="flex-shrink-0">
+							<div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+								<span className="text-white text-sm font-medium">
+									{currentOrganization.name.charAt(0).toUpperCase()}
+								</span>
+							</div>
+						</div>
+						<div className="ml-3">
+							<h3 className="text-sm font-medium text-blue-900">
+								Viewing: {currentOrganization.name}
+							</h3>
+							<p className="text-sm text-blue-700">
+								Your role: <span className="capitalize font-medium">{currentOrganization.memberRole}</span> • Plan: <span className="capitalize font-medium">{currentOrganization.plan}</span>
+							</p>
+						</div>
+					</div>
+				</div>
+			)}
 
 			{/* Quick Stats */}
 			<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -50,7 +109,7 @@ function DashboardOverview() {
 							<div className="ml-5 w-0 flex-1">
 								<dl>
 									<dt className="text-sm font-medium text-gray-500 truncate">
-										Total Agents
+										{currentOrganization ? `Agents in ${currentOrganization.name}` : "Total Agents"}
 									</dt>
 									<dd className="text-lg font-medium text-gray-900">
 										{isLoading ? (
@@ -144,24 +203,24 @@ function DashboardOverview() {
 				</div>
 			</div>
 
-			{/* Getting Started */}
+			{/* Getting Started - Updated for organization context */}
 			<div className="bg-white shadow rounded-lg">
 				<div className="px-6 py-4 border-b border-gray-200">
-					<h2 className="text-lg font-medium text-gray-900">Getting Started</h2>
+					<h2 className="text-lg font-medium text-gray-900">
+						Getting Started {currentOrganization && `with ${currentOrganization.name}`}
+					</h2>
 				</div>
 				<div className="p-6">
 					<div className="space-y-4">
 						<div className="flex items-start">
 							<div className="flex-shrink-0">
 								<div
-									className={`w-6 h-6 rounded-full flex items-center justify-center ${
-										agentCount > 0 ? "bg-green-100" : "bg-blue-100"
-									}`}
+									className={`w-6 h-6 rounded-full flex items-center justify-center ${agentCount > 0 ? "bg-green-100" : "bg-blue-100"
+										}`}
 								>
 									<span
-										className={`text-sm font-medium ${
-											agentCount > 0 ? "text-green-600" : "text-blue-600"
-										}`}
+										className={`text-sm font-medium ${agentCount > 0 ? "text-green-600" : "text-blue-600"
+											}`}
 									>
 										{agentCount > 0 ? "✓" : "1"}
 									</span>
@@ -169,9 +228,8 @@ function DashboardOverview() {
 							</div>
 							<div className="ml-3">
 								<h3
-									className={`text-sm font-medium ${
-										agentCount > 0 ? "text-green-900" : "text-gray-900"
-									}`}
+									className={`text-sm font-medium ${agentCount > 0 ? "text-green-900" : "text-gray-900"
+										}`}
 								>
 									{agentCount > 0
 										? "Agent created!"
@@ -188,14 +246,12 @@ function DashboardOverview() {
 						<div className="flex items-start">
 							<div className="flex-shrink-0">
 								<div
-									className={`w-6 h-6 rounded-full flex items-center justify-center ${
-										knowledgeCount > 0 ? "bg-green-100" : "bg-gray-100"
-									}`}
+									className={`w-6 h-6 rounded-full flex items-center justify-center ${knowledgeCount > 0 ? "bg-green-100" : "bg-gray-100"
+										}`}
 								>
 									<span
-										className={`text-sm font-medium ${
-											knowledgeCount > 0 ? "text-green-600" : "text-gray-600"
-										}`}
+										className={`text-sm font-medium ${knowledgeCount > 0 ? "text-green-600" : "text-gray-600"
+											}`}
 									>
 										{knowledgeCount > 0 ? "✓" : "2"}
 									</span>
@@ -203,9 +259,8 @@ function DashboardOverview() {
 							</div>
 							<div className="ml-3">
 								<h3
-									className={`text-sm font-medium ${
-										knowledgeCount > 0 ? "text-green-900" : "text-gray-900"
-									}`}
+									className={`text-sm font-medium ${knowledgeCount > 0 ? "text-green-900" : "text-gray-900"
+										}`}
 								>
 									{knowledgeCount > 0 ? "Knowledge added!" : "Add knowledge"}
 								</h3>

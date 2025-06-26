@@ -4,8 +4,8 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import Header from "../components/Header";
 
 import ClerkProvider from "../integrations/clerk/provider.tsx";
-
 import ConvexProvider from "../integrations/convex/provider.tsx";
+import { OrganizationProvider } from "../contexts/OrganizationContext";
 
 export const Route = createRootRoute({
 	component: RootComponent,
@@ -13,17 +13,30 @@ export const Route = createRootRoute({
 
 function RootComponent() {
 	const location = useLocation();
-	
+
 	// Don't show the header for dashboard routes since they have their own DashboardLayout
 	const showHeader = !location.pathname.startsWith('/dashboard');
+
+	// Only use OrganizationProvider for dashboard routes that need organization data
+	const needsOrganization = location.pathname.startsWith('/dashboard');
 
 	return (
 		<>
 			<ClerkProvider>
 				<ConvexProvider>
-					{showHeader && <Header />}
-					<Outlet />
-					<TanStackRouterDevtools />
+					{needsOrganization ? (
+						<OrganizationProvider>
+							{showHeader && <Header />}
+							<Outlet />
+							<TanStackRouterDevtools />
+						</OrganizationProvider>
+					) : (
+						<>
+							{showHeader && <Header />}
+							<Outlet />
+							<TanStackRouterDevtools />
+						</>
+					)}
 				</ConvexProvider>
 			</ClerkProvider>
 		</>

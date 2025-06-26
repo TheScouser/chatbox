@@ -127,16 +127,26 @@ function AgentDeploy() {
 						{`<script>
 (function(){
   if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
-    var l=document.createElement("script");
-    l.src="${baseUrl}/widget.js";
-    l.onload=function(){
-      ChatboxWidget.init({
-        agentId: "${agent._id}",
-        primaryColor: "${primaryColor}"
-      });
+    window.ChatboxWidget=(...arguments)=>{
+      if(!window.ChatboxWidget.q){window.ChatboxWidget.q=[]}
+      window.ChatboxWidget.q.push(arguments)
     };
-    document.head.appendChild(l);
+    window.ChatboxWidget=new Proxy(window.ChatboxWidget,{
+      get(target,prop){
+        if(prop==="q"){return target.q}
+        return(...args)=>target(prop,...args)
+      }
+    })
   }
+  const onLoad=function(){
+    const script=document.createElement("script");
+    script.src="${baseUrl}/widget.min.js";
+    script.id="${agent._id}";
+    script.domain="${new URL(baseUrl).hostname}";
+    document.body.appendChild(script)
+  };
+  if(document.readyState==="complete"){onLoad()}
+  else{window.addEventListener("load",onLoad)}
 })();
 </script>`}
 					</div>
@@ -146,16 +156,26 @@ function AgentDeploy() {
 								`<script>
 (function(){
   if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
-    var l=document.createElement("script");
-    l.src="${baseUrl}/widget.js";
-    l.onload=function(){
-      ChatboxWidget.init({
-        agentId: "${agent._id}",
-        primaryColor: "${primaryColor}"
-      });
+    window.ChatboxWidget=(...arguments)=>{
+      if(!window.ChatboxWidget.q){window.ChatboxWidget.q=[]}
+      window.ChatboxWidget.q.push(arguments)
     };
-    document.head.appendChild(l);
+    window.ChatboxWidget=new Proxy(window.ChatboxWidget,{
+      get(target,prop){
+        if(prop==="q"){return target.q}
+        return(...args)=>target(prop,...args)
+      }
+    })
   }
+  const onLoad=function(){
+    const script=document.createElement("script");
+    script.src="${baseUrl}/widget.min.js";
+    script.id="${agent._id}";
+    script.domain="${new URL(baseUrl).hostname}";
+    document.body.appendChild(script)
+  };
+  if(document.readyState==="complete"){onLoad()}
+  else{window.addEventListener("load",onLoad)}
 })();
 </script>`,
 								"bubble",
