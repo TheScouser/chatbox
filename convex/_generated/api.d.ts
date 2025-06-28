@@ -27,6 +27,7 @@ import type * as organizations from "../organizations.js";
 import type * as security from "../security.js";
 import type * as seedPlans from "../seedPlans.js";
 import type * as textExtraction from "../textExtraction.js";
+import type * as usage from "../usage.js";
 import type * as users from "../users.js";
 import type * as vectorSearch from "../vectorSearch.js";
 import type * as webCrawling from "../webCrawling.js";
@@ -54,6 +55,7 @@ declare const fullApi: ApiFromModules<{
   security: typeof security;
   seedPlans: typeof seedPlans;
   textExtraction: typeof textExtraction;
+  usage: typeof usage;
   users: typeof users;
   vectorSearch: typeof vectorSearch;
   webCrawling: typeof webCrawling;

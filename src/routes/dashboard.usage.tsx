@@ -1,21 +1,58 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { UsageDashboard } from "@/components/billing/UsageProgress"
-import { useUserPlan, useUserSubscription } from "@/hooks/useFeatureAccess"
 import { Link } from '@tanstack/react-router'
 import { TrendingUp, AlertTriangle, ArrowUpRight } from "lucide-react"
+
+// Import our new usage dashboard components
+import { UsageOverviewCards } from "@/components/usage/UsageOverviewCards"
+import { UsageHistoryChart } from "@/components/usage/UsageHistoryChart"
+import { AgentUsageChart } from "@/components/usage/AgentUsageChart"
+import { UsageFilters } from "@/components/usage/UsageFilters"
+
+// Import our new hooks
+import { useDateRange, useUsageDashboardData, useUsageHistory, useAgentUsageBreakdown } from "@/hooks/useUsageDashboard"
 
 export const Route = createFileRoute('/dashboard/usage')({
     component: UsagePage,
 })
 
 function UsagePage() {
-    const { plan, isLoading: planLoading, isFree, planName } = useUserPlan()
-    const { subscription, isLoading: subLoading } = useUserSubscription()
+    // State for filters
+    const [selectedDateRange, setSelectedDateRange] = useState<"7d" | "30d" | "90d">("30d")
+    const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null)
 
-    if (planLoading || subLoading) {
+    // Get date range for queries
+    const dateRange = useDateRange(selectedDateRange)
+
+    // Get dashboard data
+    const { usageOverview, plan, subscription, loading: dashboardLoading, organizationName } = useUsageDashboardData()
+
+    // Get historical usage data
+    const { data: usageHistory, loading: historyLoading } = useUsageHistory(
+        dateRange.startDate,
+        dateRange.endDate,
+        selectedAgentId || undefined
+    )
+
+    // Get agent usage breakdown
+    const { data: agentBreakdown, loading: agentLoading } = useAgentUsageBreakdown(
+        dateRange.startDate,
+        dateRange.endDate
+    )
+
+    const isFree = !plan || plan.name === "Free"
+    const planName = plan?.name || "Free"
+
+    const formatPrice = (priceInCents: number) => {
+        if (priceInCents === 0) return "Free"
+        return `$${(priceInCents / 100).toFixed(0)}/month`
+    }
+
+    // Loading state
+    if (dashboardLoading) {
         return (
             <div className="container mx-auto px-4 py-8">
                 <div className="mb-8">
@@ -31,22 +68,39 @@ function UsagePage() {
         )
     }
 
-    const formatPrice = (priceInCents: number) => {
-        if (priceInCents === 0) return "Free"
-        return `$${(priceInCents / 100).toFixed(0)}/month`
-    }
-
     return (
         <div className="container mx-auto px-4 py-8">
-            {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold flex items-center gap-2">
-                    <TrendingUp className="h-8 w-8" />
-                    Usage & Analytics
-                </h1>
-                <p className="text-gray-600 mt-2">
-                    Monitor your current usage and track your consumption across all features
-                </p>
+            {/* Usage Filters */}
+            <UsageFilters
+                selectedDateRange={selectedDateRange}
+                selectedAgentId={selectedAgentId}
+                onDateRangeChange={setSelectedDateRange}
+                onAgentChange={setSelectedAgentId}
+            />
+
+            {/* Usage Overview Cards */}
+            <UsageOverviewCards
+                creditsUsed={usageOverview?.creditsUsed || 0}
+                creditsLimit={usageOverview?.creditsLimit || 500}
+                agentsUsed={usageOverview?.agentsUsed || 0}
+                agentsLimit={usageOverview?.agentsLimit || 1}
+                loading={dashboardLoading}
+            />
+
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                {/* Usage History Chart */}
+                <UsageHistoryChart
+                    data={usageHistory?.data || []}
+                    loading={historyLoading}
+                />
+
+                {/* Agent Usage Breakdown Chart */}
+                <AgentUsageChart
+                    agents={agentBreakdown?.agents || []}
+                    totalCredits={agentBreakdown?.totalCredits || 0}
+                    loading={agentLoading}
+                />
             </div>
 
             {/* Current Plan Info */}
@@ -60,6 +114,7 @@ function UsagePage() {
                             </Badge>
                         </CardTitle>
                         <CardDescription>
+                            {organizationName && `Organization: ${organizationName} • `}
                             {subscription && (
                                 <>
                                     Billing period: {new Date(subscription.currentPeriodStart).toLocaleDateString()} - {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
@@ -102,25 +157,47 @@ function UsagePage() {
                 </Card>
             </div>
 
-            {/* Usage Dashboard */}
-            <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-4">Real-time Usage</h2>
-                <UsageDashboard />
-            </div>
-
             {/* Usage Insights */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Usage Trends</CardTitle>
-                        <CardDescription>Your usage patterns over time</CardDescription>
+                        <CardTitle>Usage Insights</CardTitle>
+                        <CardDescription>Key metrics and trends</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="text-center py-8 text-gray-500">
-                            <TrendingUp className="h-12 w-12 mx-auto mb-2 text-gray-300" />
-                            <p>Usage analytics coming soon</p>
-                            <p className="text-sm">We're building detailed usage insights for you</p>
-                        </div>
+                    <CardContent className="space-y-4">
+                        {usageHistory?.data && (
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
+                                    <div>
+                                        <p className="font-medium">Daily Average</p>
+                                        <p className="text-sm text-gray-600">
+                                            {Math.round((usageHistory.data.reduce((sum, d) => sum + d.creditsUsed, 0) / usageHistory.data.length) || 0)} credits per day
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
+                                    <div>
+                                        <p className="font-medium">Peak Usage</p>
+                                        <p className="text-sm text-gray-600">
+                                            {Math.max(...usageHistory.data.map(d => d.creditsUsed), 0)} credits in a single day
+                                        </p>
+                                    </div>
+                                </div>
+                                {agentBreakdown?.agents && agentBreakdown.agents.length > 1 && (
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-2 h-2 bg-purple-500 rounded-full mt-2" />
+                                        <div>
+                                            <p className="font-medium">Most Active Agent</p>
+                                            <p className="text-sm text-gray-600">
+                                                {agentBreakdown.agents[0]?.agentName || "N/A"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 
@@ -167,7 +244,7 @@ function UsagePage() {
                                     <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
                                     <div>
                                         <p className="font-medium">Monitor performance</p>
-                                        <p className="text-sm text-gray-600">Use analytics to understand which agents are most effective</p>
+                                        <p className="text-sm text-gray-600">Use this dashboard to understand which agents are most effective</p>
                                     </div>
                                 </div>
                             </div>
