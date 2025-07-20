@@ -16,15 +16,6 @@ import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard.index'
 import { Route as WidgetDemoAgentIdImport } from './routes/widget-demo.$agentId'
 import { Route as EmbedAgentIdImport } from './routes/embed.$agentId'
-import { Route as DemoWebCrawlingImport } from './routes/demo.web-crawling'
-import { Route as DemoVectorSearchImport } from './routes/demo.vector-search'
-import { Route as DemoTextExtractionImport } from './routes/demo.text-extraction'
-import { Route as DemoTableImport } from './routes/demo.table'
-import { Route as DemoRichTextImport } from './routes/demo.rich-text'
-import { Route as DemoKnowledgeImport } from './routes/demo.knowledge'
-import { Route as DemoFileUploadImport } from './routes/demo.file-upload'
-import { Route as DemoClerkImport } from './routes/demo.clerk'
-import { Route as DemoChatImport } from './routes/demo.chat'
 import { Route as DashboardUsageImport } from './routes/dashboard.usage'
 import { Route as DashboardSettingsImport } from './routes/dashboard.settings'
 import { Route as DashboardBillingImport } from './routes/dashboard.billing'
@@ -34,8 +25,6 @@ import { Route as ApiChatImport } from './routes/api.chat'
 import { Route as DashboardSettingsIndexImport } from './routes/dashboard.settings.index'
 import { Route as DashboardBillingIndexImport } from './routes/dashboard.billing.index'
 import { Route as DashboardAgentsIndexImport } from './routes/dashboard.agents.index'
-import { Route as DemoFormSimpleImport } from './routes/demo.form.simple'
-import { Route as DemoFormAddressImport } from './routes/demo.form.address'
 import { Route as DashboardSettingsPlansImport } from './routes/dashboard.settings.plans'
 import { Route as DashboardSettingsMembersImport } from './routes/dashboard.settings.members'
 import { Route as DashboardSettingsBillingImport } from './routes/dashboard.settings.billing'
@@ -87,60 +76,6 @@ const WidgetDemoAgentIdRoute = WidgetDemoAgentIdImport.update({
 const EmbedAgentIdRoute = EmbedAgentIdImport.update({
   id: '/embed/$agentId',
   path: '/embed/$agentId',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoWebCrawlingRoute = DemoWebCrawlingImport.update({
-  id: '/demo/web-crawling',
-  path: '/demo/web-crawling',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoVectorSearchRoute = DemoVectorSearchImport.update({
-  id: '/demo/vector-search',
-  path: '/demo/vector-search',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoTextExtractionRoute = DemoTextExtractionImport.update({
-  id: '/demo/text-extraction',
-  path: '/demo/text-extraction',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoTableRoute = DemoTableImport.update({
-  id: '/demo/table',
-  path: '/demo/table',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoRichTextRoute = DemoRichTextImport.update({
-  id: '/demo/rich-text',
-  path: '/demo/rich-text',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoKnowledgeRoute = DemoKnowledgeImport.update({
-  id: '/demo/knowledge',
-  path: '/demo/knowledge',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoFileUploadRoute = DemoFileUploadImport.update({
-  id: '/demo/file-upload',
-  path: '/demo/file-upload',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoClerkRoute = DemoClerkImport.update({
-  id: '/demo/clerk',
-  path: '/demo/clerk',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoChatRoute = DemoChatImport.update({
-  id: '/demo/chat',
-  path: '/demo/chat',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -196,18 +131,6 @@ const DashboardAgentsIndexRoute = DashboardAgentsIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardAgentsRoute,
-} as any)
-
-const DemoFormSimpleRoute = DemoFormSimpleImport.update({
-  id: '/demo/form/simple',
-  path: '/demo/form/simple',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DemoFormAddressRoute = DemoFormAddressImport.update({
-  id: '/demo/form/address',
-  path: '/demo/form/address',
-  getParentRoute: () => rootRoute,
 } as any)
 
 const DashboardSettingsPlansRoute = DashboardSettingsPlansImport.update({
@@ -412,69 +335,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardUsageImport
       parentRoute: typeof DashboardImport
     }
-    '/demo/chat': {
-      id: '/demo/chat'
-      path: '/demo/chat'
-      fullPath: '/demo/chat'
-      preLoaderRoute: typeof DemoChatImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/clerk': {
-      id: '/demo/clerk'
-      path: '/demo/clerk'
-      fullPath: '/demo/clerk'
-      preLoaderRoute: typeof DemoClerkImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/file-upload': {
-      id: '/demo/file-upload'
-      path: '/demo/file-upload'
-      fullPath: '/demo/file-upload'
-      preLoaderRoute: typeof DemoFileUploadImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/knowledge': {
-      id: '/demo/knowledge'
-      path: '/demo/knowledge'
-      fullPath: '/demo/knowledge'
-      preLoaderRoute: typeof DemoKnowledgeImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/rich-text': {
-      id: '/demo/rich-text'
-      path: '/demo/rich-text'
-      fullPath: '/demo/rich-text'
-      preLoaderRoute: typeof DemoRichTextImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/table': {
-      id: '/demo/table'
-      path: '/demo/table'
-      fullPath: '/demo/table'
-      preLoaderRoute: typeof DemoTableImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/text-extraction': {
-      id: '/demo/text-extraction'
-      path: '/demo/text-extraction'
-      fullPath: '/demo/text-extraction'
-      preLoaderRoute: typeof DemoTextExtractionImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/vector-search': {
-      id: '/demo/vector-search'
-      path: '/demo/vector-search'
-      fullPath: '/demo/vector-search'
-      preLoaderRoute: typeof DemoVectorSearchImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/web-crawling': {
-      id: '/demo/web-crawling'
-      path: '/demo/web-crawling'
-      fullPath: '/demo/web-crawling'
-      preLoaderRoute: typeof DemoWebCrawlingImport
-      parentRoute: typeof rootRoute
-    }
     '/embed/$agentId': {
       id: '/embed/$agentId'
       path: '/embed/$agentId'
@@ -537,20 +397,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard/settings/plans'
       preLoaderRoute: typeof DashboardSettingsPlansImport
       parentRoute: typeof DashboardSettingsImport
-    }
-    '/demo/form/address': {
-      id: '/demo/form/address'
-      path: '/demo/form/address'
-      fullPath: '/demo/form/address'
-      preLoaderRoute: typeof DemoFormAddressImport
-      parentRoute: typeof rootRoute
-    }
-    '/demo/form/simple': {
-      id: '/demo/form/simple'
-      path: '/demo/form/simple'
-      fullPath: '/demo/form/simple'
-      preLoaderRoute: typeof DemoFormSimpleImport
-      parentRoute: typeof rootRoute
     }
     '/dashboard/agents/': {
       id: '/dashboard/agents/'
@@ -836,15 +682,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/billing': typeof DashboardBillingRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/dashboard/usage': typeof DashboardUsageRoute
-  '/demo/chat': typeof DemoChatRoute
-  '/demo/clerk': typeof DemoClerkRoute
-  '/demo/file-upload': typeof DemoFileUploadRoute
-  '/demo/knowledge': typeof DemoKnowledgeRoute
-  '/demo/rich-text': typeof DemoRichTextRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/text-extraction': typeof DemoTextExtractionRoute
-  '/demo/vector-search': typeof DemoVectorSearchRoute
-  '/demo/web-crawling': typeof DemoWebCrawlingRoute
   '/embed/$agentId': typeof EmbedAgentIdRoute
   '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -854,8 +691,6 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings/billing': typeof DashboardSettingsBillingRoute
   '/dashboard/settings/members': typeof DashboardSettingsMembersRoute
   '/dashboard/settings/plans': typeof DashboardSettingsPlansRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
-  '/demo/form/simple': typeof DemoFormSimpleRoute
   '/dashboard/agents/': typeof DashboardAgentsIndexRoute
   '/dashboard/billing/': typeof DashboardBillingIndexRoute
   '/dashboard/settings/': typeof DashboardSettingsIndexRoute
@@ -881,15 +716,6 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/chat/$agentId': typeof ChatAgentIdRoute
   '/dashboard/usage': typeof DashboardUsageRoute
-  '/demo/chat': typeof DemoChatRoute
-  '/demo/clerk': typeof DemoClerkRoute
-  '/demo/file-upload': typeof DemoFileUploadRoute
-  '/demo/knowledge': typeof DemoKnowledgeRoute
-  '/demo/rich-text': typeof DemoRichTextRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/text-extraction': typeof DemoTextExtractionRoute
-  '/demo/vector-search': typeof DemoVectorSearchRoute
-  '/demo/web-crawling': typeof DemoWebCrawlingRoute
   '/embed/$agentId': typeof EmbedAgentIdRoute
   '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -898,8 +724,6 @@ export interface FileRoutesByTo {
   '/dashboard/settings/billing': typeof DashboardSettingsBillingRoute
   '/dashboard/settings/members': typeof DashboardSettingsMembersRoute
   '/dashboard/settings/plans': typeof DashboardSettingsPlansRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
-  '/demo/form/simple': typeof DemoFormSimpleRoute
   '/dashboard/agents': typeof DashboardAgentsIndexRoute
   '/dashboard/billing': typeof DashboardBillingIndexRoute
   '/dashboard/settings': typeof DashboardSettingsIndexRoute
@@ -928,15 +752,6 @@ export interface FileRoutesById {
   '/dashboard/billing': typeof DashboardBillingRouteWithChildren
   '/dashboard/settings': typeof DashboardSettingsRouteWithChildren
   '/dashboard/usage': typeof DashboardUsageRoute
-  '/demo/chat': typeof DemoChatRoute
-  '/demo/clerk': typeof DemoClerkRoute
-  '/demo/file-upload': typeof DemoFileUploadRoute
-  '/demo/knowledge': typeof DemoKnowledgeRoute
-  '/demo/rich-text': typeof DemoRichTextRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/text-extraction': typeof DemoTextExtractionRoute
-  '/demo/vector-search': typeof DemoVectorSearchRoute
-  '/demo/web-crawling': typeof DemoWebCrawlingRoute
   '/embed/$agentId': typeof EmbedAgentIdRoute
   '/widget-demo/$agentId': typeof WidgetDemoAgentIdRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -946,8 +761,6 @@ export interface FileRoutesById {
   '/dashboard/settings/billing': typeof DashboardSettingsBillingRoute
   '/dashboard/settings/members': typeof DashboardSettingsMembersRoute
   '/dashboard/settings/plans': typeof DashboardSettingsPlansRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
-  '/demo/form/simple': typeof DemoFormSimpleRoute
   '/dashboard/agents/': typeof DashboardAgentsIndexRoute
   '/dashboard/billing/': typeof DashboardBillingIndexRoute
   '/dashboard/settings/': typeof DashboardSettingsIndexRoute
@@ -979,15 +792,6 @@ export interface FileRouteTypes {
     | '/dashboard/billing'
     | '/dashboard/settings'
     | '/dashboard/usage'
-    | '/demo/chat'
-    | '/demo/clerk'
-    | '/demo/file-upload'
-    | '/demo/knowledge'
-    | '/demo/rich-text'
-    | '/demo/table'
-    | '/demo/text-extraction'
-    | '/demo/vector-search'
-    | '/demo/web-crawling'
     | '/embed/$agentId'
     | '/widget-demo/$agentId'
     | '/dashboard/'
@@ -997,8 +801,6 @@ export interface FileRouteTypes {
     | '/dashboard/settings/billing'
     | '/dashboard/settings/members'
     | '/dashboard/settings/plans'
-    | '/demo/form/address'
-    | '/demo/form/simple'
     | '/dashboard/agents/'
     | '/dashboard/billing/'
     | '/dashboard/settings/'
@@ -1023,15 +825,6 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/chat/$agentId'
     | '/dashboard/usage'
-    | '/demo/chat'
-    | '/demo/clerk'
-    | '/demo/file-upload'
-    | '/demo/knowledge'
-    | '/demo/rich-text'
-    | '/demo/table'
-    | '/demo/text-extraction'
-    | '/demo/vector-search'
-    | '/demo/web-crawling'
     | '/embed/$agentId'
     | '/widget-demo/$agentId'
     | '/dashboard'
@@ -1040,8 +833,6 @@ export interface FileRouteTypes {
     | '/dashboard/settings/billing'
     | '/dashboard/settings/members'
     | '/dashboard/settings/plans'
-    | '/demo/form/address'
-    | '/demo/form/simple'
     | '/dashboard/agents'
     | '/dashboard/billing'
     | '/dashboard/settings'
@@ -1068,15 +859,6 @@ export interface FileRouteTypes {
     | '/dashboard/billing'
     | '/dashboard/settings'
     | '/dashboard/usage'
-    | '/demo/chat'
-    | '/demo/clerk'
-    | '/demo/file-upload'
-    | '/demo/knowledge'
-    | '/demo/rich-text'
-    | '/demo/table'
-    | '/demo/text-extraction'
-    | '/demo/vector-search'
-    | '/demo/web-crawling'
     | '/embed/$agentId'
     | '/widget-demo/$agentId'
     | '/dashboard/'
@@ -1086,8 +868,6 @@ export interface FileRouteTypes {
     | '/dashboard/settings/billing'
     | '/dashboard/settings/members'
     | '/dashboard/settings/plans'
-    | '/demo/form/address'
-    | '/demo/form/simple'
     | '/dashboard/agents/'
     | '/dashboard/billing/'
     | '/dashboard/settings/'
@@ -1114,19 +894,8 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
   ChatAgentIdRoute: typeof ChatAgentIdRoute
-  DemoChatRoute: typeof DemoChatRoute
-  DemoClerkRoute: typeof DemoClerkRoute
-  DemoFileUploadRoute: typeof DemoFileUploadRoute
-  DemoKnowledgeRoute: typeof DemoKnowledgeRoute
-  DemoRichTextRoute: typeof DemoRichTextRoute
-  DemoTableRoute: typeof DemoTableRoute
-  DemoTextExtractionRoute: typeof DemoTextExtractionRoute
-  DemoVectorSearchRoute: typeof DemoVectorSearchRoute
-  DemoWebCrawlingRoute: typeof DemoWebCrawlingRoute
   EmbedAgentIdRoute: typeof EmbedAgentIdRoute
   WidgetDemoAgentIdRoute: typeof WidgetDemoAgentIdRoute
-  DemoFormAddressRoute: typeof DemoFormAddressRoute
-  DemoFormSimpleRoute: typeof DemoFormSimpleRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -1134,19 +903,8 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
   ChatAgentIdRoute: ChatAgentIdRoute,
-  DemoChatRoute: DemoChatRoute,
-  DemoClerkRoute: DemoClerkRoute,
-  DemoFileUploadRoute: DemoFileUploadRoute,
-  DemoKnowledgeRoute: DemoKnowledgeRoute,
-  DemoRichTextRoute: DemoRichTextRoute,
-  DemoTableRoute: DemoTableRoute,
-  DemoTextExtractionRoute: DemoTextExtractionRoute,
-  DemoVectorSearchRoute: DemoVectorSearchRoute,
-  DemoWebCrawlingRoute: DemoWebCrawlingRoute,
   EmbedAgentIdRoute: EmbedAgentIdRoute,
   WidgetDemoAgentIdRoute: WidgetDemoAgentIdRoute,
-  DemoFormAddressRoute: DemoFormAddressRoute,
-  DemoFormSimpleRoute: DemoFormSimpleRoute,
 }
 
 export const routeTree = rootRoute
@@ -1163,19 +921,8 @@ export const routeTree = rootRoute
         "/dashboard",
         "/api/chat",
         "/chat/$agentId",
-        "/demo/chat",
-        "/demo/clerk",
-        "/demo/file-upload",
-        "/demo/knowledge",
-        "/demo/rich-text",
-        "/demo/table",
-        "/demo/text-extraction",
-        "/demo/vector-search",
-        "/demo/web-crawling",
         "/embed/$agentId",
-        "/widget-demo/$agentId",
-        "/demo/form/address",
-        "/demo/form/simple"
+        "/widget-demo/$agentId"
       ]
     },
     "/": {
@@ -1228,33 +975,6 @@ export const routeTree = rootRoute
       "filePath": "dashboard.usage.tsx",
       "parent": "/dashboard"
     },
-    "/demo/chat": {
-      "filePath": "demo.chat.tsx"
-    },
-    "/demo/clerk": {
-      "filePath": "demo.clerk.tsx"
-    },
-    "/demo/file-upload": {
-      "filePath": "demo.file-upload.tsx"
-    },
-    "/demo/knowledge": {
-      "filePath": "demo.knowledge.tsx"
-    },
-    "/demo/rich-text": {
-      "filePath": "demo.rich-text.tsx"
-    },
-    "/demo/table": {
-      "filePath": "demo.table.tsx"
-    },
-    "/demo/text-extraction": {
-      "filePath": "demo.text-extraction.tsx"
-    },
-    "/demo/vector-search": {
-      "filePath": "demo.vector-search.tsx"
-    },
-    "/demo/web-crawling": {
-      "filePath": "demo.web-crawling.tsx"
-    },
     "/embed/$agentId": {
       "filePath": "embed.$agentId.tsx"
     },
@@ -1296,12 +1016,6 @@ export const routeTree = rootRoute
     "/dashboard/settings/plans": {
       "filePath": "dashboard.settings.plans.tsx",
       "parent": "/dashboard/settings"
-    },
-    "/demo/form/address": {
-      "filePath": "demo.form.address.tsx"
-    },
-    "/demo/form/simple": {
-      "filePath": "demo.form.simple.tsx"
     },
     "/dashboard/agents/": {
       "filePath": "dashboard.agents.index.tsx",
