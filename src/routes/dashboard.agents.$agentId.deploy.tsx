@@ -118,8 +118,11 @@ function AgentDeploy() {
 							</a>
 						</div>
 						<p className="text-xs text-gray-600 mb-3">
-							Embed a chat bubble on your website. Allows you to use all the advanced features of the agent. Explore the{" "}
-							<a href="#" className="text-blue-600 hover:underline">docs.</a>
+							Embed a chat bubble on your website. Allows you to use all the
+							advanced features of the agent. Explore the{" "}
+							<a href="#" className="text-blue-600 hover:underline">
+								docs.
+							</a>
 						</p>
 						<div className="bg-gray-50 rounded p-2 mb-2 h-16 overflow-x-auto overflow-y-hidden">
 							<code className="text-xs text-gray-800 font-mono whitespace-nowrap">
@@ -202,7 +205,9 @@ function AgentDeploy() {
 						<div className="flex items-center justify-between mb-3">
 							<div className="flex items-center gap-2">
 								{/* <input type="radio" name="embed-type" className="w-4 h-4 text-blue-600" /> */}
-								<span className="text-sm font-medium">Embed the iframe directly</span>
+								<span className="text-sm font-medium">
+									Embed the iframe directly
+								</span>
 							</div>
 							<a
 								href={embedUrl}
@@ -247,7 +252,9 @@ function AgentDeploy() {
 
 				<div className="bg-white border rounded-lg p-4 space-y-4">
 					<div>
-						<h5 className="text-sm font-medium text-gray-700 mb-2">On the site</h5>
+						<h5 className="text-sm font-medium text-gray-700 mb-2">
+							On the site
+						</h5>
 						<div className="text-xs text-gray-600 font-mono bg-gray-50 p-2 rounded">
 							{new URL(baseUrl).hostname}
 						</div>
@@ -256,7 +263,9 @@ function AgentDeploy() {
 					<div className="space-y-3">
 						<div className="flex items-center gap-4">
 							<div className="flex-1">
-								<Label htmlFor="width" className="text-xs text-gray-600">Width</Label>
+								<Label htmlFor="width" className="text-xs text-gray-600">
+									Width
+								</Label>
 								<Input
 									id="width"
 									value={embedWidth}
@@ -265,7 +274,9 @@ function AgentDeploy() {
 								/>
 							</div>
 							<div className="flex-1">
-								<Label htmlFor="height" className="text-xs text-gray-600">Height</Label>
+								<Label htmlFor="height" className="text-xs text-gray-600">
+									Height
+								</Label>
 								<Input
 									id="height"
 									value={embedHeight}
@@ -276,7 +287,9 @@ function AgentDeploy() {
 						</div>
 
 						<div>
-							<Label htmlFor="color" className="text-xs text-gray-600">Primary Color</Label>
+							<Label htmlFor="color" className="text-xs text-gray-600">
+								Primary Color
+							</Label>
 							<div className="flex items-center gap-2">
 								<Input
 									id="color"
@@ -297,4 +310,4 @@ function AgentDeploy() {
 			</div>
 		</div>
 	);
-} 
+}

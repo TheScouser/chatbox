@@ -2,9 +2,9 @@ import tailwindcss from "@tailwindcss/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-import { existsSync } from "node:fs";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,16 +18,16 @@ export default defineConfig({
 	},
 	configureServer(server) {
 		// Serve widget.min.js from dist folder during development
-		server.middlewares.use('/widget.min.js', (req, res, next) => {
-			const widgetPath = resolve(__dirname, 'dist/widget.min.js');
+		server.middlewares.use("/widget.min.js", (req, res, next) => {
+			const widgetPath = resolve(__dirname, "dist/widget.min.js");
 			if (existsSync(widgetPath)) {
-				res.setHeader('Content-Type', 'application/javascript');
-				const fs = require('fs');
+				res.setHeader("Content-Type", "application/javascript");
+				const fs = require("fs");
 				const content = fs.readFileSync(widgetPath);
 				res.end(content);
 			} else {
 				res.statusCode = 404;
-				res.end('Widget not found. Run npm run build first.');
+				res.end("Widget not found. Run npm run build first.");
 			}
 		});
 	},
@@ -48,7 +48,9 @@ export default defineConfig({
 			},
 			output: {
 				entryFileNames: (assetInfo) => {
-					return assetInfo.name === "widget" ? "widget.min.js" : "assets/[name]-[hash].js";
+					return assetInfo.name === "widget"
+						? "widget.min.js"
+						: "assets/[name]-[hash].js";
 				},
 				chunkFileNames: "assets/[name]-[hash].js",
 				assetFileNames: "assets/[name]-[hash][extname]",

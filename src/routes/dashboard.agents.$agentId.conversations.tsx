@@ -6,7 +6,9 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import ChatWidget from "../components/ChatWidget";
 
-export const Route = createFileRoute("/dashboard/agents/$agentId/conversations")({
+export const Route = createFileRoute(
+	"/dashboard/agents/$agentId/conversations",
+)({
 	component: AgentConversations,
 });
 
@@ -54,9 +56,7 @@ function AgentConversations() {
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
 				<div>
-					<h3 className="text-2xl font-bold text-gray-900">
-						Conversations
-					</h3>
+					<h3 className="text-2xl font-bold text-gray-900">Conversations</h3>
 					<p className="mt-1 text-gray-600">
 						View and manage all conversations with your agent.
 					</p>
@@ -127,12 +127,14 @@ function AgentConversations() {
 						No conversations yet
 					</h3>
 					<p className="mt-2 text-sm text-gray-500 max-w-sm mx-auto">
-						Conversations will appear here once users start chatting
-						with your agent.
+						Conversations will appear here once users start chatting with your
+						agent.
 					</p>
 					<div className="mt-8">
 						<button
-							onClick={() => window.location.href = `/dashboard/agents/${agentId}/chat`}
+							onClick={() =>
+								(window.location.href = `/dashboard/agents/${agentId}/chat`)
+							}
 							className="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
 						>
 							<MessageSquare className="mr-2 h-4 w-4" />
@@ -152,11 +154,8 @@ function AgentConversations() {
 						</div>
 						<div className="overflow-y-auto h-full">
 							{conversations.map((conversation, index) => {
-								const isSelected =
-									currentConversationId === conversation._id;
-								const timeAgo = new Date(
-									conversation._creationTime,
-								);
+								const isSelected = currentConversationId === conversation._id;
+								const timeAgo = new Date(conversation._creationTime);
 								const now = new Date();
 								const diffInMinutes = Math.floor(
 									(now.getTime() - timeAgo.getTime()) / (1000 * 60),
@@ -176,27 +175,22 @@ function AgentConversations() {
 								return (
 									<div
 										key={conversation._id}
-										onClick={() =>
-											setCurrentConversationId(conversation._id)
-										}
-										className={`p-5 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${isSelected
+										onClick={() => setCurrentConversationId(conversation._id)}
+										className={`p-5 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+											isSelected
 												? "bg-blue-50 border-l-4 border-l-blue-500"
 												: ""
-											}`}
+										}`}
 									>
 										<div className="flex justify-between items-start mb-3">
 											<p className="text-sm font-medium text-gray-900 truncate pr-2 leading-relaxed">
-												{conversation.title ||
-													"Untitled Conversation"}
+												{conversation.title || "Untitled Conversation"}
 											</p>
 											<button
 												onClick={(e) => {
 													e.stopPropagation();
 													// TODO: Implement delete
-													console.log(
-														"Delete conversation:",
-														conversation._id,
-													);
+													console.log("Delete conversation:", conversation._id);
 												}}
 												className="text-gray-400 hover:text-red-600 transition-colors flex-shrink-0"
 											>
@@ -215,9 +209,7 @@ function AgentConversations() {
 												</svg>
 											</button>
 										</div>
-										<p className="text-xs text-gray-500 mb-3">
-											{timeDisplay}
-										</p>
+										<p className="text-xs text-gray-500 mb-3">{timeDisplay}</p>
 										<div className="flex items-center gap-2">
 											<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
 												Source: Playground
@@ -275,8 +267,8 @@ function AgentConversations() {
 										Select a conversation
 									</h3>
 									<p className="mt-3 text-sm text-gray-500 max-w-sm">
-										Choose a conversation from the list to view its
-										details and chat history.
+										Choose a conversation from the list to view its details and
+										chat history.
 									</p>
 								</div>
 							</div>
@@ -286,4 +278,4 @@ function AgentConversations() {
 			)}
 		</div>
 	);
-} 
+}

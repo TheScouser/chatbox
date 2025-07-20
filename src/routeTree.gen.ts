@@ -48,6 +48,11 @@ import { Route as DashboardAgentsAgentIdKnowledgeImport } from './routes/dashboa
 import { Route as DashboardAgentsAgentIdDeployImport } from './routes/dashboard.agents.$agentId.deploy'
 import { Route as DashboardAgentsAgentIdConversationsImport } from './routes/dashboard.agents.$agentId.conversations'
 import { Route as DashboardAgentsAgentIdChatImport } from './routes/dashboard.agents.$agentId.chat'
+import { Route as DashboardAgentsAgentIdKnowledgeIndexImport } from './routes/dashboard.agents.$agentId.knowledge.index'
+import { Route as DashboardAgentsAgentIdKnowledgeUrlImport } from './routes/dashboard.agents.$agentId.knowledge.url'
+import { Route as DashboardAgentsAgentIdKnowledgeUploadImport } from './routes/dashboard.agents.$agentId.knowledge.upload'
+import { Route as DashboardAgentsAgentIdKnowledgeTextImport } from './routes/dashboard.agents.$agentId.knowledge.text'
+import { Route as DashboardAgentsAgentIdKnowledgeQnaImport } from './routes/dashboard.agents.$agentId.knowledge.qna'
 
 // Create/Update Routes
 
@@ -279,6 +284,41 @@ const DashboardAgentsAgentIdChatRoute = DashboardAgentsAgentIdChatImport.update(
     getParentRoute: () => DashboardAgentsAgentIdRoute,
   } as any,
 )
+
+const DashboardAgentsAgentIdKnowledgeIndexRoute =
+  DashboardAgentsAgentIdKnowledgeIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAgentsAgentIdKnowledgeRoute,
+  } as any)
+
+const DashboardAgentsAgentIdKnowledgeUrlRoute =
+  DashboardAgentsAgentIdKnowledgeUrlImport.update({
+    id: '/url',
+    path: '/url',
+    getParentRoute: () => DashboardAgentsAgentIdKnowledgeRoute,
+  } as any)
+
+const DashboardAgentsAgentIdKnowledgeUploadRoute =
+  DashboardAgentsAgentIdKnowledgeUploadImport.update({
+    id: '/upload',
+    path: '/upload',
+    getParentRoute: () => DashboardAgentsAgentIdKnowledgeRoute,
+  } as any)
+
+const DashboardAgentsAgentIdKnowledgeTextRoute =
+  DashboardAgentsAgentIdKnowledgeTextImport.update({
+    id: '/text',
+    path: '/text',
+    getParentRoute: () => DashboardAgentsAgentIdKnowledgeRoute,
+  } as any)
+
+const DashboardAgentsAgentIdKnowledgeQnaRoute =
+  DashboardAgentsAgentIdKnowledgeQnaImport.update({
+    id: '/qna',
+    path: '/qna',
+    getParentRoute: () => DashboardAgentsAgentIdKnowledgeRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -543,16 +583,78 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsAgentIdIndexImport
       parentRoute: typeof DashboardAgentsAgentIdImport
     }
+    '/dashboard/agents/$agentId/knowledge/qna': {
+      id: '/dashboard/agents/$agentId/knowledge/qna'
+      path: '/qna'
+      fullPath: '/dashboard/agents/$agentId/knowledge/qna'
+      preLoaderRoute: typeof DashboardAgentsAgentIdKnowledgeQnaImport
+      parentRoute: typeof DashboardAgentsAgentIdKnowledgeImport
+    }
+    '/dashboard/agents/$agentId/knowledge/text': {
+      id: '/dashboard/agents/$agentId/knowledge/text'
+      path: '/text'
+      fullPath: '/dashboard/agents/$agentId/knowledge/text'
+      preLoaderRoute: typeof DashboardAgentsAgentIdKnowledgeTextImport
+      parentRoute: typeof DashboardAgentsAgentIdKnowledgeImport
+    }
+    '/dashboard/agents/$agentId/knowledge/upload': {
+      id: '/dashboard/agents/$agentId/knowledge/upload'
+      path: '/upload'
+      fullPath: '/dashboard/agents/$agentId/knowledge/upload'
+      preLoaderRoute: typeof DashboardAgentsAgentIdKnowledgeUploadImport
+      parentRoute: typeof DashboardAgentsAgentIdKnowledgeImport
+    }
+    '/dashboard/agents/$agentId/knowledge/url': {
+      id: '/dashboard/agents/$agentId/knowledge/url'
+      path: '/url'
+      fullPath: '/dashboard/agents/$agentId/knowledge/url'
+      preLoaderRoute: typeof DashboardAgentsAgentIdKnowledgeUrlImport
+      parentRoute: typeof DashboardAgentsAgentIdKnowledgeImport
+    }
+    '/dashboard/agents/$agentId/knowledge/': {
+      id: '/dashboard/agents/$agentId/knowledge/'
+      path: '/'
+      fullPath: '/dashboard/agents/$agentId/knowledge/'
+      preLoaderRoute: typeof DashboardAgentsAgentIdKnowledgeIndexImport
+      parentRoute: typeof DashboardAgentsAgentIdKnowledgeImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardAgentsAgentIdKnowledgeRouteChildren {
+  DashboardAgentsAgentIdKnowledgeQnaRoute: typeof DashboardAgentsAgentIdKnowledgeQnaRoute
+  DashboardAgentsAgentIdKnowledgeTextRoute: typeof DashboardAgentsAgentIdKnowledgeTextRoute
+  DashboardAgentsAgentIdKnowledgeUploadRoute: typeof DashboardAgentsAgentIdKnowledgeUploadRoute
+  DashboardAgentsAgentIdKnowledgeUrlRoute: typeof DashboardAgentsAgentIdKnowledgeUrlRoute
+  DashboardAgentsAgentIdKnowledgeIndexRoute: typeof DashboardAgentsAgentIdKnowledgeIndexRoute
+}
+
+const DashboardAgentsAgentIdKnowledgeRouteChildren: DashboardAgentsAgentIdKnowledgeRouteChildren =
+  {
+    DashboardAgentsAgentIdKnowledgeQnaRoute:
+      DashboardAgentsAgentIdKnowledgeQnaRoute,
+    DashboardAgentsAgentIdKnowledgeTextRoute:
+      DashboardAgentsAgentIdKnowledgeTextRoute,
+    DashboardAgentsAgentIdKnowledgeUploadRoute:
+      DashboardAgentsAgentIdKnowledgeUploadRoute,
+    DashboardAgentsAgentIdKnowledgeUrlRoute:
+      DashboardAgentsAgentIdKnowledgeUrlRoute,
+    DashboardAgentsAgentIdKnowledgeIndexRoute:
+      DashboardAgentsAgentIdKnowledgeIndexRoute,
+  }
+
+const DashboardAgentsAgentIdKnowledgeRouteWithChildren =
+  DashboardAgentsAgentIdKnowledgeRoute._addFileChildren(
+    DashboardAgentsAgentIdKnowledgeRouteChildren,
+  )
+
 interface DashboardAgentsAgentIdRouteChildren {
   DashboardAgentsAgentIdChatRoute: typeof DashboardAgentsAgentIdChatRoute
   DashboardAgentsAgentIdConversationsRoute: typeof DashboardAgentsAgentIdConversationsRoute
   DashboardAgentsAgentIdDeployRoute: typeof DashboardAgentsAgentIdDeployRoute
-  DashboardAgentsAgentIdKnowledgeRoute: typeof DashboardAgentsAgentIdKnowledgeRoute
+  DashboardAgentsAgentIdKnowledgeRoute: typeof DashboardAgentsAgentIdKnowledgeRouteWithChildren
   DashboardAgentsAgentIdSettingsRoute: typeof DashboardAgentsAgentIdSettingsRoute
   DashboardAgentsAgentIdIndexRoute: typeof DashboardAgentsAgentIdIndexRoute
 }
@@ -563,7 +665,8 @@ const DashboardAgentsAgentIdRouteChildren: DashboardAgentsAgentIdRouteChildren =
     DashboardAgentsAgentIdConversationsRoute:
       DashboardAgentsAgentIdConversationsRoute,
     DashboardAgentsAgentIdDeployRoute: DashboardAgentsAgentIdDeployRoute,
-    DashboardAgentsAgentIdKnowledgeRoute: DashboardAgentsAgentIdKnowledgeRoute,
+    DashboardAgentsAgentIdKnowledgeRoute:
+      DashboardAgentsAgentIdKnowledgeRouteWithChildren,
     DashboardAgentsAgentIdSettingsRoute: DashboardAgentsAgentIdSettingsRoute,
     DashboardAgentsAgentIdIndexRoute: DashboardAgentsAgentIdIndexRoute,
   }
@@ -674,9 +777,14 @@ export interface FileRoutesByFullPath {
   '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
-  '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRoute
+  '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRouteWithChildren
   '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRoute
   '/dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
+  '/dashboard/agents/$agentId/knowledge/qna': typeof DashboardAgentsAgentIdKnowledgeQnaRoute
+  '/dashboard/agents/$agentId/knowledge/text': typeof DashboardAgentsAgentIdKnowledgeTextRoute
+  '/dashboard/agents/$agentId/knowledge/upload': typeof DashboardAgentsAgentIdKnowledgeUploadRoute
+  '/dashboard/agents/$agentId/knowledge/url': typeof DashboardAgentsAgentIdKnowledgeUrlRoute
+  '/dashboard/agents/$agentId/knowledge/': typeof DashboardAgentsAgentIdKnowledgeIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -709,9 +817,13 @@ export interface FileRoutesByTo {
   '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
-  '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRoute
   '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdIndexRoute
+  '/dashboard/agents/$agentId/knowledge/qna': typeof DashboardAgentsAgentIdKnowledgeQnaRoute
+  '/dashboard/agents/$agentId/knowledge/text': typeof DashboardAgentsAgentIdKnowledgeTextRoute
+  '/dashboard/agents/$agentId/knowledge/upload': typeof DashboardAgentsAgentIdKnowledgeUploadRoute
+  '/dashboard/agents/$agentId/knowledge/url': typeof DashboardAgentsAgentIdKnowledgeUrlRoute
+  '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeIndexRoute
 }
 
 export interface FileRoutesById {
@@ -750,9 +862,14 @@ export interface FileRoutesById {
   '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
-  '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRoute
+  '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRouteWithChildren
   '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRoute
   '/dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
+  '/dashboard/agents/$agentId/knowledge/qna': typeof DashboardAgentsAgentIdKnowledgeQnaRoute
+  '/dashboard/agents/$agentId/knowledge/text': typeof DashboardAgentsAgentIdKnowledgeTextRoute
+  '/dashboard/agents/$agentId/knowledge/upload': typeof DashboardAgentsAgentIdKnowledgeUploadRoute
+  '/dashboard/agents/$agentId/knowledge/url': typeof DashboardAgentsAgentIdKnowledgeUrlRoute
+  '/dashboard/agents/$agentId/knowledge/': typeof DashboardAgentsAgentIdKnowledgeIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -795,6 +912,11 @@ export interface FileRouteTypes {
     | '/dashboard/agents/$agentId/knowledge'
     | '/dashboard/agents/$agentId/settings'
     | '/dashboard/agents/$agentId/'
+    | '/dashboard/agents/$agentId/knowledge/qna'
+    | '/dashboard/agents/$agentId/knowledge/text'
+    | '/dashboard/agents/$agentId/knowledge/upload'
+    | '/dashboard/agents/$agentId/knowledge/url'
+    | '/dashboard/agents/$agentId/knowledge/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -826,9 +948,13 @@ export interface FileRouteTypes {
     | '/dashboard/agents/$agentId/chat'
     | '/dashboard/agents/$agentId/conversations'
     | '/dashboard/agents/$agentId/deploy'
-    | '/dashboard/agents/$agentId/knowledge'
     | '/dashboard/agents/$agentId/settings'
     | '/dashboard/agents/$agentId'
+    | '/dashboard/agents/$agentId/knowledge/qna'
+    | '/dashboard/agents/$agentId/knowledge/text'
+    | '/dashboard/agents/$agentId/knowledge/upload'
+    | '/dashboard/agents/$agentId/knowledge/url'
+    | '/dashboard/agents/$agentId/knowledge'
   id:
     | '__root__'
     | '/'
@@ -868,6 +994,11 @@ export interface FileRouteTypes {
     | '/dashboard/agents/$agentId/knowledge'
     | '/dashboard/agents/$agentId/settings'
     | '/dashboard/agents/$agentId/'
+    | '/dashboard/agents/$agentId/knowledge/qna'
+    | '/dashboard/agents/$agentId/knowledge/text'
+    | '/dashboard/agents/$agentId/knowledge/upload'
+    | '/dashboard/agents/$agentId/knowledge/url'
+    | '/dashboard/agents/$agentId/knowledge/'
   fileRoutesById: FileRoutesById
 }
 
@@ -1091,7 +1222,14 @@ export const routeTree = rootRoute
     },
     "/dashboard/agents/$agentId/knowledge": {
       "filePath": "dashboard.agents.$agentId.knowledge.tsx",
-      "parent": "/dashboard/agents/$agentId"
+      "parent": "/dashboard/agents/$agentId",
+      "children": [
+        "/dashboard/agents/$agentId/knowledge/qna",
+        "/dashboard/agents/$agentId/knowledge/text",
+        "/dashboard/agents/$agentId/knowledge/upload",
+        "/dashboard/agents/$agentId/knowledge/url",
+        "/dashboard/agents/$agentId/knowledge/"
+      ]
     },
     "/dashboard/agents/$agentId/settings": {
       "filePath": "dashboard.agents.$agentId.settings.tsx",
@@ -1100,6 +1238,26 @@ export const routeTree = rootRoute
     "/dashboard/agents/$agentId/": {
       "filePath": "dashboard.agents.$agentId.index.tsx",
       "parent": "/dashboard/agents/$agentId"
+    },
+    "/dashboard/agents/$agentId/knowledge/qna": {
+      "filePath": "dashboard.agents.$agentId.knowledge.qna.tsx",
+      "parent": "/dashboard/agents/$agentId/knowledge"
+    },
+    "/dashboard/agents/$agentId/knowledge/text": {
+      "filePath": "dashboard.agents.$agentId.knowledge.text.tsx",
+      "parent": "/dashboard/agents/$agentId/knowledge"
+    },
+    "/dashboard/agents/$agentId/knowledge/upload": {
+      "filePath": "dashboard.agents.$agentId.knowledge.upload.tsx",
+      "parent": "/dashboard/agents/$agentId/knowledge"
+    },
+    "/dashboard/agents/$agentId/knowledge/url": {
+      "filePath": "dashboard.agents.$agentId.knowledge.url.tsx",
+      "parent": "/dashboard/agents/$agentId/knowledge"
+    },
+    "/dashboard/agents/$agentId/knowledge/": {
+      "filePath": "dashboard.agents.$agentId.knowledge.index.tsx",
+      "parent": "/dashboard/agents/$agentId/knowledge"
     }
   }
 }

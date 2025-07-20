@@ -219,10 +219,11 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 							<button
 								key={tab.id}
 								onClick={() => setActiveSettingsTab(tab.id)}
-								className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md mb-1 ${activeSettingsTab === tab.id
+								className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md mb-1 ${
+									activeSettingsTab === tab.id
 										? "bg-purple-50 text-purple-700 border-r-2 border-purple-500"
 										: "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-									}`}
+								}`}
 							>
 								<Icon className="mr-3 h-4 w-4" />
 								{tab.name}
@@ -468,10 +469,7 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 											<Label htmlFor="width" className="text-sm font-medium">
 												Width
 											</Label>
-											<Select
-												value={embedWidth}
-												onValueChange={setEmbedWidth}
-											>
+											<Select value={embedWidth} onValueChange={setEmbedWidth}>
 												<SelectTrigger>
 													<SelectValue />
 												</SelectTrigger>

@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { useMemo } from "react";
 import { api } from "../../convex/_generated/api";
 import { useOrganization } from "../contexts/OrganizationContext";
-import { useMemo } from "react";
 
 export const Route = createFileRoute("/dashboard/")({
 	component: DashboardOverview,
@@ -29,14 +29,26 @@ function DashboardOverview() {
 			};
 		}
 
-		const orgAgents = allAgents?.filter((agent: any) => agent.organizationId === currentOrganization._id) || [];
+		const orgAgents =
+			allAgents?.filter(
+				(agent: any) => agent.organizationId === currentOrganization._id,
+			) || [];
 		const agentIds = new Set(orgAgents.map((agent: any) => agent._id));
 
-		const orgConversations = allConversations?.filter((conv: any) => agentIds.has(conv.agentId)) || [];
-		const conversationIds = new Set(orgConversations.map((conv: any) => conv._id));
+		const orgConversations =
+			allConversations?.filter((conv: any) => agentIds.has(conv.agentId)) || [];
+		const conversationIds = new Set(
+			orgConversations.map((conv: any) => conv._id),
+		);
 
-		const orgKnowledge = allKnowledgeEntries?.filter((entry: any) => agentIds.has(entry.agentId)) || [];
-		const orgMessages = allMessages?.filter((msg: any) => conversationIds.has(msg.conversationId)) || [];
+		const orgKnowledge =
+			allKnowledgeEntries?.filter((entry: any) =>
+				agentIds.has(entry.agentId),
+			) || [];
+		const orgMessages =
+			allMessages?.filter((msg: any) =>
+				conversationIds.has(msg.conversationId),
+			) || [];
 
 		return {
 			agents: orgAgents,
@@ -44,7 +56,13 @@ function DashboardOverview() {
 			knowledgeEntries: orgKnowledge,
 			messages: orgMessages,
 		};
-	}, [currentOrganization, allAgents, allConversations, allKnowledgeEntries, allMessages]);
+	}, [
+		currentOrganization,
+		allAgents,
+		allConversations,
+		allKnowledgeEntries,
+		allMessages,
+	]);
 
 	// Calculate stats
 	const agentCount = agents.length;
@@ -66,7 +84,11 @@ function DashboardOverview() {
 				<h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
 				<p className="mt-1 text-sm text-gray-600">
 					{currentOrganization ? (
-						<>Welcome to <span className="font-medium">{currentOrganization.name}</span>. Manage your agents, conversations, and knowledge base.</>
+						<>
+							Welcome to{" "}
+							<span className="font-medium">{currentOrganization.name}</span>.
+							Manage your agents, conversations, and knowledge base.
+						</>
 					) : (
 						"Welcome to your AI Agent Platform. Manage your agents, conversations, and knowledge base."
 					)}
@@ -89,7 +111,14 @@ function DashboardOverview() {
 								Viewing: {currentOrganization.name}
 							</h3>
 							<p className="text-sm text-blue-700">
-								Your role: <span className="capitalize font-medium">{currentOrganization.memberRole}</span> • Plan: <span className="capitalize font-medium">{currentOrganization.plan}</span>
+								Your role:{" "}
+								<span className="capitalize font-medium">
+									{currentOrganization.memberRole}
+								</span>{" "}
+								• Plan:{" "}
+								<span className="capitalize font-medium">
+									{currentOrganization.plan}
+								</span>
 							</p>
 						</div>
 					</div>
@@ -109,7 +138,9 @@ function DashboardOverview() {
 							<div className="ml-5 w-0 flex-1">
 								<dl>
 									<dt className="text-sm font-medium text-gray-500 truncate">
-										{currentOrganization ? `Agents in ${currentOrganization.name}` : "Total Agents"}
+										{currentOrganization
+											? `Agents in ${currentOrganization.name}`
+											: "Total Agents"}
 									</dt>
 									<dd className="text-lg font-medium text-gray-900">
 										{isLoading ? (
@@ -207,7 +238,8 @@ function DashboardOverview() {
 			<div className="bg-white shadow rounded-lg">
 				<div className="px-6 py-4 border-b border-gray-200">
 					<h2 className="text-lg font-medium text-gray-900">
-						Getting Started {currentOrganization && `with ${currentOrganization.name}`}
+						Getting Started{" "}
+						{currentOrganization && `with ${currentOrganization.name}`}
 					</h2>
 				</div>
 				<div className="p-6">
@@ -215,12 +247,14 @@ function DashboardOverview() {
 						<div className="flex items-start">
 							<div className="flex-shrink-0">
 								<div
-									className={`w-6 h-6 rounded-full flex items-center justify-center ${agentCount > 0 ? "bg-green-100" : "bg-blue-100"
-										}`}
+									className={`w-6 h-6 rounded-full flex items-center justify-center ${
+										agentCount > 0 ? "bg-green-100" : "bg-blue-100"
+									}`}
 								>
 									<span
-										className={`text-sm font-medium ${agentCount > 0 ? "text-green-600" : "text-blue-600"
-											}`}
+										className={`text-sm font-medium ${
+											agentCount > 0 ? "text-green-600" : "text-blue-600"
+										}`}
 									>
 										{agentCount > 0 ? "✓" : "1"}
 									</span>
@@ -228,8 +262,9 @@ function DashboardOverview() {
 							</div>
 							<div className="ml-3">
 								<h3
-									className={`text-sm font-medium ${agentCount > 0 ? "text-green-900" : "text-gray-900"
-										}`}
+									className={`text-sm font-medium ${
+										agentCount > 0 ? "text-green-900" : "text-gray-900"
+									}`}
 								>
 									{agentCount > 0
 										? "Agent created!"
@@ -246,12 +281,14 @@ function DashboardOverview() {
 						<div className="flex items-start">
 							<div className="flex-shrink-0">
 								<div
-									className={`w-6 h-6 rounded-full flex items-center justify-center ${knowledgeCount > 0 ? "bg-green-100" : "bg-gray-100"
-										}`}
+									className={`w-6 h-6 rounded-full flex items-center justify-center ${
+										knowledgeCount > 0 ? "bg-green-100" : "bg-gray-100"
+									}`}
 								>
 									<span
-										className={`text-sm font-medium ${knowledgeCount > 0 ? "text-green-600" : "text-gray-600"
-											}`}
+										className={`text-sm font-medium ${
+											knowledgeCount > 0 ? "text-green-600" : "text-gray-600"
+										}`}
 									>
 										{knowledgeCount > 0 ? "✓" : "2"}
 									</span>
@@ -259,8 +296,9 @@ function DashboardOverview() {
 							</div>
 							<div className="ml-3">
 								<h3
-									className={`text-sm font-medium ${knowledgeCount > 0 ? "text-green-900" : "text-gray-900"
-										}`}
+									className={`text-sm font-medium ${
+										knowledgeCount > 0 ? "text-green-900" : "text-gray-900"
+									}`}
 								>
 									{knowledgeCount > 0 ? "Knowledge added!" : "Add knowledge"}
 								</h3>

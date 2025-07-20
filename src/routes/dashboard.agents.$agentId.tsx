@@ -5,8 +5,8 @@ import {
 	BookOpen,
 	Bot,
 	Brain,
-	MessageSquare,
 	Globe,
+	MessageSquare,
 	Settings,
 } from "lucide-react";
 import { api } from "../../convex/_generated/api";

@@ -1,27 +1,27 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import { SignInButton, UserButton } from "@clerk/clerk-react";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { Authenticated, Unauthenticated } from "convex/react";
 import {
-	Bot,
-	MessageSquare,
-	Zap,
-	Shield,
-	BarChart3,
-	Users,
 	ArrowRight,
+	BarChart3,
+	Bot,
 	Check,
-	Star,
-	Play,
-	Globe,
-	Clock,
-	TrendingUp,
-	Sparkles,
 	ChevronRight,
+	Clock,
+	Globe,
 	Menu,
+	MessageSquare,
+	Play,
+	Shield,
+	Sparkles,
+	Star,
+	TrendingUp,
+	Users,
 	X,
+	Zap,
 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
 	component: HomePage,
@@ -48,16 +48,28 @@ function HomePage() {
 
 						{/* Desktop Navigation */}
 						<div className="hidden md:flex items-center space-x-8">
-							<a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">
+							<a
+								href="#features"
+								className="text-gray-600 hover:text-gray-900 transition-colors"
+							>
 								Features
 							</a>
-							<a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">
+							<a
+								href="#how-it-works"
+								className="text-gray-600 hover:text-gray-900 transition-colors"
+							>
 								How it Works
 							</a>
-							<a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
+							<a
+								href="#pricing"
+								className="text-gray-600 hover:text-gray-900 transition-colors"
+							>
 								Pricing
 							</a>
-							<a href="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors">
+							<a
+								href="#testimonials"
+								className="text-gray-600 hover:text-gray-900 transition-colors"
+							>
 								Testimonials
 							</a>
 						</div>
@@ -104,16 +116,28 @@ function HomePage() {
 					{mobileMenuOpen && (
 						<div className="md:hidden py-4 border-t border-gray-200">
 							<div className="flex flex-col space-y-4">
-								<a href="#features" className="text-gray-600 hover:text-gray-900">
+								<a
+									href="#features"
+									className="text-gray-600 hover:text-gray-900"
+								>
 									Features
 								</a>
-								<a href="#how-it-works" className="text-gray-600 hover:text-gray-900">
+								<a
+									href="#how-it-works"
+									className="text-gray-600 hover:text-gray-900"
+								>
 									How it Works
 								</a>
-								<a href="#pricing" className="text-gray-600 hover:text-gray-900">
+								<a
+									href="#pricing"
+									className="text-gray-600 hover:text-gray-900"
+								>
 									Pricing
 								</a>
-								<a href="#testimonials" className="text-gray-600 hover:text-gray-900">
+								<a
+									href="#testimonials"
+									className="text-gray-600 hover:text-gray-900"
+								>
 									Testimonials
 								</a>
 								<div className="pt-4 border-t border-gray-200">
@@ -160,13 +184,15 @@ function HomePage() {
 								<h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
 									Build Intelligent
 									<span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-										{" "}AI Agents{" "}
+										{" "}
+										AI Agents{" "}
 									</span>
 									in Minutes
 								</h1>
 								<p className="text-xl text-gray-600 leading-relaxed">
-									Create custom AI chatbots that understand your business, engage customers 24/7, 
-									and convert visitors into leads. No coding required.
+									Create custom AI chatbots that understand your business,
+									engage customers 24/7, and convert visitors into leads. No
+									coding required.
 								</p>
 							</div>
 
@@ -219,20 +245,23 @@ function HomePage() {
 											<Bot className="w-6 h-6 text-white" />
 										</div>
 										<div>
-											<h3 className="font-semibold text-gray-900">Sales Assistant</h3>
+											<h3 className="font-semibold text-gray-900">
+												Sales Assistant
+											</h3>
 											<p className="text-sm text-green-500">● Online</p>
 										</div>
 									</div>
-									
+
 									<div className="space-y-3">
 										<div className="flex justify-start">
 											<div className="bg-gray-100 rounded-lg px-4 py-2 max-w-xs">
 												<p className="text-sm text-gray-800">
-													Hi! I'm here to help you find the perfect solution for your business. What are you looking for?
+													Hi! I'm here to help you find the perfect solution for
+													your business. What are you looking for?
 												</p>
 											</div>
 										</div>
-										
+
 										<div className="flex justify-end">
 											<div className="bg-blue-600 text-white rounded-lg px-4 py-2 max-w-xs">
 												<p className="text-sm">
@@ -240,19 +269,23 @@ function HomePage() {
 												</p>
 											</div>
 										</div>
-										
+
 										<div className="flex justify-start">
 											<div className="bg-gray-100 rounded-lg px-4 py-2 max-w-xs">
 												<p className="text-sm text-gray-800">
-													Perfect! I can help you set up an AI agent that handles customer inquiries, processes orders, and provides 24/7 support. Would you like to see a demo?
+													Perfect! I can help you set up an AI agent that
+													handles customer inquiries, processes orders, and
+													provides 24/7 support. Would you like to see a demo?
 												</p>
 											</div>
 										</div>
 									</div>
-									
+
 									<div className="flex items-center space-x-2 pt-2">
 										<div className="flex-1 bg-gray-100 rounded-lg px-3 py-2">
-											<p className="text-sm text-gray-500">Type your message...</p>
+											<p className="text-sm text-gray-500">
+												Type your message...
+											</p>
 										</div>
 										<button className="bg-blue-600 text-white p-2 rounded-lg">
 											<ArrowRight className="w-4 h-4" />
@@ -260,7 +293,7 @@ function HomePage() {
 									</div>
 								</div>
 							</div>
-							
+
 							{/* Floating Stats */}
 							<div className="absolute -top-4 -right-4 bg-white rounded-lg shadow-lg p-4">
 								<div className="flex items-center space-x-2">
@@ -271,7 +304,7 @@ function HomePage() {
 									</div>
 								</div>
 							</div>
-							
+
 							<div className="absolute -bottom-4 -left-4 bg-white rounded-lg shadow-lg p-4">
 								<div className="flex items-center space-x-2">
 									<Clock className="w-5 h-5 text-blue-500" />
@@ -290,12 +323,17 @@ function HomePage() {
 			<section className="py-12 bg-gray-50">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="text-center mb-8">
-						<p className="text-gray-600">Trusted by 10,000+ businesses worldwide</p>
+						<p className="text-gray-600">
+							Trusted by 10,000+ businesses worldwide
+						</p>
 					</div>
 					<div className="grid grid-cols-2 md:grid-cols-5 gap-8 items-center opacity-60">
 						{/* Placeholder for company logos */}
 						{[1, 2, 3, 4, 5].map((i) => (
-							<div key={i} className="h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+							<div
+								key={i}
+								className="h-12 bg-gray-300 rounded-lg flex items-center justify-center"
+							>
 								<span className="text-gray-500 font-semibold">Company {i}</span>
 							</div>
 						))}
@@ -311,8 +349,8 @@ function HomePage() {
 							Everything you need to build amazing AI agents
 						</h2>
 						<p className="text-xl text-gray-600 max-w-3xl mx-auto">
-							Powerful features that make creating and managing AI chatbots simple, 
-							effective, and scalable for businesses of all sizes.
+							Powerful features that make creating and managing AI chatbots
+							simple, effective, and scalable for businesses of all sizes.
 						</p>
 					</div>
 
@@ -321,46 +359,63 @@ function HomePage() {
 							{
 								icon: Bot,
 								title: "Smart AI Training",
-								description: "Upload documents, websites, or text to train your AI agent with your specific knowledge base.",
-								color: "blue"
+								description:
+									"Upload documents, websites, or text to train your AI agent with your specific knowledge base.",
+								color: "blue",
 							},
 							{
 								icon: MessageSquare,
 								title: "Natural Conversations",
-								description: "Advanced language models ensure human-like conversations that engage and convert visitors.",
-								color: "purple"
+								description:
+									"Advanced language models ensure human-like conversations that engage and convert visitors.",
+								color: "purple",
 							},
 							{
 								icon: Zap,
 								title: "Instant Setup",
-								description: "Get your AI agent up and running in minutes with our intuitive drag-and-drop builder.",
-								color: "yellow"
+								description:
+									"Get your AI agent up and running in minutes with our intuitive drag-and-drop builder.",
+								color: "yellow",
 							},
 							{
 								icon: Globe,
 								title: "Multi-Platform",
-								description: "Deploy your agent on websites, social media, messaging apps, and more with one click.",
-								color: "green"
+								description:
+									"Deploy your agent on websites, social media, messaging apps, and more with one click.",
+								color: "green",
 							},
 							{
 								icon: BarChart3,
 								title: "Advanced Analytics",
-								description: "Track conversations, measure performance, and optimize your agent with detailed insights.",
-								color: "red"
+								description:
+									"Track conversations, measure performance, and optimize your agent with detailed insights.",
+								color: "red",
 							},
 							{
 								icon: Shield,
 								title: "Enterprise Security",
-								description: "Bank-level security with data encryption, GDPR compliance, and secure hosting.",
-								color: "indigo"
-							}
+								description:
+									"Bank-level security with data encryption, GDPR compliance, and secure hosting.",
+								color: "indigo",
+							},
 						].map((feature, index) => (
-							<div key={index} className="group p-8 rounded-2xl border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300">
-								<div className={`w-12 h-12 bg-${feature.color}-100 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-									<feature.icon className={`w-6 h-6 text-${feature.color}-600`} />
+							<div
+								key={index}
+								className="group p-8 rounded-2xl border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300"
+							>
+								<div
+									className={`w-12 h-12 bg-${feature.color}-100 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
+								>
+									<feature.icon
+										className={`w-6 h-6 text-${feature.color}-600`}
+									/>
 								</div>
-								<h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
-								<p className="text-gray-600 leading-relaxed">{feature.description}</p>
+								<h3 className="text-xl font-semibold text-gray-900 mb-3">
+									{feature.title}
+								</h3>
+								<p className="text-gray-600 leading-relaxed">
+									{feature.description}
+								</p>
 							</div>
 						))}
 					</div>
@@ -375,7 +430,8 @@ function HomePage() {
 							How it works
 						</h2>
 						<p className="text-xl text-gray-600 max-w-3xl mx-auto">
-							Create your AI agent in three simple steps and start engaging customers immediately.
+							Create your AI agent in three simple steps and start engaging
+							customers immediately.
 						</p>
 					</div>
 
@@ -384,32 +440,39 @@ function HomePage() {
 							{
 								step: "01",
 								title: "Train Your Agent",
-								description: "Upload your knowledge base, website content, or documents. Our AI learns your business inside and out.",
-								icon: Bot
+								description:
+									"Upload your knowledge base, website content, or documents. Our AI learns your business inside and out.",
+								icon: Bot,
 							},
 							{
 								step: "02",
 								title: "Customize & Configure",
-								description: "Design your agent's personality, appearance, and conversation flows to match your brand perfectly.",
-								icon: Sparkles
+								description:
+									"Design your agent's personality, appearance, and conversation flows to match your brand perfectly.",
+								icon: Sparkles,
 							},
 							{
 								step: "03",
 								title: "Deploy Everywhere",
-								description: "Embed your agent on your website, social media, or messaging platforms with a simple code snippet.",
-								icon: Globe
-							}
+								description:
+									"Embed your agent on your website, social media, or messaging platforms with a simple code snippet.",
+								icon: Globe,
+							},
 						].map((step, index) => (
 							<div key={index} className="relative">
-		<div className="text-center">
+								<div className="text-center">
 									<div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-6">
 										{step.step}
 									</div>
 									<div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-6">
 										<step.icon className="w-6 h-6 text-blue-600" />
 									</div>
-									<h3 className="text-xl font-semibold text-gray-900 mb-4">{step.title}</h3>
-									<p className="text-gray-600 leading-relaxed">{step.description}</p>
+									<h3 className="text-xl font-semibold text-gray-900 mb-4">
+										{step.title}
+									</h3>
+									<p className="text-gray-600 leading-relaxed">
+										{step.description}
+									</p>
 								</div>
 								{index < 2 && (
 									<div className="hidden md:block absolute top-8 left-full w-full">
@@ -430,7 +493,8 @@ function HomePage() {
 							Simple, transparent pricing
 						</h2>
 						<p className="text-xl text-gray-600 max-w-3xl mx-auto">
-							Choose the perfect plan for your business. Start free and scale as you grow.
+							Choose the perfect plan for your business. Start free and scale as
+							you grow.
 						</p>
 					</div>
 
@@ -446,10 +510,10 @@ function HomePage() {
 									"100 conversations/month",
 									"Basic customization",
 									"Email support",
-									"Standard AI models"
+									"Standard AI models",
 								],
 								cta: "Get Started Free",
-								popular: false
+								popular: false,
 							},
 							{
 								name: "Professional",
@@ -463,10 +527,10 @@ function HomePage() {
 									"Priority support",
 									"GPT-4 access",
 									"Analytics dashboard",
-									"Custom branding"
+									"Custom branding",
 								],
 								cta: "Start Free Trial",
-								popular: true
+								popular: true,
 							},
 							{
 								name: "Enterprise",
@@ -480,13 +544,16 @@ function HomePage() {
 									"Dedicated support",
 									"Custom integrations",
 									"Advanced security",
-									"SLA guarantee"
+									"SLA guarantee",
 								],
 								cta: "Contact Sales",
-								popular: false
-							}
+								popular: false,
+							},
 						].map((plan, index) => (
-							<div key={index} className={`relative p-8 rounded-2xl border-2 ${plan.popular ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'} hover:shadow-lg transition-all duration-300`}>
+							<div
+								key={index}
+								className={`relative p-8 rounded-2xl border-2 ${plan.popular ? "border-blue-600 bg-blue-50" : "border-gray-200 bg-white"} hover:shadow-lg transition-all duration-300`}
+							>
 								{plan.popular && (
 									<div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
 										<span className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-medium">
@@ -494,12 +561,18 @@ function HomePage() {
 										</span>
 									</div>
 								)}
-								
+
 								<div className="text-center mb-8">
-									<h3 className="text-xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
+									<h3 className="text-xl font-semibold text-gray-900 mb-2">
+										{plan.name}
+									</h3>
 									<div className="mb-4">
-										<span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-										{plan.period && <span className="text-gray-600 ml-2">{plan.period}</span>}
+										<span className="text-4xl font-bold text-gray-900">
+											{plan.price}
+										</span>
+										{plan.period && (
+											<span className="text-gray-600 ml-2">{plan.period}</span>
+										)}
 									</div>
 									<p className="text-gray-600">{plan.description}</p>
 								</div>
@@ -515,8 +588,8 @@ function HomePage() {
 
 								<Unauthenticated>
 									<SignInButton>
-										<Button 
-											className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
+										<Button
+											className={`w-full ${plan.popular ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"}`}
 										>
 											{plan.cta}
 										</Button>
@@ -524,8 +597,8 @@ function HomePage() {
 								</Unauthenticated>
 								<Authenticated>
 									<Link to="/dashboard">
-										<Button 
-											className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-900'}`}
+										<Button
+											className={`w-full ${plan.popular ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"}`}
 										>
 											Go to Dashboard
 										</Button>
@@ -545,38 +618,48 @@ function HomePage() {
 							Loved by businesses worldwide
 						</h2>
 						<p className="text-xl text-gray-600 max-w-3xl mx-auto">
-							See how companies are using ChatBox to transform their customer experience.
+							See how companies are using ChatBox to transform their customer
+							experience.
 						</p>
 					</div>
 
 					<div className="grid md:grid-cols-3 gap-8">
 						{[
 							{
-								quote: "ChatBox helped us reduce support tickets by 70% while improving customer satisfaction. The AI agent handles routine questions perfectly, letting our team focus on complex issues.",
+								quote:
+									"ChatBox helped us reduce support tickets by 70% while improving customer satisfaction. The AI agent handles routine questions perfectly, letting our team focus on complex issues.",
 								author: "Sarah Johnson",
 								role: "Customer Success Manager",
 								company: "TechCorp",
-								rating: 5
+								rating: 5,
 							},
 							{
-								quote: "Implementation was incredibly smooth. Within a week, we had a fully functional AI agent that understood our products and could guide customers through purchases.",
+								quote:
+									"Implementation was incredibly smooth. Within a week, we had a fully functional AI agent that understood our products and could guide customers through purchases.",
 								author: "Mike Chen",
 								role: "E-commerce Director",
 								company: "ShopPlus",
-								rating: 5
+								rating: 5,
 							},
 							{
-								quote: "The analytics insights are game-changing. We can see exactly what customers are asking about and optimize our agent's responses for better conversions.",
+								quote:
+									"The analytics insights are game-changing. We can see exactly what customers are asking about and optimize our agent's responses for better conversions.",
 								author: "Emily Rodriguez",
 								role: "Marketing Manager",
 								company: "GrowthCo",
-								rating: 5
-							}
+								rating: 5,
+							},
 						].map((testimonial, index) => (
-							<div key={index} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
+							<div
+								key={index}
+								className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200"
+							>
 								<div className="flex items-center mb-4">
 									{[...Array(testimonial.rating)].map((_, i) => (
-										<Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+										<Star
+											key={i}
+											className="w-5 h-5 text-yellow-400 fill-current"
+										/>
 									))}
 								</div>
 								<blockquote className="text-gray-700 mb-6 leading-relaxed">
@@ -584,11 +667,18 @@ function HomePage() {
 								</blockquote>
 								<div className="flex items-center">
 									<div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold mr-4">
-										{testimonial.author.split(' ').map(n => n[0]).join('')}
+										{testimonial.author
+											.split(" ")
+											.map((n) => n[0])
+											.join("")}
 									</div>
 									<div>
-										<p className="font-semibold text-gray-900">{testimonial.author}</p>
-										<p className="text-sm text-gray-600">{testimonial.role} at {testimonial.company}</p>
+										<p className="font-semibold text-gray-900">
+											{testimonial.author}
+										</p>
+										<p className="text-sm text-gray-600">
+											{testimonial.role} at {testimonial.company}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -604,7 +694,7 @@ function HomePage() {
 						Ready to transform your customer experience?
 					</h2>
 					<p className="text-xl text-blue-100 mb-8 leading-relaxed">
-						Join thousands of businesses using ChatBox to engage customers, 
+						Join thousands of businesses using ChatBox to engage customers,
 						generate leads, and provide 24/7 support with intelligent AI agents.
 					</p>
 					<div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -647,37 +737,86 @@ function HomePage() {
 								<span className="text-xl font-bold">ChatBox</span>
 							</div>
 							<p className="text-gray-400 leading-relaxed">
-								Build intelligent AI agents that engage customers and grow your business.
+								Build intelligent AI agents that engage customers and grow your
+								business.
 							</p>
 						</div>
 
 						<div>
 							<h4 className="font-semibold mb-4">Product</h4>
 							<ul className="space-y-2 text-gray-400">
-								<li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-								<li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
-								<li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
-								<li><a href="#" className="hover:text-white transition-colors">API</a></li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Features
+									</a>
+								</li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Pricing
+									</a>
+								</li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Integrations
+									</a>
+								</li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										API
+									</a>
+								</li>
 							</ul>
 						</div>
 
 						<div>
 							<h4 className="font-semibold mb-4">Company</h4>
 							<ul className="space-y-2 text-gray-400">
-								<li><a href="#" className="hover:text-white transition-colors">About</a></li>
-								<li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-								<li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-								<li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										About
+									</a>
+								</li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Blog
+									</a>
+								</li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Careers
+									</a>
+								</li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Contact
+									</a>
+								</li>
 							</ul>
 						</div>
 
 						<div>
 							<h4 className="font-semibold mb-4">Support</h4>
 							<ul className="space-y-2 text-gray-400">
-								<li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-								<li><a href="#" className="hover:text-white transition-colors">Documentation</a></li>
-								<li><a href="#" className="hover:text-white transition-colors">Community</a></li>
-								<li><a href="#" className="hover:text-white transition-colors">Status</a></li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Help Center
+									</a>
+								</li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Documentation
+									</a>
+								</li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Community
+									</a>
+								</li>
+								<li>
+									<a href="#" className="hover:text-white transition-colors">
+										Status
+									</a>
+								</li>
 							</ul>
 						</div>
 					</div>
@@ -687,9 +826,24 @@ function HomePage() {
 							© 2024 ChatBox. All rights reserved.
 						</p>
 						<div className="flex space-x-6 mt-4 md:mt-0">
-							<a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
-							<a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
-							<a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Cookie Policy</a>
+							<a
+								href="#"
+								className="text-gray-400 hover:text-white text-sm transition-colors"
+							>
+								Privacy Policy
+							</a>
+							<a
+								href="#"
+								className="text-gray-400 hover:text-white text-sm transition-colors"
+							>
+								Terms of Service
+							</a>
+							<a
+								href="#"
+								className="text-gray-400 hover:text-white text-sm transition-colors"
+							>
+								Cookie Policy
+							</a>
 						</div>
 					</div>
 				</div>

@@ -5,8 +5,8 @@ import {
 	BookOpen,
 	Bot,
 	Brain,
-	MessageSquare,
 	Globe,
+	MessageSquare,
 } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 
@@ -50,8 +50,8 @@ function AgentOverview() {
 					Agent not found
 				</h3>
 				<p className="mt-1 text-sm text-gray-500">
-					The agent you're looking for doesn't exist or you don't have
-					access to it.
+					The agent you're looking for doesn't exist or you don't have access to
+					it.
 				</p>
 				<div className="mt-6">
 					<button
@@ -76,15 +76,13 @@ function AgentOverview() {
 							<Bot className="h-8 w-8 text-blue-600" />
 						</div>
 						<div className="flex-1">
-							<h1 className="text-3xl font-bold text-gray-900">
-								{agent.name}
-							</h1>
+							<h1 className="text-3xl font-bold text-gray-900">{agent.name}</h1>
 							<p className="text-lg text-gray-600 mt-2">
 								{agent.description || "No description provided"}
 							</p>
 							<p className="text-sm text-gray-500 mt-2">
-								Created {new Date(agent._creationTime).toLocaleDateString()}{" "}
-								• Last updated{" "}
+								Created {new Date(agent._creationTime).toLocaleDateString()} •
+								Last updated{" "}
 								{new Date(agent._creationTime).toLocaleDateString()}
 							</p>
 						</div>
@@ -116,9 +114,7 @@ function AgentOverview() {
 					<div className="flex items-center">
 						<MessageSquare className="h-10 w-10 text-green-500" />
 						<div className="ml-4">
-							<p className="text-sm font-medium text-gray-500">
-								Conversations
-							</p>
+							<p className="text-sm font-medium text-gray-500">Conversations</p>
 							<p className="text-3xl font-semibold text-gray-900">
 								{conversations?.length || 0}
 							</p>
@@ -154,9 +150,7 @@ function AgentOverview() {
 							<div className="text-2xl font-bold text-blue-600">
 								{knowledgeStats.totalEntries}
 							</div>
-							<div className="text-sm text-gray-500">
-								Total Sources
-							</div>
+							<div className="text-sm text-gray-500">Total Sources</div>
 						</div>
 						<div className="text-center">
 							<div className="text-2xl font-bold text-green-600">
@@ -168,9 +162,7 @@ function AgentOverview() {
 							<div className="text-2xl font-bold text-orange-600">
 								{knowledgeStats.entriesNeedingEmbeddings}
 							</div>
-							<div className="text-sm text-gray-500">
-								Need Training
-							</div>
+							<div className="text-sm text-gray-500">Need Training</div>
 						</div>
 						<div className="text-center">
 							<div className="text-2xl font-bold text-purple-600">
@@ -183,9 +175,9 @@ function AgentOverview() {
 						<div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
 							<p className="text-sm text-orange-800">
 								<strong>Action needed:</strong>{" "}
-								{knowledgeStats.entriesNeedingEmbeddings} knowledge
-								sources need training. Go to the Knowledge Base section
-								and click "Train Agent" to improve response quality.
+								{knowledgeStats.entriesNeedingEmbeddings} knowledge sources need
+								training. Go to the Knowledge Base section and click "Train
+								Agent" to improve response quality.
 							</p>
 						</div>
 					)}
@@ -199,37 +191,37 @@ function AgentOverview() {
 				</h3>
 				<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 					<button
-						onClick={() => navigate({ to: `/dashboard/agents/${agentId}/chat` })}
+						onClick={() =>
+							navigate({ to: `/dashboard/agents/${agentId}/chat` })
+						}
 						className="text-left p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
 					>
 						<MessageSquare className="h-6 w-6 text-green-500 mb-2" />
-						<h4 className="font-medium text-gray-900">
-							Test Agent
-						</h4>
+						<h4 className="font-medium text-gray-900">Test Agent</h4>
 						<p className="text-sm text-gray-600">
 							Chat with your agent in the playground
 						</p>
 					</button>
 					<button
-						onClick={() => navigate({ to: `/dashboard/agents/${agentId}/knowledge` })}
+						onClick={() =>
+							navigate({ to: `/dashboard/agents/${agentId}/knowledge` })
+						}
 						className="text-left p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
 					>
 						<BookOpen className="h-6 w-6 text-blue-500 mb-2" />
-						<h4 className="font-medium text-gray-900">
-							Add Knowledge
-						</h4>
+						<h4 className="font-medium text-gray-900">Add Knowledge</h4>
 						<p className="text-sm text-gray-600">
 							Upload documents or add text content
 						</p>
 					</button>
 					<button
-						onClick={() => navigate({ to: `/dashboard/agents/${agentId}/deploy` })}
+						onClick={() =>
+							navigate({ to: `/dashboard/agents/${agentId}/deploy` })
+						}
 						className="text-left p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
 					>
 						<Globe className="h-6 w-6 text-purple-500 mb-2" />
-						<h4 className="font-medium text-gray-900">
-							Deploy Agent
-						</h4>
+						<h4 className="font-medium text-gray-900">Deploy Agent</h4>
 						<p className="text-sm text-gray-600">
 							Get embed code for your website
 						</p>
@@ -238,4 +230,4 @@ function AgentOverview() {
 			</div>
 		</div>
 	);
-} 
+}

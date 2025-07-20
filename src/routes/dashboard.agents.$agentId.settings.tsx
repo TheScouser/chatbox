@@ -41,9 +41,7 @@ function AgentSettings() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-2xl font-bold text-gray-900">
-					Agent Settings
-				</h3>
+				<h3 className="text-2xl font-bold text-gray-900">Agent Settings</h3>
 				<p className="mt-1 text-gray-600">
 					Configure your agent's behavior, appearance, and other settings.
 				</p>
@@ -52,4 +50,4 @@ function AgentSettings() {
 			<SettingsPanel agent={agent} />
 		</div>
 	);
-} 
+}

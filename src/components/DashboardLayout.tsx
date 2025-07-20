@@ -1,23 +1,26 @@
 import { UserButton } from "@clerk/clerk-react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "convex/react";
 import {
+	BarChart3,
+	Bell,
 	BookOpen,
 	Bot,
+	Building2,
 	ChevronDown,
+	ChevronRight,
+	CreditCard,
+	FileText,
+	Globe,
 	Home,
 	MessageSquare,
 	Plus,
-	Settings,
 	Search,
-	Bell,
-	Globe,
-	BarChart3,
-	CreditCard,
+	Settings,
 	TrendingUp,
-	Building2,
+	Upload,
 } from "lucide-react";
-import { useState } from "react";
-import { useQuery } from "convex/react";
+import React, { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { useOrganization } from "../contexts/OrganizationContext";
 
@@ -29,16 +32,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [showAgentsDropdown, setShowAgentsDropdown] = useState(false);
-	const [showOrganizationsDropdown, setShowOrganizationsDropdown] = useState(false);
+	const [showOrganizationsDropdown, setShowOrganizationsDropdown] =
+		useState(false);
 	const [agentSearch, setAgentSearch] = useState("");
 	const [organizationSearch, setOrganizationSearch] = useState("");
+	const [expandedKnowledgeBase, setExpandedKnowledgeBase] = useState(false);
 
 	// Use organization context
 	const {
 		selectedOrganizationId,
 		setSelectedOrganizationId,
 		currentOrganization,
-		organizations
+		organizations,
 	} = useOrganization();
 
 	// Fetch agents for the selector
@@ -54,7 +59,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	// Agent-specific navigation (left sidebar)
 	const agentNavigation = [
 		{ name: "Overview", href: "", icon: Home },
-		{ name: "Knowledge Base", href: "/knowledge", icon: BookOpen },
+		{
+			name: "Knowledge Base",
+			href: "/knowledge",
+			icon: BookOpen,
+			expandable: true,
+			children: [
+				{ name: "Text", href: "/knowledge/text", icon: FileText },
+				{ name: "Q&A", href: "/knowledge/qna", icon: MessageSquare },
+				{ name: "Files", href: "/knowledge/upload", icon: Upload },
+				{ name: "Website", href: "/knowledge/url", icon: Globe },
+			],
+		},
 		{ name: "Chat Playground", href: "/chat", icon: MessageSquare },
 		{ name: "Conversations", href: "/conversations", icon: MessageSquare },
 		{ name: "Deploy", href: "/deploy", icon: Globe },
@@ -78,12 +94,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			// Overview - exact match to agent base path
 			return location.pathname === basePath;
 		}
+
 		return location.pathname.startsWith(basePath + navHref);
 	};
 
 	// Get current agent if we're on an agent page
 	const getCurrentAgent = () => {
-		const agentIdMatch = location.pathname.match(/\/dashboard\/agents\/([^\/]+)/);
+		const agentIdMatch = location.pathname.match(
+			/\/dashboard\/agents\/([^\/]+)/,
+		);
 		if (agentIdMatch && agents) {
 			const agentId = agentIdMatch[1];
 			return agents.find((agent: any) => agent._id === agentId);
@@ -93,11 +112,27 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 	const currentAgent = getCurrentAgent();
 
+	// Auto-expand Knowledge Base if we're on a knowledge page
+	const isOnKnowledgePage =
+		currentAgent &&
+		location.pathname.includes(
+			`/dashboard/agents/${currentAgent._id}/knowledge`,
+		);
+
+	// Use effect to auto-expand when on knowledge page
+	React.useEffect(() => {
+		if (isOnKnowledgePage) {
+			setExpandedKnowledgeBase(true);
+		}
+	}, [isOnKnowledgePage]);
+
 	// Update organization selection logic for agent context
 	const getOrganizationForAgent = () => {
 		const currentAgent = getCurrentAgent();
 		if (currentAgent && organizations) {
-			const agentOrg = organizations.find((org: any) => org._id === currentAgent.organizationId);
+			const agentOrg = organizations.find(
+				(org: any) => org._id === currentAgent.organizationId,
+			);
 			if (agentOrg && agentOrg._id !== selectedOrganizationId) {
 				// Auto-switch to agent's organization if we're viewing an agent from a different org
 				setSelectedOrganizationId(agentOrg._id);
@@ -110,19 +145,26 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const displayOrganization = getOrganizationForAgent();
 
 	// Filter organizations based on search
-	const filteredOrganizations = organizations?.filter((org: any) =>
-		org.name.toLowerCase().includes(organizationSearch.toLowerCase())
-	) || [];
+	const filteredOrganizations =
+		organizations?.filter((org: any) =>
+			org.name.toLowerCase().includes(organizationSearch.toLowerCase()),
+		) || [];
 
 	// Filter agents based on search and current organization
-	const filteredAgents = agents?.filter((agent: any) => {
-		const matchesSearch = agent.name.toLowerCase().includes(agentSearch.toLowerCase());
-		const matchesOrg = displayOrganization ? agent.organizationId === displayOrganization._id : true;
-		return matchesSearch && matchesOrg;
-	}) || [];
+	const filteredAgents =
+		agents?.filter((agent: any) => {
+			const matchesSearch = agent.name
+				.toLowerCase()
+				.includes(agentSearch.toLowerCase());
+			const matchesOrg = displayOrganization
+				? agent.organizationId === displayOrganization._id
+				: true;
+			return matchesSearch && matchesOrg;
+		}) || [];
 
 	// Check if we're on an agent page to show the sidebar
-	const showAgentSidebar = location.pathname.includes('/dashboard/agents/') && currentAgent;
+	const showAgentSidebar =
+		location.pathname.includes("/dashboard/agents/") && currentAgent;
 
 	return (
 		<div className="min-h-screen bg-gray-50 flex">
@@ -149,7 +191,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 						<div className="space-y-1">
 							{agentNavigation.map((item) => {
 								const Icon = item.icon;
-								const href = currentAgent ? `/dashboard/agents/${currentAgent._id}${item.href}` : '#';
+								const href = currentAgent
+									? `/dashboard/agents/${currentAgent._id}${item.href}`
+									: "#";
 
 								if (item.disabled) {
 									return (
@@ -166,14 +210,89 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									);
 								}
 
+								// Handle expandable items (like Knowledge Base)
+								if (item.expandable && item.children) {
+									const isKnowledgeBaseActive =
+										isAgentNavActive(item.href) ||
+										(item.children &&
+											item.children.some((child) =>
+												isAgentNavActive(child.href),
+											));
+									const isExpanded =
+										item.name === "Knowledge Base"
+											? expandedKnowledgeBase
+											: false;
+
+									return (
+										<div key={item.name}>
+											{/* Parent Item */}
+											<div
+												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
+													isKnowledgeBaseActive
+														? "bg-blue-50 text-blue-700"
+														: "text-gray-700 hover:bg-gray-50"
+												}`}
+												onClick={() => {
+													if (item.name === "Knowledge Base") {
+														setExpandedKnowledgeBase(!expandedKnowledgeBase);
+													}
+													// Also navigate to the parent page
+													if (currentAgent) {
+														navigate({
+															to: `/dashboard/agents/${currentAgent._id}${item.href}`,
+														});
+													}
+												}}
+											>
+												<Icon className="mr-3 h-4 w-4" />
+												{item.name}
+												{isExpanded ? (
+													<ChevronDown className="ml-auto h-4 w-4" />
+												) : (
+													<ChevronRight className="ml-auto h-4 w-4" />
+												)}
+											</div>
+
+											{/* Child Items */}
+											{isExpanded && (
+												<div className="ml-6 mt-1 space-y-1">
+													{item.children.map((child) => {
+														const ChildIcon = child.icon;
+														const childHref = currentAgent
+															? `/dashboard/agents/${currentAgent._id}${child.href}`
+															: "#";
+
+														return (
+															<Link
+																key={child.name}
+																to={childHref}
+																className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+																	isAgentNavActive(child.href)
+																		? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
+																		: "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+																}`}
+															>
+																<ChildIcon className="mr-3 h-4 w-4" />
+																{child.name}
+															</Link>
+														);
+													})}
+												</div>
+											)}
+										</div>
+									);
+								}
+
+								// Regular navigation items
 								return (
 									<Link
 										key={item.name}
 										to={href}
-										className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${isAgentNavActive(item.href)
-											? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-											: "text-gray-700 hover:bg-gray-50"
-											}`}
+										className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+											isAgentNavActive(item.href)
+												? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
+												: "text-gray-700 hover:bg-gray-50"
+										}`}
 									>
 										<Icon className="mr-3 h-4 w-4" />
 										{item.name}
@@ -189,8 +308,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 							to="/dashboard/agents"
 							className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
 						>
-							<Bot className="mr-3 h-4 w-4" />
-							← Back to All Agents
+							<Bot className="mr-3 h-4 w-4" />← Back to All Agents
 						</Link>
 					</div>
 				</div>
@@ -217,13 +335,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 								{/* Organization Selector */}
 								<div className="relative">
 									<button
-										onClick={() => setShowOrganizationsDropdown(!showOrganizationsDropdown)}
+										onClick={() =>
+											setShowOrganizationsDropdown(!showOrganizationsDropdown)
+										}
 										className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors min-w-[180px] justify-between"
 									>
 										<div className="flex items-center">
 											<Building2 className="w-4 h-4 mr-2 text-gray-500" />
 											<span className="truncate">
-												{displayOrganization ? displayOrganization.name : "Select Organization"}
+												{displayOrganization
+													? displayOrganization.name
+													: "Select Organization"}
 											</span>
 										</div>
 										<ChevronDown className="w-4 h-4 text-gray-400" />
@@ -240,7 +362,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 														type="text"
 														placeholder="Search organizations..."
 														value={organizationSearch}
-														onChange={(e) => setOrganizationSearch(e.target.value)}
+														onChange={(e) =>
+															setOrganizationSearch(e.target.value)
+														}
 														className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 													/>
 												</div>
@@ -265,7 +389,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 															</div>
 														) : filteredOrganizations.length === 0 ? (
 															<div className="px-3 py-4 text-sm text-gray-500 text-center">
-																{organizationSearch ? "No organizations found" : "No organizations yet"}
+																{organizationSearch
+																	? "No organizations found"
+																	: "No organizations yet"}
 															</div>
 														) : (
 															<div className="space-y-1">
@@ -278,10 +404,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																			setShowOrganizationsDropdown(false);
 																			setOrganizationSearch("");
 																		}}
-																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${displayOrganization?._id === org._id
-																			? "bg-blue-50 text-blue-700"
-																			: "hover:bg-gray-50 text-gray-700"
-																			}`}
+																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
+																			displayOrganization?._id === org._id
+																				? "bg-blue-50 text-blue-700"
+																				: "hover:bg-gray-50 text-gray-700"
+																		}`}
 																	>
 																		<Building2 className="w-4 h-4 mr-3 text-gray-400" />
 																		<div className="flex-1 min-w-0">
@@ -313,7 +440,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 														className="w-full flex items-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
 													>
 														<Plus className="w-4 h-4 mr-3" />
-														<span className="font-medium">Create organization</span>
+														<span className="font-medium">
+															Create organization
+														</span>
 													</button>
 												</div>
 											</div>
@@ -381,7 +510,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 															</div>
 														) : filteredAgents.length === 0 ? (
 															<div className="px-3 py-4 text-sm text-gray-500 text-center">
-																{agentSearch ? "No agents found" : displayOrganization ? `No agents in ${displayOrganization.name}` : "No agents yet"}
+																{agentSearch
+																	? "No agents found"
+																	: displayOrganization
+																		? `No agents in ${displayOrganization.name}`
+																		: "No agents yet"}
 															</div>
 														) : (
 															<div className="space-y-1">
@@ -389,14 +522,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																	<button
 																		key={agent._id}
 																		onClick={() => {
-																			navigate({ to: `/dashboard/agents/${agent._id}` });
+																			navigate({
+																				to: `/dashboard/agents/${agent._id}`,
+																			});
 																			setShowAgentsDropdown(false);
 																			setAgentSearch("");
 																		}}
-																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${currentAgent?._id === agent._id
-																			? "bg-blue-50 text-blue-700"
-																			: "hover:bg-gray-50 text-gray-700"
-																			}`}
+																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
+																			currentAgent?._id === agent._id
+																				? "bg-blue-50 text-blue-700"
+																				: "hover:bg-gray-50 text-gray-700"
+																		}`}
 																	>
 																		<Bot className="w-4 h-4 mr-3 text-gray-400" />
 																		<div className="flex-1 min-w-0">
@@ -449,10 +585,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 											<Link
 												key={item.name}
 												to={item.href}
-												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive(item.href)
-													? "bg-blue-50 text-blue-700"
-													: "text-gray-700 hover:bg-gray-100"
-													}`}
+												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+													isActive(item.href)
+														? "bg-blue-50 text-blue-700"
+														: "text-gray-700 hover:bg-gray-100"
+												}`}
 											>
 												<Icon className="mr-1.5 h-4 w-4" />
 												{item.name}
@@ -510,10 +647,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 													<Link
 														key={item.name}
 														to={item.href}
-														className={`flex items-center px-2 py-1.5 text-xs font-medium rounded whitespace-nowrap transition-colors ${isActive(item.href)
-															? "bg-blue-100 text-blue-700"
-															: "text-gray-600 hover:text-gray-900"
-															}`}
+														className={`flex items-center px-2 py-1.5 text-xs font-medium rounded whitespace-nowrap transition-colors ${
+															isActive(item.href)
+																? "bg-blue-100 text-blue-700"
+																: "text-gray-600 hover:text-gray-900"
+														}`}
 													>
 														<Icon className="mr-1 h-3 w-3" />
 														{item.name}
@@ -537,7 +675,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 				{/* Main content */}
 				<main className="flex-1 py-4">
-					<div className={`mx-auto px-4 lg:px-6 ${showAgentSidebar ? 'max-w-full' : 'max-w-[1600px]'}`}>
+					<div
+						className={`mx-auto px-4 lg:px-6 ${showAgentSidebar ? "max-w-full" : "max-w-[1600px]"}`}
+					>
 						{children}
 					</div>
 				</main>

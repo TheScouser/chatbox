@@ -143,9 +143,7 @@ function CreateAgent() {
 							id="description"
 							rows={4}
 							value={formData.description}
-							onChange={(e) =>
-								handleInputChange("description", e.target.value)
-							}
+							onChange={(e) => handleInputChange("description", e.target.value)}
 							className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
 								errors.description ? "border-red-300" : "border-gray-300"
 							}`}
@@ -153,9 +151,7 @@ function CreateAgent() {
 							maxLength={500}
 						/>
 						{errors.description && (
-							<p className="mt-1 text-sm text-red-600">
-								{errors.description}
-							</p>
+							<p className="mt-1 text-sm text-red-600">{errors.description}</p>
 						)}
 						<p className="mt-1 text-sm text-gray-500">
 							{formData.description.length}/500 characters
