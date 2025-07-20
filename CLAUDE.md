@@ -75,7 +75,7 @@ This is a **chatbot/AI agent platform** built with React + Convex, supporting mu
 - `dashboard.*.tsx` - Multi-tenant dashboard pages
 - `embed.$agentId.tsx` - Embeddable widget endpoint
 - `chat.$agentId.tsx` - Standalone chat interface
-- `demo.*.tsx` - Demo/test pages (can be deleted)
+- `widget-demo.$agentId.tsx` - Widget demo page for testing widget integration
 
 **`/src/components/`** - React components
 - `ui/` - Shadcn UI components
