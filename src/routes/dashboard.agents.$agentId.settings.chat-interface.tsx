@@ -4,7 +4,9 @@ import { MessageSquare, Settings } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import ChatInterfaceSettings from "../components/ChatInterfaceSettings";
 
-export const Route = createFileRoute("/dashboard/agents/$agentId/settings/chat-interface")({
+export const Route = createFileRoute(
+	"/dashboard/agents/$agentId/settings/chat-interface",
+)({
 	component: AgentChatInterfaceSettings,
 });
 

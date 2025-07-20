@@ -4,6 +4,7 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import Header from "../components/Header";
 
 import { OrganizationProvider } from "../contexts/OrganizationContext";
+import { ThemeProvider } from "../contexts/ThemeContext";
 import ClerkProvider from "../integrations/clerk/provider.tsx";
 import ConvexProvider from "../integrations/convex/provider.tsx";
 
@@ -22,23 +23,25 @@ function RootComponent() {
 
 	return (
 		<>
-			<ClerkProvider>
-				<ConvexProvider>
-					{needsOrganization ? (
-						<OrganizationProvider>
-							{showHeader && <Header />}
-							<Outlet />
-							<TanStackRouterDevtools />
-						</OrganizationProvider>
-					) : (
-						<>
-							{showHeader && <Header />}
-							<Outlet />
-							<TanStackRouterDevtools />
-						</>
-					)}
-				</ConvexProvider>
-			</ClerkProvider>
+			<ThemeProvider>
+				<ClerkProvider>
+					<ConvexProvider>
+						{needsOrganization ? (
+							<OrganizationProvider>
+								{showHeader && <Header />}
+								<Outlet />
+								<TanStackRouterDevtools />
+							</OrganizationProvider>
+						) : (
+							<>
+								{showHeader && <Header />}
+								<Outlet />
+								<TanStackRouterDevtools />
+							</>
+						)}
+					</ConvexProvider>
+				</ClerkProvider>
+			</ThemeProvider>
 		</>
 	);
 }

@@ -14,7 +14,9 @@ interface ChatInterfaceSettingsProps {
 	agent: any;
 }
 
-export default function ChatInterfaceSettings({ agent }: ChatInterfaceSettingsProps) {
+export default function ChatInterfaceSettings({
+	agent,
+}: ChatInterfaceSettingsProps) {
 	// Chat interface state
 	const [embedWidth, setEmbedWidth] = useState("400");
 	const [embedHeight, setEmbedHeight] = useState("600");
@@ -61,10 +63,7 @@ export default function ChatInterfaceSettings({ agent }: ChatInterfaceSettingsPr
 							<Label htmlFor="height" className="text-sm font-medium">
 								Height
 							</Label>
-							<Select
-								value={embedHeight}
-								onValueChange={setEmbedHeight}
-							>
+							<Select value={embedHeight} onValueChange={setEmbedHeight}>
 								<SelectTrigger>
 									<SelectValue />
 								</SelectTrigger>
@@ -102,17 +101,14 @@ export default function ChatInterfaceSettings({ agent }: ChatInterfaceSettingsPr
 
 					{/* Preview */}
 					<div className="mt-6 p-4 bg-gray-50 rounded-lg">
-						<h5 className="text-sm font-medium text-gray-900 mb-2">
-							Preview
-						</h5>
+						<h5 className="text-sm font-medium text-gray-900 mb-2">Preview</h5>
 						<div className="text-xs text-gray-600 mb-3">
 							Widget size: {embedWidth} × {embedHeight}
 						</div>
 						<div
 							className="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm"
 							style={{
-								width:
-									embedWidth === "100%" ? "100%" : `${embedWidth}px`,
+								width: embedWidth === "100%" ? "100%" : `${embedWidth}px`,
 								height: "120px",
 								maxWidth: "100%",
 							}}

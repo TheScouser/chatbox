@@ -58,9 +58,7 @@ export default function AISettings({ agent }: AISettingsProps) {
 			<div className="p-6 space-y-8">
 				{/* Model Selection */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-gray-700">
-						Model
-					</Label>
+					<Label className="text-sm font-medium text-gray-700">Model</Label>
 					<div className="mb-2">
 						<span className="inline-block px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded">
 							Claude 4 models are now available
@@ -130,10 +128,9 @@ export default function AISettings({ agent }: AISettingsProps) {
 						placeholder="Enter your agent instructions..."
 					/>
 					<p className="text-sm text-gray-600">
-						The instructions allow you to customize your agent's
-						personality and style. Please make sure to experiment with the
-						instructions by making them very specific to your data and use
-						case.
+						The instructions allow you to customize your agent's personality and
+						style. Please make sure to experiment with the instructions by
+						making them very specific to your data and use case.
 					</p>
 					<div className="flex justify-end">
 						<Button onClick={handleSaveAI} disabled={isSaving}>

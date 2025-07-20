@@ -25,6 +25,7 @@ import {
 import React, { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { useOrganization } from "../contexts/OrganizationContext";
+import { ThemeToggleCompact } from "./ThemeToggle";
 
 interface DashboardLayoutProps {
 	children: React.ReactNode;
@@ -86,7 +87,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			children: [
 				{ name: "General", href: "/settings", icon: User },
 				{ name: "AI", href: "/settings/ai", icon: Bot },
-				{ name: "Chat Interface", href: "/settings/chat-interface", icon: MessageSquare },
+				{
+					name: "Chat Interface",
+					href: "/settings/chat-interface",
+					icon: MessageSquare,
+				},
 				{ name: "Security", href: "/settings/security", icon: Shield },
 			],
 		},
@@ -195,19 +200,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 		location.pathname.includes("/dashboard/agents/") && currentAgent;
 
 	return (
-		<div className="min-h-screen bg-gray-50 flex">
+		<div className="min-h-screen bg-background flex">
 			{/* Left Sidebar - Agent Navigation */}
 			{showAgentSidebar && (
-				<div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+				<div className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
 					{/* Sidebar Header */}
-					<div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+					<div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
 						<div className="flex items-center min-w-0">
-							<Bot className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0" />
+							<Bot className="w-5 h-5 text-sidebar-primary mr-2 flex-shrink-0" />
 							<div className="min-w-0">
-								<h2 className="text-sm font-semibold text-gray-900 truncate">
+								<h2 className="text-sm font-semibold text-sidebar-foreground truncate">
 									{currentAgent.name}
 								</h2>
-								<p className="text-xs text-gray-500 truncate">
+								<p className="text-xs text-muted-foreground truncate">
 									Agent Dashboard
 								</p>
 							</div>
@@ -227,11 +232,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									return (
 										<div
 											key={item.name}
-											className="flex items-center px-3 py-2 text-sm font-medium text-gray-400 cursor-not-allowed"
+											className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground cursor-not-allowed"
 										>
 											<Icon className="mr-3 h-4 w-4" />
 											{item.name}
-											<span className="ml-auto text-xs bg-gray-100 px-2 py-0.5 rounded">
+											<span className="ml-auto text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">
 												Soon
 											</span>
 										</div>
@@ -259,8 +264,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 											<div
 												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
 													isParentActive
-														? "bg-blue-50 text-blue-700"
-														: "text-gray-700 hover:bg-gray-50"
+														? "bg-sidebar-accent text-sidebar-primary"
+														: "text-sidebar-foreground hover:bg-sidebar-accent/50"
 												}`}
 												onClick={() => {
 													if (item.name === "Knowledge Base") {
@@ -300,8 +305,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																to={childHref}
 																className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
 																	isAgentNavActive(child.href)
-																		? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-																		: "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+																		? "bg-sidebar-accent text-sidebar-primary border-r-2 border-sidebar-primary"
+																		: "text-muted-foreground hover:bg-sidebar-accent/30 hover:text-sidebar-foreground"
 																}`}
 															>
 																<ChildIcon className="mr-3 h-4 w-4" />
@@ -322,8 +327,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 										to={href}
 										className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
 											isAgentNavActive(item.href)
-												? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-												: "text-gray-700 hover:bg-gray-50"
+												? "bg-sidebar-accent text-sidebar-primary border-r-2 border-sidebar-primary"
+												: "text-sidebar-foreground hover:bg-sidebar-accent/50"
 										}`}
 									>
 										<Icon className="mr-3 h-4 w-4" />
@@ -335,10 +340,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 					</nav>
 
 					{/* Sidebar Footer */}
-					<div className="border-t border-gray-200 p-3">
+					<div className="border-t border-sidebar-border p-3">
 						<Link
 							to="/dashboard/agents"
-							className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+							className="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors"
 						>
 							<Bot className="mr-3 h-4 w-4" />← Back to All Agents
 						</Link>
@@ -349,19 +354,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			{/* Main Content Area */}
 			<div className="flex-1 flex flex-col min-w-0">
 				{/* Top Header */}
-				<header className="bg-white shadow-sm border-b sticky top-0 z-50">
+				<header className="bg-background border-b border-border sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-background/95">
 					<div className="mx-auto max-w-full px-4 lg:px-6">
 						<div className="flex h-14 items-center justify-between">
 							{/* Logo and Selectors */}
 							<div className="flex items-center space-x-4">
 								<Link
 									to="/dashboard"
-									className="flex items-center space-x-2 text-lg font-bold text-gray-900 hover:text-gray-700 transition-colors"
+									className="flex items-center space-x-2 text-lg font-bold text-foreground hover:text-foreground/80 transition-colors"
 								>
-									<div className="w-7 h-7 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-										<Bot className="w-4 h-4 text-white" />
+									<div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
+										<Bot className="w-4 h-4 text-primary-foreground" />
 									</div>
-									<span>AI Agent Platform</span>
+									<span>Chatbox</span>
 								</Link>
 
 								{/* Organization Selector */}
@@ -370,17 +375,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 										onClick={() =>
 											setShowOrganizationsDropdown(!showOrganizationsDropdown)
 										}
-										className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors min-w-[180px] justify-between"
+										className="flex items-center px-3 py-2 text-sm font-medium text-foreground bg-muted rounded-lg hover:bg-muted/80 transition-colors min-w-[180px] justify-between border border-border"
 									>
 										<div className="flex items-center">
-											<Building2 className="w-4 h-4 mr-2 text-gray-500" />
+											<Building2 className="w-4 h-4 mr-2 text-muted-foreground" />
 											<span className="truncate">
 												{displayOrganization
 													? displayOrganization.name
 													: "Select Organization"}
 											</span>
 										</div>
-										<ChevronDown className="w-4 h-4 text-gray-400" />
+										<ChevronDown className="w-4 h-4 text-muted-foreground" />
 									</button>
 
 									{/* Organization Selector Dropdown */}
@@ -634,20 +639,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 							{/* Right side actions */}
 							<div className="flex items-center space-x-3">
 								{/* Search */}
-								<button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+								<button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
 									<Search className="h-4 w-4" />
 								</button>
 
 								{/* Notifications */}
-								<button className="p-2 text-gray-400 hover:text-gray-600 transition-colors relative">
+								<button className="p-2 text-muted-foreground hover:text-foreground transition-colors relative">
 									<Bell className="h-4 w-4" />
-									<span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+									<span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
 								</button>
+
+								{/* Theme Toggle */}
+								<ThemeToggleCompact />
 
 								{/* Create Agent Button */}
 								<button
 									onClick={() => navigate({ to: "/dashboard/agents/new" })}
-									className="hidden sm:flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+									className="hidden sm:flex items-center px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors"
 								>
 									<Plus className="mr-1.5 h-4 w-4" />
 									New Agent

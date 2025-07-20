@@ -4,7 +4,9 @@ import { Settings, Shield } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import SecuritySettings from "../components/SecuritySettings";
 
-export const Route = createFileRoute("/dashboard/agents/$agentId/settings/security")({
+export const Route = createFileRoute(
+	"/dashboard/agents/$agentId/settings/security",
+)({
 	component: AgentSecuritySettings,
 });
 

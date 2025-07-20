@@ -84,9 +84,7 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 			<div className="p-6 space-y-8">
 				{/* Agent ID */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-gray-700">
-						Agent ID
-					</Label>
+					<Label className="text-sm font-medium text-gray-700">Agent ID</Label>
 					<div className="flex items-center gap-2">
 						<div className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md font-mono text-sm text-gray-900">
 							{agent._id}
@@ -108,9 +106,7 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 
 				{/* Size */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-gray-700">
-						Size
-					</Label>
+					<Label className="text-sm font-medium text-gray-700">Size</Label>
 					<div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-900">
 						4 KB
 					</div>
@@ -155,10 +151,9 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 							Delete all conversations
 						</h4>
 						<p className="text-sm text-red-700 mb-4">
-							Once you delete all your conversations, there is no going
-							back. Please be certain. All the conversations on this agent
-							will be deleted.{" "}
-							<strong>This action is not reversible</strong>
+							Once you delete all your conversations, there is no going back.
+							Please be certain. All the conversations on this agent will be
+							deleted. <strong>This action is not reversible</strong>
 						</p>
 						<Button
 							variant="destructive"
@@ -176,12 +171,12 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 							Delete agent
 						</h4>
 						<p className="text-sm text-red-700 mb-4">
-							Once you delete your agent, there is no going back. Please
-							be certain. All your uploaded data will be deleted.{" "}
+							Once you delete your agent, there is no going back. Please be
+							certain. All your uploaded data will be deleted.{" "}
 							<strong>This action is not reversible</strong>
 						</p>
-						<Button 
-							variant="destructive" 
+						<Button
+							variant="destructive"
 							onClick={handleDeleteAgent}
 							className="flex items-center gap-2"
 						>
