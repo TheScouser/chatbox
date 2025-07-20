@@ -48,7 +48,11 @@ import { Route as DashboardAgentsAgentIdKnowledgeImport } from './routes/dashboa
 import { Route as DashboardAgentsAgentIdDeployImport } from './routes/dashboard.agents.$agentId.deploy'
 import { Route as DashboardAgentsAgentIdConversationsImport } from './routes/dashboard.agents.$agentId.conversations'
 import { Route as DashboardAgentsAgentIdChatImport } from './routes/dashboard.agents.$agentId.chat'
+import { Route as DashboardAgentsAgentIdSettingsIndexImport } from './routes/dashboard.agents.$agentId.settings.index'
 import { Route as DashboardAgentsAgentIdKnowledgeIndexImport } from './routes/dashboard.agents.$agentId.knowledge.index'
+import { Route as DashboardAgentsAgentIdSettingsSecurityImport } from './routes/dashboard.agents.$agentId.settings.security'
+import { Route as DashboardAgentsAgentIdSettingsChatInterfaceImport } from './routes/dashboard.agents.$agentId.settings.chat-interface'
+import { Route as DashboardAgentsAgentIdSettingsAiImport } from './routes/dashboard.agents.$agentId.settings.ai'
 import { Route as DashboardAgentsAgentIdKnowledgeUrlImport } from './routes/dashboard.agents.$agentId.knowledge.url'
 import { Route as DashboardAgentsAgentIdKnowledgeUploadImport } from './routes/dashboard.agents.$agentId.knowledge.upload'
 import { Route as DashboardAgentsAgentIdKnowledgeTextImport } from './routes/dashboard.agents.$agentId.knowledge.text'
@@ -285,11 +289,39 @@ const DashboardAgentsAgentIdChatRoute = DashboardAgentsAgentIdChatImport.update(
   } as any,
 )
 
+const DashboardAgentsAgentIdSettingsIndexRoute =
+  DashboardAgentsAgentIdSettingsIndexImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardAgentsAgentIdSettingsRoute,
+  } as any)
+
 const DashboardAgentsAgentIdKnowledgeIndexRoute =
   DashboardAgentsAgentIdKnowledgeIndexImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => DashboardAgentsAgentIdKnowledgeRoute,
+  } as any)
+
+const DashboardAgentsAgentIdSettingsSecurityRoute =
+  DashboardAgentsAgentIdSettingsSecurityImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => DashboardAgentsAgentIdSettingsRoute,
+  } as any)
+
+const DashboardAgentsAgentIdSettingsChatInterfaceRoute =
+  DashboardAgentsAgentIdSettingsChatInterfaceImport.update({
+    id: '/chat-interface',
+    path: '/chat-interface',
+    getParentRoute: () => DashboardAgentsAgentIdSettingsRoute,
+  } as any)
+
+const DashboardAgentsAgentIdSettingsAiRoute =
+  DashboardAgentsAgentIdSettingsAiImport.update({
+    id: '/ai',
+    path: '/ai',
+    getParentRoute: () => DashboardAgentsAgentIdSettingsRoute,
   } as any)
 
 const DashboardAgentsAgentIdKnowledgeUrlRoute =
@@ -611,12 +643,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsAgentIdKnowledgeUrlImport
       parentRoute: typeof DashboardAgentsAgentIdKnowledgeImport
     }
+    '/dashboard/agents/$agentId/settings/ai': {
+      id: '/dashboard/agents/$agentId/settings/ai'
+      path: '/ai'
+      fullPath: '/dashboard/agents/$agentId/settings/ai'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSettingsAiImport
+      parentRoute: typeof DashboardAgentsAgentIdSettingsImport
+    }
+    '/dashboard/agents/$agentId/settings/chat-interface': {
+      id: '/dashboard/agents/$agentId/settings/chat-interface'
+      path: '/chat-interface'
+      fullPath: '/dashboard/agents/$agentId/settings/chat-interface'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSettingsChatInterfaceImport
+      parentRoute: typeof DashboardAgentsAgentIdSettingsImport
+    }
+    '/dashboard/agents/$agentId/settings/security': {
+      id: '/dashboard/agents/$agentId/settings/security'
+      path: '/security'
+      fullPath: '/dashboard/agents/$agentId/settings/security'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSettingsSecurityImport
+      parentRoute: typeof DashboardAgentsAgentIdSettingsImport
+    }
     '/dashboard/agents/$agentId/knowledge/': {
       id: '/dashboard/agents/$agentId/knowledge/'
       path: '/'
       fullPath: '/dashboard/agents/$agentId/knowledge/'
       preLoaderRoute: typeof DashboardAgentsAgentIdKnowledgeIndexImport
       parentRoute: typeof DashboardAgentsAgentIdKnowledgeImport
+    }
+    '/dashboard/agents/$agentId/settings/': {
+      id: '/dashboard/agents/$agentId/settings/'
+      path: '/'
+      fullPath: '/dashboard/agents/$agentId/settings/'
+      preLoaderRoute: typeof DashboardAgentsAgentIdSettingsIndexImport
+      parentRoute: typeof DashboardAgentsAgentIdSettingsImport
     }
   }
 }
@@ -650,12 +710,36 @@ const DashboardAgentsAgentIdKnowledgeRouteWithChildren =
     DashboardAgentsAgentIdKnowledgeRouteChildren,
   )
 
+interface DashboardAgentsAgentIdSettingsRouteChildren {
+  DashboardAgentsAgentIdSettingsAiRoute: typeof DashboardAgentsAgentIdSettingsAiRoute
+  DashboardAgentsAgentIdSettingsChatInterfaceRoute: typeof DashboardAgentsAgentIdSettingsChatInterfaceRoute
+  DashboardAgentsAgentIdSettingsSecurityRoute: typeof DashboardAgentsAgentIdSettingsSecurityRoute
+  DashboardAgentsAgentIdSettingsIndexRoute: typeof DashboardAgentsAgentIdSettingsIndexRoute
+}
+
+const DashboardAgentsAgentIdSettingsRouteChildren: DashboardAgentsAgentIdSettingsRouteChildren =
+  {
+    DashboardAgentsAgentIdSettingsAiRoute:
+      DashboardAgentsAgentIdSettingsAiRoute,
+    DashboardAgentsAgentIdSettingsChatInterfaceRoute:
+      DashboardAgentsAgentIdSettingsChatInterfaceRoute,
+    DashboardAgentsAgentIdSettingsSecurityRoute:
+      DashboardAgentsAgentIdSettingsSecurityRoute,
+    DashboardAgentsAgentIdSettingsIndexRoute:
+      DashboardAgentsAgentIdSettingsIndexRoute,
+  }
+
+const DashboardAgentsAgentIdSettingsRouteWithChildren =
+  DashboardAgentsAgentIdSettingsRoute._addFileChildren(
+    DashboardAgentsAgentIdSettingsRouteChildren,
+  )
+
 interface DashboardAgentsAgentIdRouteChildren {
   DashboardAgentsAgentIdChatRoute: typeof DashboardAgentsAgentIdChatRoute
   DashboardAgentsAgentIdConversationsRoute: typeof DashboardAgentsAgentIdConversationsRoute
   DashboardAgentsAgentIdDeployRoute: typeof DashboardAgentsAgentIdDeployRoute
   DashboardAgentsAgentIdKnowledgeRoute: typeof DashboardAgentsAgentIdKnowledgeRouteWithChildren
-  DashboardAgentsAgentIdSettingsRoute: typeof DashboardAgentsAgentIdSettingsRoute
+  DashboardAgentsAgentIdSettingsRoute: typeof DashboardAgentsAgentIdSettingsRouteWithChildren
   DashboardAgentsAgentIdIndexRoute: typeof DashboardAgentsAgentIdIndexRoute
 }
 
@@ -667,7 +751,8 @@ const DashboardAgentsAgentIdRouteChildren: DashboardAgentsAgentIdRouteChildren =
     DashboardAgentsAgentIdDeployRoute: DashboardAgentsAgentIdDeployRoute,
     DashboardAgentsAgentIdKnowledgeRoute:
       DashboardAgentsAgentIdKnowledgeRouteWithChildren,
-    DashboardAgentsAgentIdSettingsRoute: DashboardAgentsAgentIdSettingsRoute,
+    DashboardAgentsAgentIdSettingsRoute:
+      DashboardAgentsAgentIdSettingsRouteWithChildren,
     DashboardAgentsAgentIdIndexRoute: DashboardAgentsAgentIdIndexRoute,
   }
 
@@ -778,13 +863,17 @@ export interface FileRoutesByFullPath {
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
   '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRouteWithChildren
-  '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRoute
+  '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRouteWithChildren
   '/dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
   '/dashboard/agents/$agentId/knowledge/qna': typeof DashboardAgentsAgentIdKnowledgeQnaRoute
   '/dashboard/agents/$agentId/knowledge/text': typeof DashboardAgentsAgentIdKnowledgeTextRoute
   '/dashboard/agents/$agentId/knowledge/upload': typeof DashboardAgentsAgentIdKnowledgeUploadRoute
   '/dashboard/agents/$agentId/knowledge/url': typeof DashboardAgentsAgentIdKnowledgeUrlRoute
+  '/dashboard/agents/$agentId/settings/ai': typeof DashboardAgentsAgentIdSettingsAiRoute
+  '/dashboard/agents/$agentId/settings/chat-interface': typeof DashboardAgentsAgentIdSettingsChatInterfaceRoute
+  '/dashboard/agents/$agentId/settings/security': typeof DashboardAgentsAgentIdSettingsSecurityRoute
   '/dashboard/agents/$agentId/knowledge/': typeof DashboardAgentsAgentIdKnowledgeIndexRoute
+  '/dashboard/agents/$agentId/settings/': typeof DashboardAgentsAgentIdSettingsIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -817,13 +906,16 @@ export interface FileRoutesByTo {
   '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
-  '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdIndexRoute
   '/dashboard/agents/$agentId/knowledge/qna': typeof DashboardAgentsAgentIdKnowledgeQnaRoute
   '/dashboard/agents/$agentId/knowledge/text': typeof DashboardAgentsAgentIdKnowledgeTextRoute
   '/dashboard/agents/$agentId/knowledge/upload': typeof DashboardAgentsAgentIdKnowledgeUploadRoute
   '/dashboard/agents/$agentId/knowledge/url': typeof DashboardAgentsAgentIdKnowledgeUrlRoute
+  '/dashboard/agents/$agentId/settings/ai': typeof DashboardAgentsAgentIdSettingsAiRoute
+  '/dashboard/agents/$agentId/settings/chat-interface': typeof DashboardAgentsAgentIdSettingsChatInterfaceRoute
+  '/dashboard/agents/$agentId/settings/security': typeof DashboardAgentsAgentIdSettingsSecurityRoute
   '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeIndexRoute
+  '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsIndexRoute
 }
 
 export interface FileRoutesById {
@@ -863,13 +955,17 @@ export interface FileRoutesById {
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
   '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRouteWithChildren
-  '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRoute
+  '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRouteWithChildren
   '/dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
   '/dashboard/agents/$agentId/knowledge/qna': typeof DashboardAgentsAgentIdKnowledgeQnaRoute
   '/dashboard/agents/$agentId/knowledge/text': typeof DashboardAgentsAgentIdKnowledgeTextRoute
   '/dashboard/agents/$agentId/knowledge/upload': typeof DashboardAgentsAgentIdKnowledgeUploadRoute
   '/dashboard/agents/$agentId/knowledge/url': typeof DashboardAgentsAgentIdKnowledgeUrlRoute
+  '/dashboard/agents/$agentId/settings/ai': typeof DashboardAgentsAgentIdSettingsAiRoute
+  '/dashboard/agents/$agentId/settings/chat-interface': typeof DashboardAgentsAgentIdSettingsChatInterfaceRoute
+  '/dashboard/agents/$agentId/settings/security': typeof DashboardAgentsAgentIdSettingsSecurityRoute
   '/dashboard/agents/$agentId/knowledge/': typeof DashboardAgentsAgentIdKnowledgeIndexRoute
+  '/dashboard/agents/$agentId/settings/': typeof DashboardAgentsAgentIdSettingsIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -916,7 +1012,11 @@ export interface FileRouteTypes {
     | '/dashboard/agents/$agentId/knowledge/text'
     | '/dashboard/agents/$agentId/knowledge/upload'
     | '/dashboard/agents/$agentId/knowledge/url'
+    | '/dashboard/agents/$agentId/settings/ai'
+    | '/dashboard/agents/$agentId/settings/chat-interface'
+    | '/dashboard/agents/$agentId/settings/security'
     | '/dashboard/agents/$agentId/knowledge/'
+    | '/dashboard/agents/$agentId/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -948,13 +1048,16 @@ export interface FileRouteTypes {
     | '/dashboard/agents/$agentId/chat'
     | '/dashboard/agents/$agentId/conversations'
     | '/dashboard/agents/$agentId/deploy'
-    | '/dashboard/agents/$agentId/settings'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/$agentId/knowledge/qna'
     | '/dashboard/agents/$agentId/knowledge/text'
     | '/dashboard/agents/$agentId/knowledge/upload'
     | '/dashboard/agents/$agentId/knowledge/url'
+    | '/dashboard/agents/$agentId/settings/ai'
+    | '/dashboard/agents/$agentId/settings/chat-interface'
+    | '/dashboard/agents/$agentId/settings/security'
     | '/dashboard/agents/$agentId/knowledge'
+    | '/dashboard/agents/$agentId/settings'
   id:
     | '__root__'
     | '/'
@@ -998,7 +1101,11 @@ export interface FileRouteTypes {
     | '/dashboard/agents/$agentId/knowledge/text'
     | '/dashboard/agents/$agentId/knowledge/upload'
     | '/dashboard/agents/$agentId/knowledge/url'
+    | '/dashboard/agents/$agentId/settings/ai'
+    | '/dashboard/agents/$agentId/settings/chat-interface'
+    | '/dashboard/agents/$agentId/settings/security'
     | '/dashboard/agents/$agentId/knowledge/'
+    | '/dashboard/agents/$agentId/settings/'
   fileRoutesById: FileRoutesById
 }
 
@@ -1233,7 +1340,13 @@ export const routeTree = rootRoute
     },
     "/dashboard/agents/$agentId/settings": {
       "filePath": "dashboard.agents.$agentId.settings.tsx",
-      "parent": "/dashboard/agents/$agentId"
+      "parent": "/dashboard/agents/$agentId",
+      "children": [
+        "/dashboard/agents/$agentId/settings/ai",
+        "/dashboard/agents/$agentId/settings/chat-interface",
+        "/dashboard/agents/$agentId/settings/security",
+        "/dashboard/agents/$agentId/settings/"
+      ]
     },
     "/dashboard/agents/$agentId/": {
       "filePath": "dashboard.agents.$agentId.index.tsx",
@@ -1255,9 +1368,25 @@ export const routeTree = rootRoute
       "filePath": "dashboard.agents.$agentId.knowledge.url.tsx",
       "parent": "/dashboard/agents/$agentId/knowledge"
     },
+    "/dashboard/agents/$agentId/settings/ai": {
+      "filePath": "dashboard.agents.$agentId.settings.ai.tsx",
+      "parent": "/dashboard/agents/$agentId/settings"
+    },
+    "/dashboard/agents/$agentId/settings/chat-interface": {
+      "filePath": "dashboard.agents.$agentId.settings.chat-interface.tsx",
+      "parent": "/dashboard/agents/$agentId/settings"
+    },
+    "/dashboard/agents/$agentId/settings/security": {
+      "filePath": "dashboard.agents.$agentId.settings.security.tsx",
+      "parent": "/dashboard/agents/$agentId/settings"
+    },
     "/dashboard/agents/$agentId/knowledge/": {
       "filePath": "dashboard.agents.$agentId.knowledge.index.tsx",
       "parent": "/dashboard/agents/$agentId/knowledge"
+    },
+    "/dashboard/agents/$agentId/settings/": {
+      "filePath": "dashboard.agents.$agentId.settings.index.tsx",
+      "parent": "/dashboard/agents/$agentId/settings"
     }
   }
 }

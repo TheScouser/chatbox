@@ -17,8 +17,10 @@ import {
 	Plus,
 	Search,
 	Settings,
+	Shield,
 	TrendingUp,
 	Upload,
+	User,
 } from "lucide-react";
 import React, { useState } from "react";
 import { api } from "../../convex/_generated/api";
@@ -37,6 +39,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const [agentSearch, setAgentSearch] = useState("");
 	const [organizationSearch, setOrganizationSearch] = useState("");
 	const [expandedKnowledgeBase, setExpandedKnowledgeBase] = useState(false);
+	const [expandedSettings, setExpandedSettings] = useState(false);
 
 	// Use organization context
 	const {
@@ -75,7 +78,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 		{ name: "Conversations", href: "/conversations", icon: MessageSquare },
 		{ name: "Deploy", href: "/deploy", icon: Globe },
 		{ name: "Analytics", href: "/analytics", icon: BarChart3, disabled: true },
-		{ name: "Settings", href: "/settings", icon: Settings },
+		{
+			name: "Settings",
+			href: "/settings",
+			icon: Settings,
+			expandable: true,
+			children: [
+				{ name: "General", href: "/settings", icon: User },
+				{ name: "AI", href: "/settings/ai", icon: Bot },
+				{ name: "Chat Interface", href: "/settings/chat-interface", icon: MessageSquare },
+				{ name: "Security", href: "/settings/security", icon: Shield },
+			],
+		},
 	];
 
 	const isActive = (href: string) => {
@@ -119,12 +133,26 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			`/dashboard/agents/${currentAgent._id}/knowledge`,
 		);
 
+	// Auto-expand Settings if we're on a settings page
+	const isOnSettingsPage =
+		currentAgent &&
+		location.pathname.includes(
+			`/dashboard/agents/${currentAgent._id}/settings`,
+		);
+
 	// Use effect to auto-expand when on knowledge page
 	React.useEffect(() => {
 		if (isOnKnowledgePage) {
 			setExpandedKnowledgeBase(true);
 		}
 	}, [isOnKnowledgePage]);
+
+	// Use effect to auto-expand when on settings page
+	React.useEffect(() => {
+		if (isOnSettingsPage) {
+			setExpandedSettings(true);
+		}
+	}, [isOnSettingsPage]);
 
 	// Update organization selection logic for agent context
 	const getOrganizationForAgent = () => {
@@ -210,9 +238,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									);
 								}
 
-								// Handle expandable items (like Knowledge Base)
+								// Handle expandable items (like Knowledge Base and Settings)
 								if (item.expandable && item.children) {
-									const isKnowledgeBaseActive =
+									const isParentActive =
 										isAgentNavActive(item.href) ||
 										(item.children &&
 											item.children.some((child) =>
@@ -221,20 +249,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									const isExpanded =
 										item.name === "Knowledge Base"
 											? expandedKnowledgeBase
-											: false;
+											: item.name === "Settings"
+												? expandedSettings
+												: false;
 
 									return (
 										<div key={item.name}>
 											{/* Parent Item */}
 											<div
 												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
-													isKnowledgeBaseActive
+													isParentActive
 														? "bg-blue-50 text-blue-700"
 														: "text-gray-700 hover:bg-gray-50"
 												}`}
 												onClick={() => {
 													if (item.name === "Knowledge Base") {
 														setExpandedKnowledgeBase(!expandedKnowledgeBase);
+													} else if (item.name === "Settings") {
+														setExpandedSettings(!expandedSettings);
 													}
 													// Also navigate to the parent page
 													if (currentAgent) {
