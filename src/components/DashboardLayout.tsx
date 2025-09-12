@@ -390,11 +390,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 									{/* Organization Selector Dropdown */}
 									{showOrganizationsDropdown && (
-										<div className="absolute top-full left-0 mt-1 w-80 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+										<div className="absolute top-full left-0 mt-1 w-80 bg-popover rounded-lg shadow-lg ring-1 ring-border border border-border z-50 backdrop-blur-xl">
 											<div className="p-3">
 												{/* Search Input */}
 												<div className="relative mb-3">
-													<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+													<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
 													<input
 														type="text"
 														placeholder="Search organizations..."
@@ -402,13 +402,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 														onChange={(e) =>
 															setOrganizationSearch(e.target.value)
 														}
-														className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+														className="w-full pl-10 pr-4 py-2 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring text-foreground placeholder:text-muted-foreground"
 													/>
 												</div>
 
 												{/* Organizations Section */}
 												<div className="mb-2">
-													<h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+													<h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
 														Organizations
 													</h4>
 													<div className="max-h-48 overflow-y-auto">
@@ -419,13 +419,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																		key={i}
 																		className="flex items-center px-3 py-2 rounded-lg animate-pulse"
 																	>
-																		<div className="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-																		<div className="h-4 bg-gray-200 rounded flex-1"></div>
+																		<div className="w-4 h-4 bg-muted rounded mr-3"></div>
+																		<div className="h-4 bg-muted rounded flex-1"></div>
 																	</div>
 																))}
 															</div>
 														) : filteredOrganizations.length === 0 ? (
-															<div className="px-3 py-4 text-sm text-gray-500 text-center">
+															<div className="px-3 py-4 text-sm text-muted-foreground text-center">
 																{organizationSearch
 																	? "No organizations found"
 																	: "No organizations yet"}
@@ -443,21 +443,21 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																		}}
 																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
 																			displayOrganization?._id === org._id
-																				? "bg-blue-50 text-blue-700"
-																				: "hover:bg-gray-50 text-gray-700"
+																				? "bg-accent text-accent-foreground"
+																				: "hover:bg-accent/50 text-foreground"
 																		}`}
 																	>
-																		<Building2 className="w-4 h-4 mr-3 text-gray-400" />
+																		<Building2 className="w-4 h-4 mr-3 text-muted-foreground" />
 																		<div className="flex-1 min-w-0">
 																			<div className="font-medium truncate">
 																				{org.name}
 																			</div>
-																			<div className="text-xs text-gray-500 capitalize">
+																			<div className="text-xs text-muted-foreground capitalize">
 																				{org.memberRole} • {org.plan}
 																			</div>
 																		</div>
 																		{displayOrganization?._id === org._id && (
-																			<div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+																			<div className="w-2 h-2 bg-primary rounded-full ml-2"></div>
 																		)}
 																	</button>
 																))}
@@ -467,14 +467,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 												</div>
 
 												{/* Create Organization Button */}
-												<div className="border-t border-gray-100 pt-2">
+												<div className="border-t border-border pt-2">
 													<button
 														onClick={() => {
 															navigate({ to: "/dashboard/settings" }); // Navigate to settings instead since org creation route doesn't exist yet
 															setShowOrganizationsDropdown(false);
 															setOrganizationSearch("");
 														}}
-														className="w-full flex items-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+														className="w-full flex items-center px-3 py-2 text-sm text-primary hover:bg-accent rounded-lg transition-colors"
 													>
 														<Plus className="w-4 h-4 mr-3" />
 														<span className="font-medium">
@@ -491,37 +491,37 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 								<div className="relative">
 									<button
 										onClick={() => setShowAgentsDropdown(!showAgentsDropdown)}
-										className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors min-w-[200px] justify-between"
+										className="flex items-center px-3 py-2 text-sm font-medium text-foreground bg-muted rounded-lg hover:bg-muted/80 transition-colors min-w-[200px] justify-between border border-border"
 									>
 										<div className="flex items-center">
-											<Bot className="w-4 h-4 mr-2 text-gray-500" />
+											<Bot className="w-4 h-4 mr-2 text-muted-foreground" />
 											<span className="truncate">
 												{currentAgent ? currentAgent.name : "Select Agent"}
 											</span>
 										</div>
-										<ChevronDown className="w-4 h-4 text-gray-400" />
+										<ChevronDown className="w-4 h-4 text-muted-foreground" />
 									</button>
 
 									{/* Agent Selector Dropdown */}
 									{showAgentsDropdown && (
-										<div className="absolute top-full left-0 mt-1 w-80 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+										<div className="absolute top-full left-0 mt-1 w-80 bg-popover rounded-lg shadow-lg ring-1 ring-border border border-border z-50 backdrop-blur-xl">
 											<div className="p-3">
 												{/* Search Input */}
 												<div className="relative mb-3">
-													<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+													<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
 													<input
 														type="text"
 														placeholder="Search agents..."
 														value={agentSearch}
 														onChange={(e) => setAgentSearch(e.target.value)}
-														className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+														className="w-full pl-10 pr-4 py-2 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring text-foreground placeholder:text-muted-foreground"
 													/>
 												</div>
 
 												{/* Current Organization Filter */}
 												{displayOrganization && (
-													<div className="mb-3 px-3 py-2 bg-blue-50 rounded-lg">
-														<div className="text-xs text-blue-600 font-medium">
+													<div className="mb-3 px-3 py-2 bg-accent/20 rounded-lg">
+														<div className="text-xs text-primary font-medium">
 															Showing agents from: {displayOrganization.name}
 														</div>
 													</div>
@@ -529,7 +529,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 												{/* Agents Section */}
 												<div className="mb-2">
-													<h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+													<h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
 														Agents
 													</h4>
 													<div className="max-h-48 overflow-y-auto">
@@ -540,13 +540,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																		key={i}
 																		className="flex items-center px-3 py-2 rounded-lg animate-pulse"
 																	>
-																		<div className="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-																		<div className="h-4 bg-gray-200 rounded flex-1"></div>
+																		<div className="w-4 h-4 bg-muted rounded mr-3"></div>
+																		<div className="h-4 bg-muted rounded flex-1"></div>
 																	</div>
 																))}
 															</div>
 														) : filteredAgents.length === 0 ? (
-															<div className="px-3 py-4 text-sm text-gray-500 text-center">
+															<div className="px-3 py-4 text-sm text-muted-foreground text-center">
 																{agentSearch
 																	? "No agents found"
 																	: displayOrganization
@@ -567,23 +567,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																		}}
 																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
 																			currentAgent?._id === agent._id
-																				? "bg-blue-50 text-blue-700"
-																				: "hover:bg-gray-50 text-gray-700"
+																				? "bg-accent text-accent-foreground"
+																				: "hover:bg-accent/50 text-foreground"
 																		}`}
 																	>
-																		<Bot className="w-4 h-4 mr-3 text-gray-400" />
+																		<Bot className="w-4 h-4 mr-3 text-muted-foreground" />
 																		<div className="flex-1 min-w-0">
 																			<div className="font-medium truncate">
 																				{agent.name}
 																			</div>
 																			{agent.description && (
-																				<div className="text-xs text-gray-500 truncate">
+																				<div className="text-xs text-muted-foreground truncate">
 																					{agent.description}
 																				</div>
 																			)}
 																		</div>
 																		{currentAgent?._id === agent._id && (
-																			<div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+																			<div className="w-2 h-2 bg-primary rounded-full ml-2"></div>
 																		)}
 																	</button>
 																))}
@@ -593,14 +593,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 												</div>
 
 												{/* Create Agent Button */}
-												<div className="border-t border-gray-100 pt-2">
+												<div className="border-t border-border pt-2">
 													<button
 														onClick={() => {
 															navigate({ to: "/dashboard/agents/new" });
 															setShowAgentsDropdown(false);
 															setAgentSearch("");
 														}}
-														className="w-full flex items-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+														className="w-full flex items-center px-3 py-2 text-sm text-primary hover:bg-accent rounded-lg transition-colors"
 													>
 														<Plus className="w-4 h-4 mr-3" />
 														<span className="font-medium">Create agent</span>
@@ -624,8 +624,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 												to={item.href}
 												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
 													isActive(item.href)
-														? "bg-blue-50 text-blue-700"
-														: "text-gray-700 hover:bg-gray-100"
+														? "bg-accent text-accent-foreground"
+														: "text-foreground hover:bg-accent/50"
 												}`}
 											>
 												<Icon className="mr-1.5 h-4 w-4" />
@@ -676,7 +676,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 						{/* Mobile Navigation - only show if not on agent page */}
 						{!showAgentSidebar && (
-							<div className="md:hidden border-t border-gray-200 bg-gray-50">
+							<div className="md:hidden border-t border-border bg-muted/30">
 								<div className="px-2 py-2">
 									<div className="flex items-center justify-between">
 										<div className="flex space-x-1 overflow-x-auto">
@@ -689,8 +689,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 														to={item.href}
 														className={`flex items-center px-2 py-1.5 text-xs font-medium rounded whitespace-nowrap transition-colors ${
 															isActive(item.href)
-																? "bg-blue-100 text-blue-700"
-																: "text-gray-600 hover:text-gray-900"
+																? "bg-accent text-accent-foreground"
+																: "text-muted-foreground hover:text-foreground"
 														}`}
 													>
 														<Icon className="mr-1 h-3 w-3" />
@@ -701,7 +701,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 										</div>
 										<button
 											onClick={() => navigate({ to: "/dashboard/agents/new" })}
-											className="flex items-center px-2 py-1.5 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors whitespace-nowrap ml-2"
+											className="flex items-center px-2 py-1.5 text-xs font-medium text-primary-foreground bg-primary rounded hover:bg-primary/90 transition-colors whitespace-nowrap ml-2"
 										>
 											<Plus className="mr-1 h-3 w-3" />
 											New
@@ -714,7 +714,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 				</header>
 
 				{/* Main content */}
-				<main className="flex-1 py-4">
+				<main className="flex-1 py-6">
 					<div
 						className={`mx-auto px-4 lg:px-6 ${showAgentSidebar ? "max-w-full" : "max-w-[1600px]"}`}
 					>

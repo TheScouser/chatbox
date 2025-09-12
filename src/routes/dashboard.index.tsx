@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { useMemo } from "react";
+import { Bot, MessageSquare, BookOpen, TrendingUp } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import { useOrganization } from "../contexts/OrganizationContext";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 
 export const Route = createFileRoute("/dashboard/")({
 	component: DashboardOverview,
