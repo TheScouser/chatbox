@@ -26,9 +26,10 @@
       }
       const onLoad = function () {
         const script = document.createElement("script");
-        script.src = "http://localhost:3000/widget.min.js";
+        script.type = "module";
+        script.src = "/widget.min.js"; // same-origin so it works in dev/preview
         script.id = "jd78n9wcg26t5rwf0ha12mt9md7h3hxs";
-        script.domain = "localhost";
+        script.domain = location.hostname;
         document.body.appendChild(script)
       };
       if (document.readyState === "complete") { onLoad() }

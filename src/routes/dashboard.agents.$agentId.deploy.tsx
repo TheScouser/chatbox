@@ -20,6 +20,11 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { Button } from "../components/ui/button";
+import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
+import { PageHeader } from "../components/ui/page-header";
+import { ContentCard, ContentCardEmpty, ContentCardListItem } from "../components/ui/content-card";
+import { FormCard, FormSection, FormField } from "../components/ui/form-card";
 
 export const Route = createFileRoute("/dashboard/agents/$agentId/deploy")({
 	component: AgentDeploy,
@@ -63,69 +68,56 @@ function AgentDeploy() {
 	if (agents === undefined) {
 		return (
 			<div className="animate-pulse">
-				<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-				<div className="h-96 bg-gray-200 rounded"></div>
+				<div className="h-8 bg-muted rounded w-1/4 mb-4"></div>
+				<div className="h-96 bg-muted rounded"></div>
 			</div>
 		);
 	}
 
 	if (!agent) {
 		return (
-			<div className="text-center py-12">
-				<Globe className="mx-auto h-12 w-12 text-gray-400" />
-				<h3 className="mt-2 text-sm font-medium text-gray-900">
-					Agent not found
-				</h3>
-				<p className="mt-1 text-sm text-gray-500">
-					The agent you're looking for doesn't exist.
-				</p>
-			</div>
+			<PageLayout>
+				<ContentCardEmpty
+					icon={Globe}
+					title="Agent not found"
+					description="The agent you're looking for doesn't exist."
+				/>
+			</PageLayout>
 		);
 	}
 
 	return (
-		<div className="space-y-4">
-			<div>
-				<h3 className="text-xl font-semibold text-gray-900">
-					Deploy Your Agent
-				</h3>
-				<p className="mt-1 text-sm text-gray-600">
-					Share your agent with the world using these deployment options.
-				</p>
-			</div>
+		<PageLayout>
+			<PageHeader
+				title="Deploy Your Agent"
+				description="Share your agent with the world using these deployment options."
+			/>
 
-			{/* Embed */}
-			<div className="space-y-3">
-				<h4 className="text-base font-medium text-gray-900">Embed</h4>
-				<div className="flex gap-4">
-					{/* Chat Bubble Widget */}
-					<div className="flex-1 min-w-0 bg-white border rounded-lg p-4 border-blue-500">
+			<TwoColumnLayout>
+				{/* Chat Bubble Widget */}
+				<ContentCard
+					title="Chat Bubble Widget"
+					description="Embed a chat bubble on your website. Enables all advanced features of the agent."
+					className="border-primary"
+				>
+					<ContentCardListItem>
 						<div className="flex items-center justify-between mb-3">
 							<div className="flex items-center gap-2">
-								{/* <input type="radio" name="embed-type" defaultChecked className="w-4 h-4 text-blue-600" /> */}
-								<span className="text-sm font-medium">Embed a chat bubble</span>
-								<span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">
+								<span className="px-2 py-0.5 text-xs bg-primary/10 text-primary rounded-full">
 									Recommended
 								</span>
 							</div>
-							<a
-								href={`${baseUrl}/widget-demo/${agent._id}`}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="text-xs text-blue-600 hover:text-blue-800"
+							<Button
+								size="sm"
+								variant="outline"
+								onClick={() => window.open(`${baseUrl}/widget-demo/${agent._id}`, '_blank')}
 							>
-								Preview →
-							</a>
+								<ExternalLink className="h-3 w-3 mr-1" />
+								Preview
+							</Button>
 						</div>
-						<p className="text-xs text-gray-600 mb-3">
-							Embed a chat bubble on your website. Allows you to use all the
-							advanced features of the agent. Explore the{" "}
-							<a href="#" className="text-blue-600 hover:underline">
-								docs.
-							</a>
-						</p>
-						<div className="bg-gray-50 rounded p-2 mb-2 h-16 overflow-x-auto overflow-y-hidden">
-							<code className="text-xs text-gray-800 font-mono whitespace-nowrap">
+						<div className="bg-muted rounded p-2 mb-2 h-16 overflow-x-auto overflow-y-hidden">
+							<code className="text-xs text-muted-foreground font-mono whitespace-nowrap">
 								{`<script>
 (function(){
   if(!window.ChatboxWidget||window.ChatboxWidget("getState")!=="initialized"){
@@ -142,9 +134,10 @@ function AgentDeploy() {
   }
   const onLoad=function(){
     const script=document.createElement("script");
-    script.src="${baseUrl}/widget.min.js";
+    script.type="module";
+    script.src="/widget.min.js";
     script.id="${agent._id}";
-    script.domain="${new URL(baseUrl).hostname}";
+    script.domain=location.hostname;
     document.body.appendChild(script)
   };
   if(document.readyState==="complete"){onLoad()}
@@ -153,7 +146,8 @@ function AgentDeploy() {
 </script>`}
 							</code>
 						</div>
-						<button
+						<Button
+							size="sm"
 							onClick={() =>
 								copyToClipboard(
 									`<script>
@@ -172,9 +166,10 @@ function AgentDeploy() {
   }
   const onLoad=function(){
     const script=document.createElement("script");
-    script.src="${baseUrl}/widget.min.js";
+    script.type="module";
+    script.src="/widget.min.js";
     script.id="${agent._id}";
-    script.domain="${new URL(baseUrl).hostname}";
+    script.domain=location.hostname;
     document.body.appendChild(script)
   };
   if(document.readyState==="complete"){onLoad()}
@@ -184,130 +179,104 @@ function AgentDeploy() {
 									"bubble",
 								)
 							}
-							className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-gray-900 rounded hover:bg-gray-800"
 						>
 							{copiedCode === "bubble" ? (
 								<>
-									<Check className="h-3 w-3" />
+									<Check className="h-3 w-3 mr-1" />
 									Copied!
 								</>
 							) : (
 								<>
-									<Copy className="h-3 w-3" />
-									Copy
+									<Copy className="h-3 w-3 mr-1" />
+									Copy Code
 								</>
 							)}
-						</button>
-					</div>
+						</Button>
+					</ContentCardListItem>
+				</ContentCard>
 
-					{/* Iframe Embed */}
-					<div className="flex-1 min-w-0 bg-white border rounded-lg p-4">
-						<div className="flex items-center justify-between mb-3">
-							<div className="flex items-center gap-2">
-								{/* <input type="radio" name="embed-type" className="w-4 h-4 text-blue-600" /> */}
-								<span className="text-sm font-medium">
-									Embed the iframe directly
-								</span>
-							</div>
-							<a
-								href={embedUrl}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="text-xs text-blue-600 hover:text-blue-800"
+				{/* Iframe Embed */}
+				<ContentCard
+					title="Iframe Embed"
+					description="Add the agent anywhere on your website"
+				>
+					<ContentCardListItem>
+						<div className="flex items-center justify-end mb-3">
+							<Button
+								size="sm"
+								variant="outline"
+								onClick={() => window.open(embedUrl, '_blank')}
 							>
-								Preview →
-							</a>
+								<ExternalLink className="h-3 w-3 mr-1" />
+								Preview
+							</Button>
 						</div>
-						<p className="text-xs text-gray-600 mb-3">
-							Add the agent anywhere on your website
-						</p>
-						<div className="bg-gray-50 rounded p-2 mb-2 h-16 overflow-x-auto overflow-y-hidden">
-							<code className="text-xs text-gray-800 font-mono whitespace-nowrap">
+						<div className="bg-muted rounded p-2 mb-2 h-16 overflow-x-auto overflow-y-hidden">
+							<code className="text-xs text-muted-foreground font-mono whitespace-nowrap">
 								{iframeCode}
 							</code>
 						</div>
-						<button
+						<Button
+							size="sm"
 							onClick={() => copyToClipboard(iframeCode, "iframe")}
-							className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-gray-900 rounded hover:bg-gray-800"
 						>
 							{copiedCode === "iframe" ? (
 								<>
-									<Check className="h-3 w-3" />
+									<Check className="h-3 w-3 mr-1" />
 									Copied!
 								</>
 							) : (
 								<>
-									<Copy className="h-3 w-3" />
-									Copy
+									<Copy className="h-3 w-3 mr-1" />
+									Copy Code
 								</>
 							)}
-						</button>
-					</div>
-				</div>
-			</div>
+						</Button>
+					</ContentCardListItem>
+				</ContentCard>
+			</TwoColumnLayout>
 
 			{/* Configuration */}
-			<div className="space-y-3">
-				<h4 className="text-base font-medium text-gray-900">Configuration</h4>
-
-				<div className="bg-white border rounded-lg p-4 space-y-4">
-					<div>
-						<h5 className="text-sm font-medium text-gray-700 mb-2">
-							On the site
-						</h5>
-						<div className="text-xs text-gray-600 font-mono bg-gray-50 p-2 rounded">
-							{new URL(baseUrl).hostname}
-						</div>
+			<FormCard
+				title="Configuration"
+				description={`Configure your widget for ${new URL(baseUrl).hostname}`}
+				icon={Settings}
+			>
+				<FormSection>
+					<div className="flex items-center gap-4">
+						<FormField label="Width" className="flex-1">
+							<Input
+								value={embedWidth}
+								onChange={(e) => setEmbedWidth(e.target.value)}
+								className="h-8"
+							/>
+						</FormField>
+						<FormField label="Height" className="flex-1">
+							<Input
+								value={embedHeight}
+								onChange={(e) => setEmbedHeight(e.target.value)}
+								className="h-8"
+							/>
+						</FormField>
 					</div>
 
-					<div className="space-y-3">
-						<div className="flex items-center gap-4">
-							<div className="flex-1">
-								<Label htmlFor="width" className="text-xs text-gray-600">
-									Width
-								</Label>
-								<Input
-									id="width"
-									value={embedWidth}
-									onChange={(e) => setEmbedWidth(e.target.value)}
-									className="h-8 text-xs"
-								/>
-							</div>
-							<div className="flex-1">
-								<Label htmlFor="height" className="text-xs text-gray-600">
-									Height
-								</Label>
-								<Input
-									id="height"
-									value={embedHeight}
-									onChange={(e) => setEmbedHeight(e.target.value)}
-									className="h-8 text-xs"
-								/>
-							</div>
+					<FormField label="Primary Color">
+						<div className="flex items-center gap-2">
+							<Input
+								type="color"
+								value={primaryColor}
+								onChange={(e) => setPrimaryColor(e.target.value)}
+								className="h-8 w-16"
+							/>
+							<Input
+								value={primaryColor}
+								onChange={(e) => setPrimaryColor(e.target.value)}
+								className="h-8 flex-1"
+							/>
 						</div>
-
-						<div>
-							<Label htmlFor="color" className="text-xs text-gray-600">
-								Primary Color
-							</Label>
-							<div className="flex items-center gap-2">
-								<Input
-									id="color"
-									type="color"
-									value={primaryColor}
-									onChange={(e) => setPrimaryColor(e.target.value)}
-									className="h-8 w-16"
-								/>
-								<Input
-									value={primaryColor}
-									onChange={(e) => setPrimaryColor(e.target.value)}
-									className="h-8 text-xs flex-1"
-								/>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+					</FormField>
+				</FormSection>
+			</FormCard>
+		</PageLayout>
 	);
 }

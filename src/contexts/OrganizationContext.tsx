@@ -1,4 +1,5 @@
 import { useQuery } from "convex/react";
+import { useAuth } from "@clerk/clerk-react";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 
@@ -20,7 +21,11 @@ export function OrganizationProvider({
 	const [selectedOrganizationId, setSelectedOrganizationId] = useState<
 		string | null
 	>(null);
-	const organizations = useQuery(api.organizations.getUserOrganizations);
+	const { isLoaded, isSignedIn } = useAuth();
+	const organizations = useQuery(
+		api.organizations.getUserOrganizations,
+		isLoaded && isSignedIn ? {} : "skip",
+	);
 
 	// Get current organization
 	const currentOrganization = React.useMemo(() => {

@@ -6,6 +6,10 @@ import { api } from "../../convex/_generated/api";
 import { useOrganization } from "../contexts/OrganizationContext";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
+import { PageLayout } from "../components/ui/layout";
+import { PageHeader } from "../components/ui/page-header";
+import { ContentCard, ContentCardEmpty } from "../components/ui/content-card";
+import { Alert, AlertDescription } from "../components/ui/alert";
 
 export const Route = createFileRoute("/dashboard/agents/")({
 	component: AgentsList,
@@ -29,64 +33,32 @@ function AgentsList() {
 	}, [currentOrganization, allAgents]);
 
 	return (
-		<div className="space-y-8">
-			{/* Page Header */}
-			<div className="flex items-center justify-between border-b border-border pb-6">
-				<div>
-					<h1 className="text-3xl font-bold text-foreground">
-						{currentOrganization
-							? `${currentOrganization.name} Agents`
-							: "My Agents"}
-					</h1>
-					<p className="mt-2 text-base text-muted-foreground max-w-2xl">
-						{currentOrganization ? (
-							<>
-								Create and manage AI agents for{" "}
-								<span className="font-medium text-foreground">{currentOrganization.name}</span>.
-								Each agent can be trained with specific knowledge and deployed
-								anywhere.
-							</>
-						) : (
-							"Create and manage your AI agents. Each agent can be trained with specific knowledge and deployed anywhere."
-						)}
-					</p>
-				</div>
-				<Button
-					onClick={() => navigate({ to: "/dashboard/agents/new" })}
-					className="h-10"
-				>
-					<Plus className="mr-2 h-4 w-4" />
-					Create Agent
-				</Button>
-			</div>
+		<PageLayout>
+			<PageHeader
+				title={currentOrganization
+					? `${currentOrganization.name} Agents`
+					: "My Agents"}
+				description={currentOrganization ? (
+					<>
+						Create and manage AI agents for{" "}
+						<span className="font-medium text-foreground">{currentOrganization.name}</span>.
+						Each agent can be trained with specific knowledge and deployed
+						anywhere.
+					</>
+				) : (
+					"Create and manage your AI agents. Each agent can be trained with specific knowledge and deployed anywhere."
+				)}
+				action={
+					<Button
+						onClick={() => navigate({ to: "/dashboard/agents/new" })}
+					>
+						<Plus className="mr-2 h-4 w-4" />
+						Create Agent
+					</Button>
+				}
+			/>
 
-			{/* Organization Context Indicator */}
-			{currentOrganization && (
-				<Card className="bg-accent/20 border-accent/30">
-					<CardContent className="py-4">
-						<div className="flex items-center">
-							<div className="flex-shrink-0">
-								<Building2 className="w-5 h-5 text-primary" />
-							</div>
-							<div className="ml-3">
-								<h3 className="text-sm font-medium text-foreground">
-									Viewing agents for: {currentOrganization.name}
-								</h3>
-								<p className="text-sm text-muted-foreground">
-									Your role:{" "}
-									<span className="capitalize font-medium text-foreground">
-										{currentOrganization.memberRole}
-									</span>{" "}
-									• Plan:{" "}
-									<span className="capitalize font-medium text-foreground">
-										{currentOrganization.plan}
-									</span>
-								</p>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-			)}
+			{/* Organization Context Indicator removed per UX request */}
 
 			{/* Agents Grid */}
 			{allAgents === undefined ? (
@@ -112,33 +84,29 @@ function AgentsList() {
 				</div>
 			) : agents.length === 0 ? (
 				/* Empty State */
-				<div className="text-center py-16">
-					<div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-6">
-						<Bot className="w-8 h-8 text-muted-foreground" />
-					</div>
-					<h3 className="text-lg font-semibold text-foreground mb-2">
-						{currentOrganization
-							? `No agents in ${currentOrganization.name} yet`
-							: "No agents yet"}
-					</h3>
-					<p className="text-base text-muted-foreground mb-8 max-w-md mx-auto">
-						{currentOrganization ? (
-							<>
-								Get started by creating your first AI agent for{" "}
-								{currentOrganization.name}.
-							</>
-						) : (
-							"Get started by creating your first AI agent."
-						)}
-					</p>
-					<Button
-						onClick={() => navigate({ to: "/dashboard/agents/new" })}
-						size="lg"
-					>
-						<Plus className="mr-2 h-4 w-4" />
-						Create your first agent
-					</Button>
-				</div>
+				<ContentCardEmpty
+					icon={Bot}
+					title={currentOrganization
+						? `No agents in ${currentOrganization.name} yet`
+						: "No agents yet"}
+					description={currentOrganization ? (
+						<>
+							Get started by creating your first AI agent for{" "}
+							{currentOrganization.name}.
+						</>
+					) : (
+						"Get started by creating your first AI agent."
+					)}
+					action={
+						<Button
+							onClick={() => navigate({ to: "/dashboard/agents/new" })}
+							size="lg"
+						>
+							<Plus className="mr-2 h-4 w-4" />
+							Create your first agent
+						</Button>
+					}
+				/>
 			) : (
 				/* Agents Grid */
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -192,6 +160,6 @@ function AgentsList() {
 					))}
 				</div>
 			)}
-		</div>
+		</PageLayout>
 	);
 }

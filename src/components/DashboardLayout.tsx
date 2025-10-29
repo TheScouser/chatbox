@@ -4,15 +4,12 @@ import { useQuery } from "convex/react";
 import {
 	BarChart3,
 	Bell,
-	BookOpen,
 	Bot,
 	Building2,
 	ChevronDown,
 	ChevronRight,
-	CreditCard,
 	FileText,
 	Globe,
-	Home,
 	MessageSquare,
 	Plus,
 	Search,
@@ -21,6 +18,13 @@ import {
 	TrendingUp,
 	Upload,
 	User,
+	Menu,
+	X,
+	BotMessageSquareIcon,
+	DatabaseIcon,
+	CreditCard,
+	FolderOpen,
+	Users,
 } from "lucide-react";
 import React, { useState } from "react";
 import { api } from "../../convex/_generated/api";
@@ -41,6 +45,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const [organizationSearch, setOrganizationSearch] = useState("");
 	const [expandedKnowledgeBase, setExpandedKnowledgeBase] = useState(false);
 	const [expandedSettings, setExpandedSettings] = useState(false);
+	const [expandedGlobalSettings, setExpandedGlobalSettings] = useState(false);
+	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
 	// Use organization context
 	const {
@@ -53,20 +59,31 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	// Fetch agents for the selector
 	const agents = useQuery(api.agents.getAgentsForUser);
 
-	// Platform-level navigation (top header)
-	const platformNavigation = [
+	// Platform/global navigation used in left sidebar when no agent selected
+	const globalNavigation = [
 		{ name: "Agents", href: "/dashboard/agents", icon: Bot },
 		{ name: "Usage", href: "/dashboard/usage", icon: TrendingUp },
-		{ name: "Settings", href: "/dashboard/settings", icon: Settings },
+		{
+			name: "Settings",
+			href: "/dashboard/settings",
+			icon: Settings,
+			expandable: true,
+			children: [
+				{ name: "General", href: "/dashboard/settings", icon: Settings, exact: true },
+				{ name: "Members", href: "/dashboard/settings/members", icon: Users },
+				{ name: "Plans", href: "/dashboard/settings/plans", icon: FolderOpen },
+				{ name: "Billing", href: "/dashboard/settings/billing", icon: CreditCard },
+			],
+		},
 	];
 
 	// Agent-specific navigation (left sidebar)
 	const agentNavigation = [
-		{ name: "Overview", href: "", icon: Home },
+		{ name: "Chat Playground", href: "/chat", icon: BotMessageSquareIcon },
 		{
-			name: "Knowledge Base",
+			name: "Sources",
 			href: "/knowledge",
-			icon: BookOpen,
+			icon: DatabaseIcon,
 			expandable: true,
 			children: [
 				{ name: "Text", href: "/knowledge/text", icon: FileText },
@@ -75,7 +92,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 				{ name: "Website", href: "/knowledge/url", icon: Globe },
 			],
 		},
-		{ name: "Chat Playground", href: "/chat", icon: MessageSquare },
 		{ name: "Conversations", href: "/conversations", icon: MessageSquare },
 		{ name: "Deploy", href: "/deploy", icon: Globe },
 		{ name: "Analytics", href: "/analytics", icon: BarChart3, disabled: true },
@@ -109,11 +125,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 		if (!currentAgent) return false;
 
 		const basePath = `/dashboard/agents/${currentAgent._id}`;
-		if (navHref === "") {
-			// Overview - exact match to agent base path
-			return location.pathname === basePath;
-		}
-
 		return location.pathname.startsWith(basePath + navHref);
 	};
 
@@ -131,7 +142,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 	const currentAgent = getCurrentAgent();
 
-	// Auto-expand Knowledge Base if we're on a knowledge page
+	// Auto-expand Sources if we're on a knowledge page
 	const isOnKnowledgePage =
 		currentAgent &&
 		location.pathname.includes(
@@ -158,6 +169,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			setExpandedSettings(true);
 		}
 	}, [isOnSettingsPage]);
+
+	// Check if we're on an agent page to show the sidebar
+	const showAgentSidebar =
+		location.pathname.includes("/dashboard/agents/") && currentAgent;
+
+	// Auto-expand global settings when on settings pages and not on agent
+	React.useEffect(() => {
+		if (!showAgentSidebar && location.pathname.startsWith("/dashboard/settings")) {
+			setExpandedGlobalSettings(true);
+		}
+	}, [showAgentSidebar, location.pathname]);
 
 	// Update organization selection logic for agent context
 	const getOrganizationForAgent = () => {
@@ -195,33 +217,43 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			return matchesSearch && matchesOrg;
 		}) || [];
 
-	// Check if we're on an agent page to show the sidebar
-	const showAgentSidebar =
-		location.pathname.includes("/dashboard/agents/") && currentAgent;
-
 	return (
 		<div className="min-h-screen bg-background flex">
 			{/* Left Sidebar - Agent Navigation */}
 			{showAgentSidebar && (
-				<div className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
+				<div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-sidebar border-r border-sidebar-border/50 flex flex-col transition-all duration-300`}>
 					{/* Sidebar Header */}
-					<div className="flex items-center justify-between px-4 py-3 border-b border-sidebar-border">
+					<div className="flex items-center justify-between px-5 py-4 border-b border-sidebar-border/30">
 						<div className="flex items-center min-w-0">
-							<Bot className="w-5 h-5 text-sidebar-primary mr-2 flex-shrink-0" />
-							<div className="min-w-0">
-								<h2 className="text-sm font-semibold text-sidebar-foreground truncate">
-									{currentAgent.name}
-								</h2>
-								<p className="text-xs text-muted-foreground truncate">
-									Agent Dashboard
-								</p>
+							<div className="w-6 h-6 bg-sidebar-primary rounded-md flex items-center justify-center mr-3 flex-shrink-0">
+								<Bot className="w-3.5 h-3.5 text-sidebar-primary-foreground" />
 							</div>
+							{!sidebarCollapsed && (
+								<div className="min-w-0">
+									<h2 className="text-sm font-medium text-sidebar-foreground truncate">
+										{currentAgent.name}
+									</h2>
+									<p className="text-xs text-muted-foreground/80 truncate">
+										Agent
+									</p>
+								</div>
+							)}
 						</div>
+						<button
+							onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+							className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
+						>
+							{sidebarCollapsed ? (
+								<Menu className="w-4 h-4 text-sidebar-foreground" />
+							) : (
+								<X className="w-4 h-4 text-sidebar-foreground" />
+							)}
+						</button>
 					</div>
 
 					{/* Sidebar Navigation */}
-					<nav className="flex-1 px-3 py-4">
-						<div className="space-y-1">
+					<nav className="flex-1 px-3 py-3">
+						<div className="space-y-0.5">
 							{agentNavigation.map((item) => {
 								const Icon = item.icon;
 								const href = currentAgent
@@ -232,13 +264,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									return (
 										<div
 											key={item.name}
-											className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground cursor-not-allowed"
+											className={`flex items-center px-3 py-1.5 text-sm font-normal text-muted-foreground/60 cursor-not-allowed ${sidebarCollapsed ? 'justify-center' : ''}`}
+											title={sidebarCollapsed ? item.name : undefined}
 										>
-											<Icon className="mr-3 h-4 w-4" />
-											{item.name}
-											<span className="ml-auto text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">
-												Soon
-											</span>
+											<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+											{!sidebarCollapsed && (
+												<>
+													{item.name}
+													<span className="ml-auto text-xs bg-muted/50 text-muted-foreground/60 px-1.5 py-0.5 rounded text-[10px]">
+														Soon
+													</span>
+												</>
+											)}
 										</div>
 									);
 								}
@@ -252,7 +289,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 												isAgentNavActive(child.href),
 											));
 									const isExpanded =
-										item.name === "Knowledge Base"
+										item.name === "Sources"
 											? expandedKnowledgeBase
 											: item.name === "Settings"
 												? expandedSettings
@@ -262,18 +299,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 										<div key={item.name}>
 											{/* Parent Item */}
 											<div
-												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
-													isParentActive
-														? "bg-sidebar-accent text-sidebar-primary"
-														: "text-sidebar-foreground hover:bg-sidebar-accent/50"
-												}`}
+												className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors cursor-pointer ${isParentActive
+													? "bg-sidebar-accent/80 text-sidebar-primary"
+													: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+													} ${sidebarCollapsed ? 'justify-center' : ''}`}
+												title={sidebarCollapsed ? item.name : undefined}
 												onClick={() => {
-													if (item.name === "Knowledge Base") {
-														setExpandedKnowledgeBase(!expandedKnowledgeBase);
-													} else if (item.name === "Settings") {
-														setExpandedSettings(!expandedSettings);
+													if (!sidebarCollapsed) {
+														if (item.name === "Sources") {
+															setExpandedKnowledgeBase(!expandedKnowledgeBase);
+														} else if (item.name === "Settings") {
+															setExpandedSettings(!expandedSettings);
+														}
 													}
-													// Also navigate to the parent page
+													// Always navigate to the parent page
 													if (currentAgent) {
 														navigate({
 															to: `/dashboard/agents/${currentAgent._id}${item.href}`,
@@ -281,18 +320,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 													}
 												}}
 											>
-												<Icon className="mr-3 h-4 w-4" />
-												{item.name}
-												{isExpanded ? (
-													<ChevronDown className="ml-auto h-4 w-4" />
-												) : (
-													<ChevronRight className="ml-auto h-4 w-4" />
+												<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+												{!sidebarCollapsed && (
+													<>
+														{item.name}
+														{isExpanded ? (
+															<ChevronDown className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+														) : (
+															<ChevronRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+														)}
+													</>
 												)}
 											</div>
 
-											{/* Child Items */}
-											{isExpanded && (
-												<div className="ml-6 mt-1 space-y-1">
+											{/* Child Items - only show when not collapsed */}
+											{isExpanded && !sidebarCollapsed && (
+												<div className="ml-6 mt-0.5 space-y-0.5">
 													{item.children.map((child) => {
 														const ChildIcon = child.icon;
 														const childHref = currentAgent
@@ -303,13 +346,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 															<Link
 																key={child.name}
 																to={childHref}
-																className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-																	isAgentNavActive(child.href)
-																		? "bg-sidebar-accent text-sidebar-primary border-r-2 border-sidebar-primary"
-																		: "text-muted-foreground hover:bg-sidebar-accent/30 hover:text-sidebar-foreground"
-																}`}
+																className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${isAgentNavActive(child.href)
+																	? "bg-sidebar-accent text-sidebar-primary"
+																	: "text-muted-foreground/80 hover:bg-sidebar-accent/30 hover:text-sidebar-foreground"
+																	}`}
 															>
-																<ChildIcon className="mr-3 h-4 w-4" />
+																<ChildIcon className="mr-3 h-3.5 w-3.5" />
 																{child.name}
 															</Link>
 														);
@@ -325,14 +367,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									<Link
 										key={item.name}
 										to={href}
-										className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-											isAgentNavActive(item.href)
-												? "bg-sidebar-accent text-sidebar-primary border-r-2 border-sidebar-primary"
-												: "text-sidebar-foreground hover:bg-sidebar-accent/50"
-										}`}
+										className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${isAgentNavActive(item.href)
+											? "bg-sidebar-accent/80 text-sidebar-primary"
+											: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+											} ${sidebarCollapsed ? 'justify-center' : ''}`}
+										title={sidebarCollapsed ? item.name : undefined}
 									>
-										<Icon className="mr-3 h-4 w-4" />
-										{item.name}
+										<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+										{!sidebarCollapsed && item.name}
 									</Link>
 								);
 							})}
@@ -343,28 +385,147 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 					<div className="border-t border-sidebar-border p-3">
 						<Link
 							to="/dashboard/agents"
-							className="flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors"
+							className={`flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}
+							title={sidebarCollapsed ? "Back to All Agents" : undefined}
 						>
-							<Bot className="mr-3 h-4 w-4" />← Back to All Agents
+							<Bot className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+							{!sidebarCollapsed && "← Back to All Agents"}
 						</Link>
 					</div>
+				</div>
+			)}
+
+			{/* Left Sidebar - Global Navigation (when no agent selected) */}
+			{!showAgentSidebar && (
+				<div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-sidebar border-r border-sidebar-border/50 flex flex-col transition-all duration-300`}>
+					{/* Sidebar Header */}
+					<div className="flex items-center justify-between px-5 py-4 border-b border-sidebar-border/30">
+						<div className="flex items-center min-w-0">
+							<div className="w-6 h-6 bg-sidebar-primary rounded-md flex items-center justify-center mr-3 flex-shrink-0">
+								<Bot className="w-3.5 h-3.5 text-sidebar-primary-foreground" />
+							</div>
+							{!sidebarCollapsed && (
+								<div className="min-w-0">
+									<h2 className="text-sm font-medium text-sidebar-foreground truncate">
+										Navigation
+									</h2>
+									<p className="text-xs text-muted-foreground/80 truncate">Dashboard</p>
+								</div>
+							)}
+						</div>
+						<button
+							onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+							className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
+						>
+							{sidebarCollapsed ? (
+								<Menu className="w-4 h-4 text-sidebar-foreground" />
+							) : (
+								<X className="w-4 h-4 text-sidebar-foreground" />
+							)}
+						</button>
+					</div>
+
+					{/* Sidebar Navigation */}
+					<nav className="flex-1 px-3 py-3">
+						<div className="space-y-0.5">
+							{globalNavigation.map((item) => {
+								const Icon = item.icon as any;
+								if ((item as any).expandable && (item as any).children) {
+									const isParentActive =
+										isActive(item.href) ||
+										((item as any).children as any[]).some((child: any) =>
+											isActive(child.href),
+										);
+									const isExpanded = expandedGlobalSettings;
+
+									return (
+										<div key={item.name}>
+											{/* Parent */}
+											<div
+												className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors cursor-pointer ${isParentActive
+													? "bg-sidebar-accent/80 text-sidebar-primary"
+													: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+													} ${sidebarCollapsed ? 'justify-center' : ''}`}
+												title={sidebarCollapsed ? item.name : undefined}
+												onClick={() => {
+													if (!sidebarCollapsed) {
+														setExpandedGlobalSettings(!expandedGlobalSettings);
+													}
+													navigate({ to: item.href });
+												}}
+											>
+												<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+												{!sidebarCollapsed && (
+													<>
+														{item.name}
+														{isExpanded ? (
+															<ChevronDown className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+														) : (
+															<ChevronRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+														)}
+													</>
+												)}
+											</div>
+
+											{/* Children */}
+											{isExpanded && !sidebarCollapsed && (
+												<div className="ml-6 mt-0.5 space-y-0.5">
+													{((item as any).children as any[]).map((child: any) => {
+														const ChildIcon = child.icon;
+														return (
+															<Link
+																key={child.name}
+																to={child.href}
+																className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${isActive(child.href)
+																	? "bg-sidebar-accent text-sidebar-primary"
+																	: "text-muted-foreground/80 hover:bg-sidebar-accent/30 hover:text-sidebar-foreground"
+																	}`}
+															>
+																<ChildIcon className="mr-3 h-3.5 w-3.5" />
+																{child.name}
+															</Link>
+														);
+													})}
+												</div>
+											)}
+										</div>
+									);
+								}
+
+								return (
+									<Link
+										key={item.name}
+										to={item.href}
+										className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${isActive(item.href)
+											? "bg-sidebar-accent/80 text-sidebar-primary"
+											: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+											} ${sidebarCollapsed ? 'justify-center' : ''}`}
+										title={sidebarCollapsed ? item.name : undefined}
+									>
+										<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+										{!sidebarCollapsed && item.name}
+									</Link>
+								);
+							})}
+						</div>
+					</nav>
 				</div>
 			)}
 
 			{/* Main Content Area */}
 			<div className="flex-1 flex flex-col min-w-0">
 				{/* Top Header */}
-				<header className="bg-background border-b border-border sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-background/95">
+				<header className="bg-background/80 border-b border-border/30 sticky top-0 z-50 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
 					<div className="mx-auto max-w-full px-4 lg:px-6">
-						<div className="flex h-14 items-center justify-between">
+						<div className="flex h-12 items-center justify-between">
 							{/* Logo and Selectors */}
 							<div className="flex items-center space-x-4">
 								<Link
-									to="/dashboard"
-									className="flex items-center space-x-2 text-lg font-bold text-foreground hover:text-foreground/80 transition-colors"
+									to="/dashboard/agents"
+									className="flex items-center space-x-2.5 text-base font-medium text-foreground hover:text-foreground/80 transition-colors"
 								>
-									<div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
-										<Bot className="w-4 h-4 text-primary-foreground" />
+									<div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
+										<Bot className="w-3.5 h-3.5 text-primary-foreground" />
 									</div>
 									<span>Chatbox</span>
 								</Link>
@@ -441,11 +602,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																			setShowOrganizationsDropdown(false);
 																			setOrganizationSearch("");
 																		}}
-																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
-																			displayOrganization?._id === org._id
-																				? "bg-accent text-accent-foreground"
-																				: "hover:bg-accent/50 text-foreground"
-																		}`}
+																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${displayOrganization?._id === org._id
+																			? "bg-accent text-accent-foreground"
+																			: "hover:bg-accent/50 text-foreground"
+																			}`}
 																	>
 																		<Building2 className="w-4 h-4 mr-3 text-muted-foreground" />
 																		<div className="flex-1 min-w-0">
@@ -565,11 +725,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																			setShowAgentsDropdown(false);
 																			setAgentSearch("");
 																		}}
-																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
-																			currentAgent?._id === agent._id
-																				? "bg-accent text-accent-foreground"
-																				: "hover:bg-accent/50 text-foreground"
-																		}`}
+																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${currentAgent?._id === agent._id
+																			? "bg-accent text-accent-foreground"
+																			: "hover:bg-accent/50 text-foreground"
+																			}`}
 																	>
 																		<Bot className="w-4 h-4 mr-3 text-muted-foreground" />
 																		<div className="flex-1 min-w-0">
@@ -612,29 +771,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 								</div>
 							</div>
 
-							{/* Platform Navigation - only show if not on agent page */}
-							{!showAgentSidebar && (
-								<nav className="hidden md:flex items-center space-x-1">
-									{platformNavigation.map((item) => {
-										const Icon = item.icon;
-
-										return (
-											<Link
-												key={item.name}
-												to={item.href}
-												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-													isActive(item.href)
-														? "bg-accent text-accent-foreground"
-														: "text-foreground hover:bg-accent/50"
-												}`}
-											>
-												<Icon className="mr-1.5 h-4 w-4" />
-												{item.name}
-											</Link>
-										);
-									})}
-								</nav>
-							)}
+							{/* Platform Navigation removed: now shown in left sidebar when no agent selected */}
 
 							{/* Right side actions */}
 							<div className="flex items-center space-x-3">
@@ -674,47 +811,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 							</div>
 						</div>
 
-						{/* Mobile Navigation - only show if not on agent page */}
-						{!showAgentSidebar && (
-							<div className="md:hidden border-t border-border bg-muted/30">
-								<div className="px-2 py-2">
-									<div className="flex items-center justify-between">
-										<div className="flex space-x-1 overflow-x-auto">
-											{platformNavigation.map((item) => {
-												const Icon = item.icon;
-
-												return (
-													<Link
-														key={item.name}
-														to={item.href}
-														className={`flex items-center px-2 py-1.5 text-xs font-medium rounded whitespace-nowrap transition-colors ${
-															isActive(item.href)
-																? "bg-accent text-accent-foreground"
-																: "text-muted-foreground hover:text-foreground"
-														}`}
-													>
-														<Icon className="mr-1 h-3 w-3" />
-														{item.name}
-													</Link>
-												);
-											})}
-										</div>
-										<button
-											onClick={() => navigate({ to: "/dashboard/agents/new" })}
-											className="flex items-center px-2 py-1.5 text-xs font-medium text-primary-foreground bg-primary rounded hover:bg-primary/90 transition-colors whitespace-nowrap ml-2"
-										>
-											<Plus className="mr-1 h-3 w-3" />
-											New
-										</button>
-									</div>
-								</div>
-							</div>
-						)}
+						{/* Mobile platform nav removed: consolidated into left sidebar */}
 					</div>
 				</header>
 
 				{/* Main content */}
-				<main className="flex-1 py-6">
+				<main className="flex-1">
 					<div
 						className={`mx-auto px-4 lg:px-6 ${showAgentSidebar ? "max-w-full" : "max-w-[1600px]"}`}
 					>
