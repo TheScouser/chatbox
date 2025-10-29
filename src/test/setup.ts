@@ -39,8 +39,6 @@ vi.mock('@tanstack/react-router', () => ({
   useNavigate: vi.fn(() => vi.fn()),
   useParams: vi.fn(() => ({})),
   useSearch: vi.fn(() => ({})),
-  Link: ({ children, ...props }: any) => <a {...props}>{children}</a>,
-  Outlet: () => null,
 }))
 
 // Global test utilities

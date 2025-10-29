@@ -16,21 +16,21 @@ export default defineConfig({
 	server: {
 		middlewareMode: false,
 	},
-	configureServer(server) {
-		// Serve widget.min.js from dist folder during development
-		server.middlewares.use("/widget.min.js", (req, res, next) => {
-			const widgetPath = resolve(__dirname, "dist/widget.min.js");
-			if (existsSync(widgetPath)) {
-				res.setHeader("Content-Type", "application/javascript");
-				const fs = require("fs");
-				const content = fs.readFileSync(widgetPath);
-				res.end(content);
-			} else {
-				res.statusCode = 404;
-				res.end("Widget not found. Run npm run build first.");
-			}
-		});
-	},
+	// configureServer(server) {
+	// 	// Serve widget.min.js from dist folder during development
+	// 	server.middlewares.use("/widget.min.js", (req, res, next) => {
+	// 		const widgetPath = resolve(__dirname, "dist/widget.min.js");
+	// 		if (existsSync(widgetPath)) {
+	// 			res.setHeader("Content-Type", "application/javascript");
+	// 			const fs = require("fs");
+	// 			const content = fs.readFileSync(widgetPath);
+	// 			res.end(content);
+	// 		} else {
+	// 			res.statusCode = 404;
+	// 			res.end("Widget not found. Run npm run build first.");
+	// 		}
+	// 	});
+	// },
 	test: {
 		globals: true,
 		environment: "jsdom",

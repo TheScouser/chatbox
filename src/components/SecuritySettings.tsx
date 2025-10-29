@@ -12,7 +12,7 @@ interface SecuritySettingsProps {
 
 export default function SecuritySettings({ agent }: SecuritySettingsProps) {
 	const [isSaving, setIsSaving] = useState(false);
-	
+
 	// Security settings
 	const [allowedDomains, setAllowedDomains] = useState<string[]>(
 		agent.allowedDomains || [],
@@ -93,9 +93,7 @@ export default function SecuritySettings({ agent }: SecuritySettingsProps) {
 								type="checkbox"
 								id="domain-verification"
 								checked={domainVerificationEnabled}
-								onChange={(e) =>
-									setDomainVerificationEnabled(e.target.checked)
-								}
+								onChange={(e) => setDomainVerificationEnabled(e.target.checked)}
 								className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
 							/>
 							<label
@@ -116,9 +114,9 @@ export default function SecuritySettings({ agent }: SecuritySettingsProps) {
 										How Domain Verification Works
 									</h5>
 									<p className="text-sm text-blue-700 mt-1">
-										When enabled, your chat widget will only work on the
-										domains you specify below. This prevents others from
-										embedding your widget on unauthorized websites.
+										When enabled, your chat widget will only work on the domains
+										you specify below. This prevents others from embedding your
+										widget on unauthorized websites.
 									</p>
 								</div>
 							</div>
@@ -172,8 +170,8 @@ export default function SecuritySettings({ agent }: SecuritySettingsProps) {
 						{allowedDomains.length === 0 && domainVerificationEnabled && (
 							<div className="text-center py-4 bg-yellow-50 border border-yellow-200 rounded-lg">
 								<p className="text-sm text-yellow-800">
-									⚠️ No domains added. Your widget will not work until you
-									add at least one domain.
+									⚠️ No domains added. Your widget will not work until you add at
+									least one domain.
 								</p>
 							</div>
 						)}
@@ -234,10 +232,9 @@ export default function SecuritySettings({ agent }: SecuritySettingsProps) {
 									Keep Your Secret Key Safe
 								</h5>
 								<p className="text-sm text-orange-700 mt-1">
-									Never commit this key to your repository, client-side
-									code, or anywhere a third party can find it. Use it only
-									on your server to generate HMAC signatures for widget
-									authentication.
+									Never commit this key to your repository, client-side code, or
+									anywhere a third party can find it. Use it only on your server
+									to generate HMAC signatures for widget authentication.
 								</p>
 							</div>
 						</div>

@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { Authenticated } from "convex/react";
+import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react";
 import DashboardLayout from "../components/DashboardLayout";
 
 export const Route = createFileRoute("/dashboard")({
@@ -8,10 +8,15 @@ export const Route = createFileRoute("/dashboard")({
 
 function Dashboard() {
 	return (
-		<Authenticated>
-			<DashboardLayout>
-				<Outlet />
-			</DashboardLayout>
-		</Authenticated>
+		<>
+			<SignedIn>
+				<DashboardLayout>
+					<Outlet />
+				</DashboardLayout>
+			</SignedIn>
+			<SignedOut>
+				<RedirectToSignIn />
+			</SignedOut>
+		</>
 	);
 }

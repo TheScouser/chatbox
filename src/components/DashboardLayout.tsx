@@ -4,15 +4,12 @@ import { useQuery } from "convex/react";
 import {
 	BarChart3,
 	Bell,
-	BookOpen,
 	Bot,
 	Building2,
 	ChevronDown,
 	ChevronRight,
-	CreditCard,
 	FileText,
 	Globe,
-	Home,
 	MessageSquare,
 	Plus,
 	Search,
@@ -21,10 +18,18 @@ import {
 	TrendingUp,
 	Upload,
 	User,
+	Menu,
+	X,
+	BotMessageSquareIcon,
+	DatabaseIcon,
+	CreditCard,
+	FolderOpen,
+	Users,
 } from "lucide-react";
 import React, { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { useOrganization } from "../contexts/OrganizationContext";
+import { ThemeToggleCompact } from "./ThemeToggle";
 
 interface DashboardLayoutProps {
 	children: React.ReactNode;
@@ -40,6 +45,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const [organizationSearch, setOrganizationSearch] = useState("");
 	const [expandedKnowledgeBase, setExpandedKnowledgeBase] = useState(false);
 	const [expandedSettings, setExpandedSettings] = useState(false);
+	const [expandedGlobalSettings, setExpandedGlobalSettings] = useState(false);
+	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
 	// Use organization context
 	const {
@@ -52,20 +59,31 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	// Fetch agents for the selector
 	const agents = useQuery(api.agents.getAgentsForUser);
 
-	// Platform-level navigation (top header)
-	const platformNavigation = [
+	// Platform/global navigation used in left sidebar when no agent selected
+	const globalNavigation = [
 		{ name: "Agents", href: "/dashboard/agents", icon: Bot },
 		{ name: "Usage", href: "/dashboard/usage", icon: TrendingUp },
-		{ name: "Settings", href: "/dashboard/settings", icon: Settings },
+		{
+			name: "Settings",
+			href: "/dashboard/settings",
+			icon: Settings,
+			expandable: true,
+			children: [
+				{ name: "General", href: "/dashboard/settings", icon: Settings, exact: true },
+				{ name: "Members", href: "/dashboard/settings/members", icon: Users },
+				{ name: "Plans", href: "/dashboard/settings/plans", icon: FolderOpen },
+				{ name: "Billing", href: "/dashboard/settings/billing", icon: CreditCard },
+			],
+		},
 	];
 
 	// Agent-specific navigation (left sidebar)
 	const agentNavigation = [
-		{ name: "Overview", href: "", icon: Home },
+		{ name: "Chat Playground", href: "/chat", icon: BotMessageSquareIcon },
 		{
-			name: "Knowledge Base",
+			name: "Sources",
 			href: "/knowledge",
-			icon: BookOpen,
+			icon: DatabaseIcon,
 			expandable: true,
 			children: [
 				{ name: "Text", href: "/knowledge/text", icon: FileText },
@@ -74,7 +92,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 				{ name: "Website", href: "/knowledge/url", icon: Globe },
 			],
 		},
-		{ name: "Chat Playground", href: "/chat", icon: MessageSquare },
 		{ name: "Conversations", href: "/conversations", icon: MessageSquare },
 		{ name: "Deploy", href: "/deploy", icon: Globe },
 		{ name: "Analytics", href: "/analytics", icon: BarChart3, disabled: true },
@@ -86,7 +103,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			children: [
 				{ name: "General", href: "/settings", icon: User },
 				{ name: "AI", href: "/settings/ai", icon: Bot },
-				{ name: "Chat Interface", href: "/settings/chat-interface", icon: MessageSquare },
+				{
+					name: "Chat Interface",
+					href: "/settings/chat-interface",
+					icon: MessageSquare,
+				},
 				{ name: "Security", href: "/settings/security", icon: Shield },
 			],
 		},
@@ -104,11 +125,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 		if (!currentAgent) return false;
 
 		const basePath = `/dashboard/agents/${currentAgent._id}`;
-		if (navHref === "") {
-			// Overview - exact match to agent base path
-			return location.pathname === basePath;
-		}
-
 		return location.pathname.startsWith(basePath + navHref);
 	};
 
@@ -126,7 +142,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 	const currentAgent = getCurrentAgent();
 
-	// Auto-expand Knowledge Base if we're on a knowledge page
+	// Auto-expand Sources if we're on a knowledge page
 	const isOnKnowledgePage =
 		currentAgent &&
 		location.pathname.includes(
@@ -153,6 +169,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			setExpandedSettings(true);
 		}
 	}, [isOnSettingsPage]);
+
+	// Check if we're on an agent page to show the sidebar
+	const showAgentSidebar =
+		location.pathname.includes("/dashboard/agents/") && currentAgent;
+
+	// Auto-expand global settings when on settings pages and not on agent
+	React.useEffect(() => {
+		if (!showAgentSidebar && location.pathname.startsWith("/dashboard/settings")) {
+			setExpandedGlobalSettings(true);
+		}
+	}, [showAgentSidebar, location.pathname]);
 
 	// Update organization selection logic for agent context
 	const getOrganizationForAgent = () => {
@@ -190,33 +217,43 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 			return matchesSearch && matchesOrg;
 		}) || [];
 
-	// Check if we're on an agent page to show the sidebar
-	const showAgentSidebar =
-		location.pathname.includes("/dashboard/agents/") && currentAgent;
-
 	return (
-		<div className="min-h-screen bg-gray-50 flex">
+		<div className="min-h-screen bg-background flex">
 			{/* Left Sidebar - Agent Navigation */}
 			{showAgentSidebar && (
-				<div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+				<div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-sidebar border-r border-sidebar-border/50 flex flex-col transition-all duration-300`}>
 					{/* Sidebar Header */}
-					<div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+					<div className="flex items-center justify-between px-5 py-4 border-b border-sidebar-border/30">
 						<div className="flex items-center min-w-0">
-							<Bot className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0" />
-							<div className="min-w-0">
-								<h2 className="text-sm font-semibold text-gray-900 truncate">
-									{currentAgent.name}
-								</h2>
-								<p className="text-xs text-gray-500 truncate">
-									Agent Dashboard
-								</p>
+							<div className="w-6 h-6 bg-sidebar-primary rounded-md flex items-center justify-center mr-3 flex-shrink-0">
+								<Bot className="w-3.5 h-3.5 text-sidebar-primary-foreground" />
 							</div>
+							{!sidebarCollapsed && (
+								<div className="min-w-0">
+									<h2 className="text-sm font-medium text-sidebar-foreground truncate">
+										{currentAgent.name}
+									</h2>
+									<p className="text-xs text-muted-foreground/80 truncate">
+										Agent
+									</p>
+								</div>
+							)}
 						</div>
+						<button
+							onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+							className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
+						>
+							{sidebarCollapsed ? (
+								<Menu className="w-4 h-4 text-sidebar-foreground" />
+							) : (
+								<X className="w-4 h-4 text-sidebar-foreground" />
+							)}
+						</button>
 					</div>
 
 					{/* Sidebar Navigation */}
-					<nav className="flex-1 px-3 py-4">
-						<div className="space-y-1">
+					<nav className="flex-1 px-3 py-3">
+						<div className="space-y-0.5">
 							{agentNavigation.map((item) => {
 								const Icon = item.icon;
 								const href = currentAgent
@@ -227,13 +264,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									return (
 										<div
 											key={item.name}
-											className="flex items-center px-3 py-2 text-sm font-medium text-gray-400 cursor-not-allowed"
+											className={`flex items-center px-3 py-1.5 text-sm font-normal text-muted-foreground/60 cursor-not-allowed ${sidebarCollapsed ? 'justify-center' : ''}`}
+											title={sidebarCollapsed ? item.name : undefined}
 										>
-											<Icon className="mr-3 h-4 w-4" />
-											{item.name}
-											<span className="ml-auto text-xs bg-gray-100 px-2 py-0.5 rounded">
-												Soon
-											</span>
+											<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+											{!sidebarCollapsed && (
+												<>
+													{item.name}
+													<span className="ml-auto text-xs bg-muted/50 text-muted-foreground/60 px-1.5 py-0.5 rounded text-[10px]">
+														Soon
+													</span>
+												</>
+											)}
 										</div>
 									);
 								}
@@ -247,7 +289,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 												isAgentNavActive(child.href),
 											));
 									const isExpanded =
-										item.name === "Knowledge Base"
+										item.name === "Sources"
 											? expandedKnowledgeBase
 											: item.name === "Settings"
 												? expandedSettings
@@ -257,18 +299,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 										<div key={item.name}>
 											{/* Parent Item */}
 											<div
-												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
-													isParentActive
-														? "bg-blue-50 text-blue-700"
-														: "text-gray-700 hover:bg-gray-50"
-												}`}
+												className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors cursor-pointer ${isParentActive
+													? "bg-sidebar-accent/80 text-sidebar-primary"
+													: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+													} ${sidebarCollapsed ? 'justify-center' : ''}`}
+												title={sidebarCollapsed ? item.name : undefined}
 												onClick={() => {
-													if (item.name === "Knowledge Base") {
-														setExpandedKnowledgeBase(!expandedKnowledgeBase);
-													} else if (item.name === "Settings") {
-														setExpandedSettings(!expandedSettings);
+													if (!sidebarCollapsed) {
+														if (item.name === "Sources") {
+															setExpandedKnowledgeBase(!expandedKnowledgeBase);
+														} else if (item.name === "Settings") {
+															setExpandedSettings(!expandedSettings);
+														}
 													}
-													// Also navigate to the parent page
+													// Always navigate to the parent page
 													if (currentAgent) {
 														navigate({
 															to: `/dashboard/agents/${currentAgent._id}${item.href}`,
@@ -276,18 +320,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 													}
 												}}
 											>
-												<Icon className="mr-3 h-4 w-4" />
-												{item.name}
-												{isExpanded ? (
-													<ChevronDown className="ml-auto h-4 w-4" />
-												) : (
-													<ChevronRight className="ml-auto h-4 w-4" />
+												<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+												{!sidebarCollapsed && (
+													<>
+														{item.name}
+														{isExpanded ? (
+															<ChevronDown className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+														) : (
+															<ChevronRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+														)}
+													</>
 												)}
 											</div>
 
-											{/* Child Items */}
-											{isExpanded && (
-												<div className="ml-6 mt-1 space-y-1">
+											{/* Child Items - only show when not collapsed */}
+											{isExpanded && !sidebarCollapsed && (
+												<div className="ml-6 mt-0.5 space-y-0.5">
 													{item.children.map((child) => {
 														const ChildIcon = child.icon;
 														const childHref = currentAgent
@@ -298,13 +346,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 															<Link
 																key={child.name}
 																to={childHref}
-																className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-																	isAgentNavActive(child.href)
-																		? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-																		: "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-																}`}
+																className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${isAgentNavActive(child.href)
+																	? "bg-sidebar-accent text-sidebar-primary"
+																	: "text-muted-foreground/80 hover:bg-sidebar-accent/30 hover:text-sidebar-foreground"
+																	}`}
 															>
-																<ChildIcon className="mr-3 h-4 w-4" />
+																<ChildIcon className="mr-3 h-3.5 w-3.5" />
 																{child.name}
 															</Link>
 														);
@@ -320,14 +367,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 									<Link
 										key={item.name}
 										to={href}
-										className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-											isAgentNavActive(item.href)
-												? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-												: "text-gray-700 hover:bg-gray-50"
-										}`}
+										className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${isAgentNavActive(item.href)
+											? "bg-sidebar-accent/80 text-sidebar-primary"
+											: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+											} ${sidebarCollapsed ? 'justify-center' : ''}`}
+										title={sidebarCollapsed ? item.name : undefined}
 									>
-										<Icon className="mr-3 h-4 w-4" />
-										{item.name}
+										<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+										{!sidebarCollapsed && item.name}
 									</Link>
 								);
 							})}
@@ -335,33 +382,152 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 					</nav>
 
 					{/* Sidebar Footer */}
-					<div className="border-t border-gray-200 p-3">
+					<div className="border-t border-sidebar-border p-3">
 						<Link
 							to="/dashboard/agents"
-							className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
+							className={`flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}
+							title={sidebarCollapsed ? "Back to All Agents" : undefined}
 						>
-							<Bot className="mr-3 h-4 w-4" />← Back to All Agents
+							<Bot className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+							{!sidebarCollapsed && "← Back to All Agents"}
 						</Link>
 					</div>
+				</div>
+			)}
+
+			{/* Left Sidebar - Global Navigation (when no agent selected) */}
+			{!showAgentSidebar && (
+				<div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-sidebar border-r border-sidebar-border/50 flex flex-col transition-all duration-300`}>
+					{/* Sidebar Header */}
+					<div className="flex items-center justify-between px-5 py-4 border-b border-sidebar-border/30">
+						<div className="flex items-center min-w-0">
+							<div className="w-6 h-6 bg-sidebar-primary rounded-md flex items-center justify-center mr-3 flex-shrink-0">
+								<Bot className="w-3.5 h-3.5 text-sidebar-primary-foreground" />
+							</div>
+							{!sidebarCollapsed && (
+								<div className="min-w-0">
+									<h2 className="text-sm font-medium text-sidebar-foreground truncate">
+										Navigation
+									</h2>
+									<p className="text-xs text-muted-foreground/80 truncate">Dashboard</p>
+								</div>
+							)}
+						</div>
+						<button
+							onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+							className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
+						>
+							{sidebarCollapsed ? (
+								<Menu className="w-4 h-4 text-sidebar-foreground" />
+							) : (
+								<X className="w-4 h-4 text-sidebar-foreground" />
+							)}
+						</button>
+					</div>
+
+					{/* Sidebar Navigation */}
+					<nav className="flex-1 px-3 py-3">
+						<div className="space-y-0.5">
+							{globalNavigation.map((item) => {
+								const Icon = item.icon as any;
+								if ((item as any).expandable && (item as any).children) {
+									const isParentActive =
+										isActive(item.href) ||
+										((item as any).children as any[]).some((child: any) =>
+											isActive(child.href),
+										);
+									const isExpanded = expandedGlobalSettings;
+
+									return (
+										<div key={item.name}>
+											{/* Parent */}
+											<div
+												className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors cursor-pointer ${isParentActive
+													? "bg-sidebar-accent/80 text-sidebar-primary"
+													: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+													} ${sidebarCollapsed ? 'justify-center' : ''}`}
+												title={sidebarCollapsed ? item.name : undefined}
+												onClick={() => {
+													if (!sidebarCollapsed) {
+														setExpandedGlobalSettings(!expandedGlobalSettings);
+													}
+													navigate({ to: item.href });
+												}}
+											>
+												<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+												{!sidebarCollapsed && (
+													<>
+														{item.name}
+														{isExpanded ? (
+															<ChevronDown className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+														) : (
+															<ChevronRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
+														)}
+													</>
+												)}
+											</div>
+
+											{/* Children */}
+											{isExpanded && !sidebarCollapsed && (
+												<div className="ml-6 mt-0.5 space-y-0.5">
+													{((item as any).children as any[]).map((child: any) => {
+														const ChildIcon = child.icon;
+														return (
+															<Link
+																key={child.name}
+																to={child.href}
+																className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${isActive(child.href)
+																	? "bg-sidebar-accent text-sidebar-primary"
+																	: "text-muted-foreground/80 hover:bg-sidebar-accent/30 hover:text-sidebar-foreground"
+																	}`}
+															>
+																<ChildIcon className="mr-3 h-3.5 w-3.5" />
+																{child.name}
+															</Link>
+														);
+													})}
+												</div>
+											)}
+										</div>
+									);
+								}
+
+								return (
+									<Link
+										key={item.name}
+										to={item.href}
+										className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${isActive(item.href)
+											? "bg-sidebar-accent/80 text-sidebar-primary"
+											: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
+											} ${sidebarCollapsed ? 'justify-center' : ''}`}
+										title={sidebarCollapsed ? item.name : undefined}
+									>
+										<Icon className={`h-4 w-4 ${sidebarCollapsed ? '' : 'mr-3'}`} />
+										{!sidebarCollapsed && item.name}
+									</Link>
+								);
+							})}
+						</div>
+					</nav>
 				</div>
 			)}
 
 			{/* Main Content Area */}
 			<div className="flex-1 flex flex-col min-w-0">
 				{/* Top Header */}
-				<header className="bg-white shadow-sm border-b sticky top-0 z-50">
+				<header className="bg-background/80 border-b border-border/30 sticky top-0 z-50 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
 					<div className="mx-auto max-w-full px-4 lg:px-6">
-						<div className="flex h-14 items-center justify-between">
+						<div className="flex h-12 items-center justify-between">
 							{/* Logo and Selectors */}
 							<div className="flex items-center space-x-4">
 								<Link
-									to="/dashboard"
-									className="flex items-center space-x-2 text-lg font-bold text-gray-900 hover:text-gray-700 transition-colors"
+									to="/dashboard/agents"
+									className="flex items-center space-x-2.5 text-base font-medium text-foreground hover:text-foreground/80 transition-colors"
 								>
-									<div className="w-7 h-7 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-										<Bot className="w-4 h-4 text-white" />
+									<div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
+										<Bot className="w-3.5 h-3.5 text-primary-foreground" />
 									</div>
-									<span>AI Agent Platform</span>
+									<span>Chatbox</span>
 								</Link>
 
 								{/* Organization Selector */}
@@ -370,26 +536,26 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 										onClick={() =>
 											setShowOrganizationsDropdown(!showOrganizationsDropdown)
 										}
-										className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors min-w-[180px] justify-between"
+										className="flex items-center px-3 py-2 text-sm font-medium text-foreground bg-muted rounded-lg hover:bg-muted/80 transition-colors min-w-[180px] justify-between border border-border"
 									>
 										<div className="flex items-center">
-											<Building2 className="w-4 h-4 mr-2 text-gray-500" />
+											<Building2 className="w-4 h-4 mr-2 text-muted-foreground" />
 											<span className="truncate">
 												{displayOrganization
 													? displayOrganization.name
 													: "Select Organization"}
 											</span>
 										</div>
-										<ChevronDown className="w-4 h-4 text-gray-400" />
+										<ChevronDown className="w-4 h-4 text-muted-foreground" />
 									</button>
 
 									{/* Organization Selector Dropdown */}
 									{showOrganizationsDropdown && (
-										<div className="absolute top-full left-0 mt-1 w-80 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+										<div className="absolute top-full left-0 mt-1 w-80 bg-popover rounded-lg shadow-lg ring-1 ring-border border border-border z-50 backdrop-blur-xl">
 											<div className="p-3">
 												{/* Search Input */}
 												<div className="relative mb-3">
-													<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+													<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
 													<input
 														type="text"
 														placeholder="Search organizations..."
@@ -397,13 +563,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 														onChange={(e) =>
 															setOrganizationSearch(e.target.value)
 														}
-														className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+														className="w-full pl-10 pr-4 py-2 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring text-foreground placeholder:text-muted-foreground"
 													/>
 												</div>
 
 												{/* Organizations Section */}
 												<div className="mb-2">
-													<h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+													<h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
 														Organizations
 													</h4>
 													<div className="max-h-48 overflow-y-auto">
@@ -414,13 +580,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																		key={i}
 																		className="flex items-center px-3 py-2 rounded-lg animate-pulse"
 																	>
-																		<div className="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-																		<div className="h-4 bg-gray-200 rounded flex-1"></div>
+																		<div className="w-4 h-4 bg-muted rounded mr-3"></div>
+																		<div className="h-4 bg-muted rounded flex-1"></div>
 																	</div>
 																))}
 															</div>
 														) : filteredOrganizations.length === 0 ? (
-															<div className="px-3 py-4 text-sm text-gray-500 text-center">
+															<div className="px-3 py-4 text-sm text-muted-foreground text-center">
 																{organizationSearch
 																	? "No organizations found"
 																	: "No organizations yet"}
@@ -436,23 +602,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																			setShowOrganizationsDropdown(false);
 																			setOrganizationSearch("");
 																		}}
-																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
-																			displayOrganization?._id === org._id
-																				? "bg-blue-50 text-blue-700"
-																				: "hover:bg-gray-50 text-gray-700"
-																		}`}
+																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${displayOrganization?._id === org._id
+																			? "bg-accent text-accent-foreground"
+																			: "hover:bg-accent/50 text-foreground"
+																			}`}
 																	>
-																		<Building2 className="w-4 h-4 mr-3 text-gray-400" />
+																		<Building2 className="w-4 h-4 mr-3 text-muted-foreground" />
 																		<div className="flex-1 min-w-0">
 																			<div className="font-medium truncate">
 																				{org.name}
 																			</div>
-																			<div className="text-xs text-gray-500 capitalize">
+																			<div className="text-xs text-muted-foreground capitalize">
 																				{org.memberRole} • {org.plan}
 																			</div>
 																		</div>
 																		{displayOrganization?._id === org._id && (
-																			<div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+																			<div className="w-2 h-2 bg-primary rounded-full ml-2"></div>
 																		)}
 																	</button>
 																))}
@@ -462,14 +627,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 												</div>
 
 												{/* Create Organization Button */}
-												<div className="border-t border-gray-100 pt-2">
+												<div className="border-t border-border pt-2">
 													<button
 														onClick={() => {
 															navigate({ to: "/dashboard/settings" }); // Navigate to settings instead since org creation route doesn't exist yet
 															setShowOrganizationsDropdown(false);
 															setOrganizationSearch("");
 														}}
-														className="w-full flex items-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+														className="w-full flex items-center px-3 py-2 text-sm text-primary hover:bg-accent rounded-lg transition-colors"
 													>
 														<Plus className="w-4 h-4 mr-3" />
 														<span className="font-medium">
@@ -486,37 +651,37 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 								<div className="relative">
 									<button
 										onClick={() => setShowAgentsDropdown(!showAgentsDropdown)}
-										className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors min-w-[200px] justify-between"
+										className="flex items-center px-3 py-2 text-sm font-medium text-foreground bg-muted rounded-lg hover:bg-muted/80 transition-colors min-w-[200px] justify-between border border-border"
 									>
 										<div className="flex items-center">
-											<Bot className="w-4 h-4 mr-2 text-gray-500" />
+											<Bot className="w-4 h-4 mr-2 text-muted-foreground" />
 											<span className="truncate">
 												{currentAgent ? currentAgent.name : "Select Agent"}
 											</span>
 										</div>
-										<ChevronDown className="w-4 h-4 text-gray-400" />
+										<ChevronDown className="w-4 h-4 text-muted-foreground" />
 									</button>
 
 									{/* Agent Selector Dropdown */}
 									{showAgentsDropdown && (
-										<div className="absolute top-full left-0 mt-1 w-80 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+										<div className="absolute top-full left-0 mt-1 w-80 bg-popover rounded-lg shadow-lg ring-1 ring-border border border-border z-50 backdrop-blur-xl">
 											<div className="p-3">
 												{/* Search Input */}
 												<div className="relative mb-3">
-													<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+													<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
 													<input
 														type="text"
 														placeholder="Search agents..."
 														value={agentSearch}
 														onChange={(e) => setAgentSearch(e.target.value)}
-														className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+														className="w-full pl-10 pr-4 py-2 text-sm bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring text-foreground placeholder:text-muted-foreground"
 													/>
 												</div>
 
 												{/* Current Organization Filter */}
 												{displayOrganization && (
-													<div className="mb-3 px-3 py-2 bg-blue-50 rounded-lg">
-														<div className="text-xs text-blue-600 font-medium">
+													<div className="mb-3 px-3 py-2 bg-accent/20 rounded-lg">
+														<div className="text-xs text-primary font-medium">
 															Showing agents from: {displayOrganization.name}
 														</div>
 													</div>
@@ -524,7 +689,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 												{/* Agents Section */}
 												<div className="mb-2">
-													<h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+													<h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
 														Agents
 													</h4>
 													<div className="max-h-48 overflow-y-auto">
@@ -535,13 +700,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																		key={i}
 																		className="flex items-center px-3 py-2 rounded-lg animate-pulse"
 																	>
-																		<div className="w-4 h-4 bg-gray-200 rounded mr-3"></div>
-																		<div className="h-4 bg-gray-200 rounded flex-1"></div>
+																		<div className="w-4 h-4 bg-muted rounded mr-3"></div>
+																		<div className="h-4 bg-muted rounded flex-1"></div>
 																	</div>
 																))}
 															</div>
 														) : filteredAgents.length === 0 ? (
-															<div className="px-3 py-4 text-sm text-gray-500 text-center">
+															<div className="px-3 py-4 text-sm text-muted-foreground text-center">
 																{agentSearch
 																	? "No agents found"
 																	: displayOrganization
@@ -560,25 +725,24 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 																			setShowAgentsDropdown(false);
 																			setAgentSearch("");
 																		}}
-																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
-																			currentAgent?._id === agent._id
-																				? "bg-blue-50 text-blue-700"
-																				: "hover:bg-gray-50 text-gray-700"
-																		}`}
+																		className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${currentAgent?._id === agent._id
+																			? "bg-accent text-accent-foreground"
+																			: "hover:bg-accent/50 text-foreground"
+																			}`}
 																	>
-																		<Bot className="w-4 h-4 mr-3 text-gray-400" />
+																		<Bot className="w-4 h-4 mr-3 text-muted-foreground" />
 																		<div className="flex-1 min-w-0">
 																			<div className="font-medium truncate">
 																				{agent.name}
 																			</div>
 																			{agent.description && (
-																				<div className="text-xs text-gray-500 truncate">
+																				<div className="text-xs text-muted-foreground truncate">
 																					{agent.description}
 																				</div>
 																			)}
 																		</div>
 																		{currentAgent?._id === agent._id && (
-																			<div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+																			<div className="w-2 h-2 bg-primary rounded-full ml-2"></div>
 																		)}
 																	</button>
 																))}
@@ -588,14 +752,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 												</div>
 
 												{/* Create Agent Button */}
-												<div className="border-t border-gray-100 pt-2">
+												<div className="border-t border-border pt-2">
 													<button
 														onClick={() => {
 															navigate({ to: "/dashboard/agents/new" });
 															setShowAgentsDropdown(false);
 															setAgentSearch("");
 														}}
-														className="w-full flex items-center px-3 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+														className="w-full flex items-center px-3 py-2 text-sm text-primary hover:bg-accent rounded-lg transition-colors"
 													>
 														<Plus className="w-4 h-4 mr-3" />
 														<span className="font-medium">Create agent</span>
@@ -607,47 +771,28 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 								</div>
 							</div>
 
-							{/* Platform Navigation - only show if not on agent page */}
-							{!showAgentSidebar && (
-								<nav className="hidden md:flex items-center space-x-1">
-									{platformNavigation.map((item) => {
-										const Icon = item.icon;
-
-										return (
-											<Link
-												key={item.name}
-												to={item.href}
-												className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-													isActive(item.href)
-														? "bg-blue-50 text-blue-700"
-														: "text-gray-700 hover:bg-gray-100"
-												}`}
-											>
-												<Icon className="mr-1.5 h-4 w-4" />
-												{item.name}
-											</Link>
-										);
-									})}
-								</nav>
-							)}
+							{/* Platform Navigation removed: now shown in left sidebar when no agent selected */}
 
 							{/* Right side actions */}
 							<div className="flex items-center space-x-3">
 								{/* Search */}
-								<button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+								<button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
 									<Search className="h-4 w-4" />
 								</button>
 
 								{/* Notifications */}
-								<button className="p-2 text-gray-400 hover:text-gray-600 transition-colors relative">
+								<button className="p-2 text-muted-foreground hover:text-foreground transition-colors relative">
 									<Bell className="h-4 w-4" />
-									<span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+									<span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
 								</button>
+
+								{/* Theme Toggle */}
+								<ThemeToggleCompact />
 
 								{/* Create Agent Button */}
 								<button
 									onClick={() => navigate({ to: "/dashboard/agents/new" })}
-									className="hidden sm:flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+									className="hidden sm:flex items-center px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors"
 								>
 									<Plus className="mr-1.5 h-4 w-4" />
 									New Agent
@@ -666,47 +811,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 							</div>
 						</div>
 
-						{/* Mobile Navigation - only show if not on agent page */}
-						{!showAgentSidebar && (
-							<div className="md:hidden border-t border-gray-200 bg-gray-50">
-								<div className="px-2 py-2">
-									<div className="flex items-center justify-between">
-										<div className="flex space-x-1 overflow-x-auto">
-											{platformNavigation.map((item) => {
-												const Icon = item.icon;
-
-												return (
-													<Link
-														key={item.name}
-														to={item.href}
-														className={`flex items-center px-2 py-1.5 text-xs font-medium rounded whitespace-nowrap transition-colors ${
-															isActive(item.href)
-																? "bg-blue-100 text-blue-700"
-																: "text-gray-600 hover:text-gray-900"
-														}`}
-													>
-														<Icon className="mr-1 h-3 w-3" />
-														{item.name}
-													</Link>
-												);
-											})}
-										</div>
-										<button
-											onClick={() => navigate({ to: "/dashboard/agents/new" })}
-											className="flex items-center px-2 py-1.5 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors whitespace-nowrap ml-2"
-										>
-											<Plus className="mr-1 h-3 w-3" />
-											New
-										</button>
-									</div>
-								</div>
-							</div>
-						)}
+						{/* Mobile platform nav removed: consolidated into left sidebar */}
 					</div>
 				</header>
 
 				{/* Main content */}
-				<main className="flex-1 py-4">
+				<main className="flex-1">
 					<div
 						className={`mx-auto px-4 lg:px-6 ${showAgentSidebar ? "max-w-full" : "max-w-[1600px]"}`}
 					>

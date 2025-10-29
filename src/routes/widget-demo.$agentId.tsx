@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Authenticated, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
+import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react";
 import { api } from "../../convex/_generated/api";
 import ChatBubbleWidget from "../components/ChatBubbleWidget";
 
@@ -11,9 +12,14 @@ function WidgetDemo() {
 	const { agentId } = Route.useParams();
 
 	return (
-		<Authenticated>
-			<WidgetDemoContent agentId={agentId} />
-		</Authenticated>
+		<>
+			<SignedIn>
+				<WidgetDemoContent agentId={agentId} />
+			</SignedIn>
+			<SignedOut>
+				<RedirectToSignIn />
+			</SignedOut>
+		</>
 	);
 }
 

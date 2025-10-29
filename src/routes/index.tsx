@@ -90,7 +90,7 @@ function HomePage() {
 							</Unauthenticated>
 							<Authenticated>
 								<Link
-									to="/dashboard"
+									to="/dashboard/agents"
 									className="text-gray-600 hover:text-gray-900 transition-colors"
 								>
 									Dashboard
@@ -155,7 +155,7 @@ function HomePage() {
 									</Unauthenticated>
 									<Authenticated>
 										<Link
-											to="/dashboard"
+											to="/dashboard/agents"
 											className="block text-gray-600 hover:text-gray-900 mb-2"
 										>
 											Dashboard
@@ -207,7 +207,7 @@ function HomePage() {
 								</Unauthenticated>
 								<Authenticated>
 									<Link
-										to="/dashboard"
+										to="/dashboard/agents"
 										className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
 									>
 										Go to Dashboard
@@ -596,7 +596,7 @@ function HomePage() {
 									</SignInButton>
 								</Unauthenticated>
 								<Authenticated>
-									<Link to="/dashboard">
+									<Link to="/dashboard/agents">
 										<Button
 											className={`w-full ${plan.popular ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"}`}
 										>
@@ -708,7 +708,7 @@ function HomePage() {
 						</Unauthenticated>
 						<Authenticated>
 							<Link
-								to="/dashboard"
+								to="/dashboard/agents"
 								className="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
 							>
 								Go to Dashboard
