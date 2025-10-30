@@ -1,11 +1,17 @@
 import '@testing-library/jest-dom'
 import { cleanup } from '@testing-library/react'
-import { afterEach, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, vi } from 'vitest'
+import { server } from './server'
 
 // Cleanup after each test case
 afterEach(() => {
   cleanup()
 })
+
+// MSW setup
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
 
 // Mock Convex client for tests
 vi.mock('convex/react', () => ({
@@ -39,6 +45,7 @@ vi.mock('@tanstack/react-router', () => ({
   useNavigate: vi.fn(() => vi.fn()),
   useParams: vi.fn(() => ({})),
   useSearch: vi.fn(() => ({})),
+  Link: ({ children }: { children: React.ReactNode }) => children as any,
 }))
 
 // Global test utilities
@@ -62,3 +69,10 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: vi.fn(),
   })),
 })
+
+// Stub scrollIntoView for JSDOM
+// @ts-ignore
+if (!HTMLElement.prototype.scrollIntoView) {
+  // @ts-ignore
+  HTMLElement.prototype.scrollIntoView = vi.fn()
+}

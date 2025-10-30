@@ -29,25 +29,38 @@ export function ThemeProvider({
 	// Calculate actual theme based on system preference
 	const [actualTheme, setActualTheme] = useState<"light" | "dark">(() => {
 		if (theme === "system") {
-			return window.matchMedia("(prefers-color-scheme: dark)").matches
-				? "dark"
-				: "light";
+			try {
+				if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+					return window.matchMedia("(prefers-color-scheme: dark)").matches
+						? "dark"
+						: "light";
+				}
+			} catch (_) {}
+			return "light";
 		}
 		return theme;
 	});
 
 	useEffect(() => {
-		// Listen for system theme changes
-		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+		// Only listen to system changes when theme follows system
+		if (theme !== "system") return;
+		if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
 
+		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 		const handleChange = () => {
-			if (theme === "system") {
-				setActualTheme(mediaQuery.matches ? "dark" : "light");
-			}
+			setActualTheme(mediaQuery.matches ? "dark" : "light");
 		};
 
-		mediaQuery.addEventListener("change", handleChange);
-		return () => mediaQuery.removeEventListener("change", handleChange);
+		if (typeof mediaQuery.addEventListener === "function") {
+			mediaQuery.addEventListener("change", handleChange);
+			return () => mediaQuery.removeEventListener("change", handleChange);
+		}
+		// Fallback for older environments
+		if (typeof (mediaQuery as any).addListener === "function") {
+			(mediaQuery as any).addListener(handleChange);
+			return () => (mediaQuery as any).removeListener(handleChange);
+		}
+		return;
 	}, [theme]);
 
 	useEffect(() => {
