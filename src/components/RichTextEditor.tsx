@@ -37,7 +37,7 @@ export default function RichTextEditor({
 		editorProps: {
 			attributes: {
 				class:
-					"prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4",
+					"prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4 text-foreground dark:prose-invert",
 			},
 		},
 	});
@@ -66,9 +66,8 @@ export default function RichTextEditor({
 	}) => (
 		<button
 			onClick={onClick}
-			className={`p-2 rounded hover:bg-gray-100 transition-colors ${
-				isActive ? "bg-gray-200 text-blue-600" : "text-gray-600"
-			}`}
+			className={`p-2 rounded hover:bg-muted transition-colors ${isActive ? "bg-accent text-primary" : "text-muted-foreground"
+				}`}
 			title={title}
 			type="button"
 		>
@@ -78,10 +77,10 @@ export default function RichTextEditor({
 
 	return (
 		<div
-			className={`border border-gray-300 rounded-lg overflow-hidden ${className}`}
+			className={`border border-input rounded-lg overflow-hidden bg-background ${className}`}
 		>
 			{/* Toolbar */}
-			<div className="border-b border-gray-200 bg-gray-50 p-2 flex flex-wrap gap-1">
+			<div className="border-b border-border bg-muted/40 p-2 flex flex-wrap gap-1">
 				<ToolbarButton
 					onClick={() => editor.chain().focus().toggleBold().run()}
 					isActive={editor.isActive("bold")}
@@ -98,7 +97,7 @@ export default function RichTextEditor({
 					<Italic className="h-4 w-4" />
 				</ToolbarButton>
 
-				<div className="w-px h-6 bg-gray-300 mx-1" />
+				<div className="w-px h-6 bg-border mx-1" />
 
 				<ToolbarButton
 					onClick={() =>
@@ -130,7 +129,7 @@ export default function RichTextEditor({
 					<Heading3 className="h-4 w-4" />
 				</ToolbarButton>
 
-				<div className="w-px h-6 bg-gray-300 mx-1" />
+				<div className="w-px h-6 bg-border mx-1" />
 
 				<ToolbarButton
 					onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -156,7 +155,7 @@ export default function RichTextEditor({
 					<Quote className="h-4 w-4" />
 				</ToolbarButton>
 
-				<div className="w-px h-6 bg-gray-300 mx-1" />
+				<div className="w-px h-6 bg-border mx-1" />
 
 				<ToolbarButton
 					onClick={() => editor.chain().focus().undo().run()}
@@ -174,7 +173,7 @@ export default function RichTextEditor({
 			</div>
 
 			{/* Editor Content */}
-			<div className="bg-white">
+			<div className="bg-background text-foreground min-h-[inherit]">
 				<EditorContent editor={editor} placeholder={placeholder} />
 			</div>
 		</div>

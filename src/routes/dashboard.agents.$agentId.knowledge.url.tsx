@@ -3,13 +3,23 @@ import { useAction, useMutation, useQuery } from "convex/react";
 import { ExternalLink, Globe } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { PageHeader } from "../components/ui/page-header";
-import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { FormCard, FormSection, FormField, FormActions } from "../components/ui/form-card";
-import { ContentCard, ContentCardEmpty, ContentCardList, ContentCardListItem } from "../components/ui/content-card";
+import { Button } from "../components/ui/button";
+import {
+	ContentCard,
+	ContentCardEmpty,
+	ContentCardList,
+	ContentCardListItem,
+} from "../components/ui/content-card";
+import {
+	FormActions,
+	FormCard,
+	FormField,
+	FormSection,
+} from "../components/ui/form-card";
+import { Input } from "../components/ui/input";
+import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
+import { PageHeader } from "../components/ui/page-header";
 
 export const Route = createFileRoute(
 	"/dashboard/agents/$agentId/knowledge/url",
@@ -113,7 +123,10 @@ function AgentKnowledgeUrl() {
 							<Alert>
 								<Globe className="h-4 w-4" />
 								<AlertDescription>
-									<strong>How it works:</strong> Enter a webpage URL to automatically extract and add its content to your agent. The system will fetch the page content, extract the text, and make it searchable for your AI agent.
+									<strong>How it works:</strong> Enter a webpage URL to
+									automatically extract and add its content to your agent. The
+									system will fetch the page content, extract the text, and make
+									it searchable for your AI agent.
 								</AlertDescription>
 							</Alert>
 
@@ -174,16 +187,7 @@ function AgentKnowledgeUrl() {
 					) : (
 						<ContentCardList>
 							{urlEntries.map((entry) => {
-								const urlMetadata = entry.sourceMetadata?.url ? (
-									<a
-										href={entry.sourceMetadata.url}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-primary hover:underline"
-									>
-										{entry.sourceMetadata.url}
-									</a>
-								) : `Added ${new Date(entry._creationTime).toLocaleDateString()}`;
+								/* variable removed */
 
 								return (
 									<ContentCardListItem key={entry._id}>
@@ -208,14 +212,16 @@ function AgentKnowledgeUrl() {
 												<div className="mt-2 text-sm text-muted-foreground prose prose-sm max-w-none">
 													<div
 														dangerouslySetInnerHTML={{
-															__html: entry.content.length > 200
-																? entry.content.substring(0, 200) + "..."
-																: entry.content,
+															__html:
+																entry.content.length > 200
+																	? `${entry.content.substring(0, 200)}...`
+																	: entry.content,
 														}}
 													/>
 												</div>
 												<div className="mt-2 text-xs text-muted-foreground/80">
-													Added {new Date(entry._creationTime).toLocaleDateString()}
+													Added{" "}
+													{new Date(entry._creationTime).toLocaleDateString()}
 												</div>
 											</div>
 											<div className="flex items-center space-x-2 ml-4">
@@ -224,6 +230,7 @@ function AgentKnowledgeUrl() {
 														size="sm"
 														variant="outline"
 														onClick={() =>
+															entry.sourceMetadata?.url &&
 															window.open(entry.sourceMetadata.url, "_blank")
 														}
 													>

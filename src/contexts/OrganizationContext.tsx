@@ -1,5 +1,5 @@
-import { useQuery } from "convex/react";
 import { useAuth } from "@clerk/clerk-react";
+import { useQuery } from "convex/react";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
 
@@ -45,7 +45,7 @@ export function OrganizationProvider({
 	// Auto-select first organization when data loads
 	useEffect(() => {
 		if (organizations && organizations.length > 0 && !selectedOrganizationId) {
-			setSelectedOrganizationId(organizations[0]._id);
+			setSelectedOrganizationId(organizations[0]?._id ?? null);
 		}
 	}, [organizations, selectedOrganizationId]);
 

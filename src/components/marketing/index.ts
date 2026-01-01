@@ -6,4 +6,3 @@ export { Navbar } from "./Navbar";
 export { HowItWorksSection } from "./HowItWorksSection";
 export { TestimonialsSection } from "./TestimonialsSection";
 export { CTASection, SocialProofSection } from "./CTASection";
-

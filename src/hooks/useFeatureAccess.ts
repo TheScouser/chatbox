@@ -1,10 +1,18 @@
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import { useOrganization } from "../contexts/OrganizationContext";
 
 export function useFeatureAccess(feature: string) {
-	const access = useQuery(api.featureGates.checkFeatureAccess, {
-		feature: feature as any,
-	});
+	const { currentOrganization } = useOrganization();
+	const access = useQuery(
+		api.featureGates.checkFeatureAccess,
+		currentOrganization?._id
+			? {
+					organizationId: currentOrganization._id,
+					feature: feature as any,
+				}
+			: ("skip" as any),
+	);
 
 	return {
 		hasAccess: access?.hasAccess || false,
@@ -16,9 +24,16 @@ export function useFeatureAccess(feature: string) {
 }
 
 export function useUsageLimit(metric: string) {
-	const limit = useQuery(api.featureGates.checkUsageLimit, {
-		metric: metric as any,
-	});
+	const { currentOrganization } = useOrganization();
+	const limit = useQuery(
+		api.featureGates.checkUsageLimit,
+		currentOrganization?._id
+			? {
+					organizationId: currentOrganization._id,
+					metric: metric as any,
+				}
+			: ("skip" as any),
+	);
 
 	return {
 		canPerformAction: limit?.allowed || false,

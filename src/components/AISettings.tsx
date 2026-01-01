@@ -54,13 +54,13 @@ export default function AISettings({ agent }: AISettingsProps) {
 4. Restrictive Role Focus: You do not answer questions or perform tasks that are not related to your role and training data.`;
 
 	return (
-		<div className="bg-white shadow rounded-lg">
+		<div className="bg-card shadow-sm border border-border rounded-lg">
 			<div className="p-6 space-y-8">
 				{/* Model Selection */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-gray-700">Model</Label>
+					<Label className="text-sm font-medium text-muted-foreground">Model</Label>
 					<div className="mb-2">
-						<span className="inline-block px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded">
+						<span className="inline-block px-2 py-1 text-xs font-medium text-primary bg-primary/10 rounded">
 							Claude 4 models are now available
 						</span>
 					</div>
@@ -100,7 +100,7 @@ export default function AISettings({ agent }: AISettingsProps) {
 				{/* Instructions */}
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
-						<Label className="text-sm font-medium text-gray-700">
+						<Label className="text-sm font-medium text-muted-foreground">
 							Instructions
 						</Label>
 						<div className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export default function AISettings({ agent }: AISettingsProps) {
 						className="min-h-[300px] font-mono text-sm"
 						placeholder="Enter your agent instructions..."
 					/>
-					<p className="text-sm text-gray-600">
+					<p className="text-sm text-muted-foreground">
 						The instructions allow you to customize your agent's personality and
 						style. Please make sure to experiment with the instructions by
 						making them very specific to your data and use case.

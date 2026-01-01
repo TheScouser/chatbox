@@ -11,19 +11,14 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation } from "convex/react";
 import {
-	Bell,
 	Bot,
 	Check,
 	Copy,
-	Globe,
 	Info,
 	MessageSquare,
 	Settings,
 	Shield,
-	Trash2,
 	User,
-	Users,
-	Webhook,
 	X,
 } from "lucide-react";
 import { useState } from "react";
@@ -208,9 +203,9 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 	return (
 		<div className="flex h-full">
 			{/* Left Sidebar */}
-			<div className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
+			<div className="w-64 bg-card border-r border-border flex-shrink-0">
 				<div className="p-6">
-					<h2 className="text-xl font-semibold text-gray-900">Settings</h2>
+					<h2 className="text-xl font-semibold text-foreground">Settings</h2>
 				</div>
 				<nav className="px-3 pb-6">
 					{settingsTabs.map((tab) => {
@@ -219,11 +214,10 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 							<button
 								key={tab.id}
 								onClick={() => setActiveSettingsTab(tab.id)}
-								className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md mb-1 ${
-									activeSettingsTab === tab.id
-										? "bg-purple-50 text-purple-700 border-r-2 border-purple-500"
-										: "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-								}`}
+								className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md mb-1 ${activeSettingsTab === tab.id
+									? "bg-primary/10 text-primary border-r-2 border-primary"
+									: "text-muted-foreground hover:text-foreground hover:bg-muted"
+									}`}
 							>
 								<Icon className="mr-3 h-4 w-4" />
 								{tab.name}
@@ -239,18 +233,18 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 					{activeSettingsTab === "general" && (
 						<div className="space-y-8">
 							<div>
-								<h3 className="text-2xl font-semibold text-gray-900">
+								<h3 className="text-2xl font-semibold text-foreground">
 									General
 								</h3>
 							</div>
 
 							{/* Agent ID */}
 							<div className="space-y-2">
-								<Label className="text-sm font-medium text-gray-700">
+								<Label className="text-sm font-medium text-muted-foreground">
 									Agent ID
 								</Label>
 								<div className="flex items-center gap-2">
-									<div className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md font-mono text-sm text-gray-900">
+									<div className="flex-1 px-3 py-2 bg-muted/30 border border-border rounded-md font-mono text-sm text-foreground">
 										{agent._id}
 									</div>
 									<Button
@@ -270,10 +264,10 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 
 							{/* Size */}
 							<div className="space-y-2">
-								<Label className="text-sm font-medium text-gray-700">
+								<Label className="text-sm font-medium text-muted-foreground">
 									Size
 								</Label>
-								<div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-900">
+								<div className="px-3 py-2 bg-muted/30 border border-border rounded-md text-sm text-foreground">
 									4 KB
 								</div>
 							</div>
@@ -282,7 +276,7 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 							<div className="space-y-2">
 								<Label
 									htmlFor="agent-name"
-									className="text-sm font-medium text-gray-700"
+									className="text-sm font-medium text-muted-foreground"
 								>
 									Name
 								</Label>
@@ -312,8 +306,8 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 								</div>
 
 								{/* Delete all conversations */}
-								<div className="bg-white border border-red-200 rounded-lg p-6 mb-6">
-									<h4 className="text-lg font-medium text-red-900 mb-2">
+								<div className="bg-card border border-destructive/20 rounded-lg p-6 mb-6">
+									<h4 className="text-lg font-medium text-destructive mb-2">
 										Delete all conversations
 									</h4>
 									<p className="text-sm text-red-700 mb-4">
@@ -331,8 +325,8 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 								</div>
 
 								{/* Delete agent */}
-								<div className="bg-white border border-red-200 rounded-lg p-6">
-									<h4 className="text-lg font-medium text-red-900 mb-2">
+								<div className="bg-card border border-destructive/20 rounded-lg p-6">
+									<h4 className="text-lg font-medium text-destructive mb-2">
 										Delete agent
 									</h4>
 									<p className="text-sm text-red-700 mb-4">
@@ -351,12 +345,12 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 					{activeSettingsTab === "ai" && (
 						<div className="space-y-8">
 							<div>
-								<h3 className="text-2xl font-semibold text-gray-900">AI</h3>
+								<h3 className="text-2xl font-semibold text-foreground">AI</h3>
 							</div>
 
 							{/* Model Selection */}
 							<div className="space-y-2">
-								<Label className="text-sm font-medium text-gray-700">
+								<Label className="text-sm font-medium text-muted-foreground">
 									Model
 								</Label>
 								<div className="mb-2">
@@ -400,7 +394,7 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 							{/* Instructions */}
 							<div className="space-y-2">
 								<div className="flex items-center justify-between">
-									<Label className="text-sm font-medium text-gray-700">
+									<Label className="text-sm font-medium text-muted-foreground">
 										Instructions
 									</Label>
 									<div className="flex items-center gap-2">
@@ -445,19 +439,19 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 					{/* Placeholder sections for other tabs */}
 					{activeSettingsTab === "chat-interface" && (
 						<div className="space-y-6">
-							<h3 className="text-2xl font-semibold text-gray-900">
-								Chat Interface
+							<h3 className="text-2xl font-semibold text-foreground">
+								chat Interface
 							</h3>
-							<div className="bg-gray-50 rounded-lg p-6">
+							<div className="bg-muted/30 rounded-lg p-6">
 								{/* Customization Options */}
-								<div className="bg-white shadow rounded-lg p-6">
+								<div className="bg-card shadow-sm border border-border rounded-lg p-6">
 									<div className="flex items-start gap-3 mb-6">
-										<Settings className="h-5 w-5 text-blue-600 mt-0.5" />
+										<Settings className="h-5 w-5 text-primary mt-0.5" />
 										<div>
-											<h4 className="text-sm font-medium text-gray-900">
+											<h4 className="text-sm font-medium text-foreground">
 												Customize Widget
 											</h4>
-											<p className="text-sm text-gray-600 mt-1">
+											<p className="text-sm text-muted-foreground mt-1">
 												Adjust the appearance and size of your chat widget
 											</p>
 										</div>
@@ -527,15 +521,15 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 									</div>
 
 									{/* Preview */}
-									<div className="mt-6 p-4 bg-gray-50 rounded-lg">
-										<h5 className="text-sm font-medium text-gray-900 mb-2">
+									<div className="mt-6 p-4 bg-muted/30 rounded-lg">
+										<h5 className="text-sm font-medium text-foreground mb-2">
 											Preview
 										</h5>
-										<div className="text-xs text-gray-600 mb-3">
+										<div className="text-xs text-muted-foreground mb-3">
 											Widget size: {embedWidth} × {embedHeight}
 										</div>
 										<div
-											className="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm"
+											className="border-2 border-dashed border-border rounded-lg flex items-center justify-center text-muted-foreground text-sm"
 											style={{
 												width:
 													embedWidth === "100%" ? "100%" : `${embedWidth}px`,
@@ -563,10 +557,10 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 					{activeSettingsTab === "security" && (
 						<div className="space-y-8">
 							<div>
-								<h3 className="text-2xl font-semibold text-gray-900">
+								<h3 className="text-2xl font-semibold text-foreground">
 									Security
 								</h3>
-								<p className="text-sm text-gray-600">
+								<p className="text-sm text-muted-foreground">
 									Configure security settings for your chat widget and API
 									access.
 								</p>
@@ -576,10 +570,10 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 							<div className="space-y-4">
 								<div className="flex items-center justify-between">
 									<div>
-										<h4 className="text-lg font-medium text-gray-900">
+										<h4 className="text-lg font-medium text-foreground">
 											Domain Verification
 										</h4>
-										<p className="text-sm text-gray-600">
+										<p className="text-sm text-muted-foreground">
 											Restrict widget usage to specific domains to prevent
 											unauthorized embedding.
 										</p>
@@ -592,11 +586,11 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 											onChange={(e) =>
 												setDomainVerificationEnabled(e.target.checked)
 											}
-											className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+											className="h-4 w-4 text-primary focus:ring-primary border-border rounded"
 										/>
 										<label
 											htmlFor="domain-verification"
-											className="ml-2 text-sm text-gray-700"
+											className="ml-2 text-sm text-foreground"
 										>
 											Enable domain verification
 										</label>
@@ -604,14 +598,14 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 								</div>
 
 								{domainVerificationEnabled && (
-									<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+									<div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
 										<div className="flex items-start">
-											<Info className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
+											<Info className="h-5 w-5 text-primary mt-0.5 mr-3" />
 											<div>
-												<h5 className="text-sm font-medium text-blue-800">
+												<h5 className="text-sm font-medium text-primary">
 													How Domain Verification Works
 												</h5>
-												<p className="text-sm text-blue-700 mt-1">
+												<p className="text-sm text-primary/80 mt-1">
 													When enabled, your chat widget will only work on the
 													domains you specify below. This prevents others from
 													embedding your widget on unauthorized websites.
@@ -623,7 +617,7 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 
 								{/* Allowed Domains List */}
 								<div className="space-y-3">
-									<Label className="text-sm font-medium text-gray-700">
+									<Label className="text-sm font-medium text-muted-foreground">
 										Allowed Domains
 									</Label>
 
@@ -647,9 +641,9 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 											{allowedDomains.map((domain, index) => (
 												<div
 													key={index}
-													className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+													className="flex items-center justify-between p-3 bg-muted/40 rounded-lg hover:bg-muted/60 transition-colors"
 												>
-													<span className="text-sm font-mono text-gray-900">
+													<span className="text-sm font-mono text-foreground">
 														{domain}
 													</span>
 													<Button
@@ -666,8 +660,8 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 									)}
 
 									{allowedDomains.length === 0 && domainVerificationEnabled && (
-										<div className="text-center py-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-											<p className="text-sm text-yellow-800">
+										<div className="text-center py-4 bg-warning/10 border border-warning/20 rounded-lg">
+											<p className="text-sm text-warning">
 												⚠️ No domains added. Your widget will not work until you
 												add at least one domain.
 											</p>
@@ -679,21 +673,21 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 							{/* Widget Secret Key */}
 							<div className="space-y-4">
 								<div>
-									<h4 className="text-lg font-medium text-gray-900">
+									<h4 className="text-lg font-medium text-foreground">
 										Widget Security Key
 									</h4>
-									<p className="text-sm text-gray-600">
+									<p className="text-sm text-muted-foreground">
 										Secret key for HMAC verification. Keep this secure and never
 										expose it in client-side code.
 									</p>
 								</div>
 
 								<div className="space-y-3">
-									<Label className="text-sm font-medium text-gray-700">
+									<Label className="text-sm font-medium text-muted-foreground">
 										Secret Key
 									</Label>
 									<div className="flex items-center gap-2">
-										<div className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md font-mono text-sm text-gray-900">
+										<div className="flex-1 px-3 py-2 bg-muted/30 border border-border rounded-md font-mono text-sm text-foreground">
 											{widgetSecretKey
 												? `${"•".repeat(8)}${widgetSecretKey.slice(-4)}`
 												: "No key generated"}
@@ -722,14 +716,14 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 									</div>
 								</div>
 
-								<div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+								<div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
 									<div className="flex items-start">
-										<Info className="h-5 w-5 text-orange-600 mt-0.5 mr-3" />
+										<Info className="h-5 w-5 text-warning mt-0.5 mr-3" />
 										<div>
-											<h5 className="text-sm font-medium text-orange-800">
+											<h5 className="text-sm font-medium text-warning">
 												Keep Your Secret Key Safe
 											</h5>
-											<p className="text-sm text-orange-700 mt-1">
+											<p className="text-sm text-warning/90 mt-1">
 												Never commit this key to your repository, client-side
 												code, or anywhere a third party can find it. Use it only
 												on your server to generate HMAC signatures for widget
@@ -742,10 +736,10 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 								{/* HMAC Implementation Example */}
 								{widgetSecretKey && (
 									<div className="space-y-3">
-										<Label className="text-sm font-medium text-gray-700">
+										<Label className="text-sm font-medium text-muted-foreground">
 											Server Implementation Example
 										</Label>
-										<div className="bg-gray-50 rounded-lg p-3 font-mono text-sm text-gray-800 whitespace-pre-wrap">
+										<div className="bg-muted/30 rounded-lg p-3 font-mono text-sm text-foreground whitespace-pre-wrap">
 											{`const crypto = require('crypto');
 
 const secret = '${widgetSecretKey.slice(0, 8)}...'; // Your verification secret key
@@ -761,7 +755,7 @@ const hash = crypto.createHmac('sha256', secret).update(userId).digest('hex');
 							</div>
 
 							{/* Save Button */}
-							<div className="flex justify-end pt-6 border-t border-gray-200">
+							<div className="flex justify-end pt-6 border-t border-border">
 								<Button onClick={handleSaveSecurity} disabled={isSaving}>
 									{isSaving ? "Saving..." : "Save Security Settings"}
 								</Button>

@@ -40,9 +40,9 @@ export const generateAIResponse = action({
     await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
 
     // First, add the user message
-    const _userMessageId = await ctx.runMutation(internal.conversations.addMessageInternal, {
+    await ctx.runMutation(internal.conversations.addMessageInternal, {
       conversationId: args.conversationId,
-      role: "user",
+      role: "user" as const,
       content: args.userMessage,
       metadata: { userId: identity.subject },
     });
@@ -80,7 +80,7 @@ export const generateAIResponse = action({
       // Add the AI response message
       const aiMessageId = await ctx.runMutation(internal.conversations.addMessageInternal, {
         conversationId: args.conversationId,
-        role: "assistant",
+        role: "assistant" as const,
         content: aiResponse,
         metadata: { 
           model: "gpt-4o-mini",
@@ -99,7 +99,7 @@ export const generateAIResponse = action({
       const errorMessage = "I apologize, but I'm having trouble generating a response right now. Please try again.";
       const errorMessageId = await ctx.runMutation(internal.conversations.addMessageInternal, {
         conversationId: args.conversationId,
-        role: "assistant",
+        role: "assistant" as const,
         content: errorMessage,
         metadata: { 
           model: "error",

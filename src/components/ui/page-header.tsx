@@ -1,14 +1,19 @@
-import type * as React from "react";
 import { cn } from "@/lib/utils";
+import type * as React from "react";
 
 interface PageHeaderProps {
 	title: string;
-	description?: string;
+	description?: React.ReactNode;
 	children?: React.ReactNode;
 	className?: string;
 }
 
-export function PageHeader({ title, description, children, className }: PageHeaderProps) {
+export function PageHeader({
+	title,
+	description,
+	children,
+	className,
+}: PageHeaderProps) {
 	return (
 		<div className={cn("space-y-2", className)}>
 			<div className="flex items-center justify-between">
@@ -31,13 +36,20 @@ interface PageSectionProps {
 	className?: string;
 }
 
-export function PageSection({ title, description, children, className }: PageSectionProps) {
+export function PageSection({
+	title,
+	description,
+	children,
+	className,
+}: PageSectionProps) {
 	return (
 		<div className={cn("space-y-4", className)}>
 			{(title || description) && (
 				<div>
 					{title && (
-						<h3 className="text-lg font-medium text-card-foreground">{title}</h3>
+						<h3 className="text-lg font-medium text-card-foreground">
+							{title}
+						</h3>
 					)}
 					{description && (
 						<p className="mt-1 text-sm text-muted-foreground">{description}</p>

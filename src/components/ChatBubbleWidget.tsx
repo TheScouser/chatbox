@@ -22,7 +22,7 @@ interface Message {
 
 export default function ChatBubbleWidget({
 	agentId,
-	apiUrl = window.location.origin,
+	// apiUrl = window.location.origin,
 	primaryColor = "#2563eb",
 	position = "bottom-right",
 	offset = { x: 20, y: 20 },

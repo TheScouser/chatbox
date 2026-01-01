@@ -107,10 +107,10 @@ export function PlanCard({
 
 	return (
 		<Card
-			className={`relative ${isPopular ? "border-blue-500 ring-2 ring-blue-500" : ""}`}
+			className={`relative ${isPopular ? "border-primary ring-2 ring-primary" : ""}`}
 		>
 			{isPopular && (
-				<Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
+				<Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary">
 					Most Popular
 				</Badge>
 			)}
@@ -143,9 +143,9 @@ export function PlanCard({
 					{premiumFeatures.map((feature) => (
 						<div key={feature.key} className="flex items-center gap-2 text-sm">
 							<Check
-								className={`h-4 w-4 ${feature.enabled ? "text-green-500" : "text-gray-300"}`}
+								className={`h-4 w-4 ${feature.enabled ? "text-green-500" : "text-muted"}`}
 							/>
-							<span className={feature.enabled ? "" : "text-gray-400"}>
+							<span className={feature.enabled ? "" : "text-muted-foreground"}>
 								{feature.label}
 							</span>
 						</div>

@@ -60,13 +60,13 @@ export function UsageHistoryChart({
 	}));
 
 	// Custom tooltip component
-	const CustomTooltip = ({ active, payload, label }: any) => {
+	const CustomTooltip = ({ active, payload }: any) => {
 		if (active && payload && payload.length) {
 			const data = payload[0].payload;
 			return (
-				<div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
-					<p className="font-medium text-gray-900">{data.fullDate}</p>
-					<p className="text-blue-600">
+				<div className="bg-popover border border-border rounded-lg shadow-lg p-3">
+					<p className="font-medium text-foreground">{data.fullDate}</p>
+					<p className="text-primary">
 						<span className="font-medium">{data.creditsUsed}</span> credits used
 					</p>
 				</div>
@@ -96,23 +96,23 @@ export function UsageHistoryChart({
 								bottom: 5,
 							}}
 						>
-							<CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+							<CartesianGrid strokeDasharray="3 3" className="opacity-30 stroke-border" />
 							<XAxis
 								dataKey="formattedDate"
-								tick={{ fontSize: 12 }}
-								tickLine={{ stroke: "#e5e7eb" }}
-								axisLine={{ stroke: "#e5e7eb" }}
+								tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
+								tickLine={{ stroke: "var(--color-border)" }}
+								axisLine={{ stroke: "var(--color-border)" }}
 							/>
 							<YAxis
 								domain={[0, yAxisMax]}
-								tick={{ fontSize: 12 }}
-								tickLine={{ stroke: "#e5e7eb" }}
-								axisLine={{ stroke: "#e5e7eb" }}
+								tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}
+								tickLine={{ stroke: "var(--color-border)" }}
+								axisLine={{ stroke: "var(--color-border)" }}
 							/>
 							<Tooltip content={<CustomTooltip />} />
 							<Bar
 								dataKey="creditsUsed"
-								fill="#3b82f6"
+								fill="var(--color-primary)"
 								radius={[4, 4, 0, 0]}
 								maxBarSize={60}
 							/>
@@ -121,7 +121,7 @@ export function UsageHistoryChart({
 				</div>
 
 				{data.length === 0 && (
-					<div className="flex items-center justify-center h-64 text-gray-500">
+					<div className="flex items-center justify-center h-64 text-muted-foreground">
 						<div className="text-center">
 							<p className="font-medium">No usage data</p>
 							<p className="text-sm">

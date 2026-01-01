@@ -1,12 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-	Cell,
-	Legend,
-	Pie,
-	PieChart,
-	ResponsiveContainer,
-	Tooltip,
-} from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 interface AgentUsage {
 	agentId: string;
@@ -45,7 +38,7 @@ export function AgentUsageChart({
 					<CardTitle>Credits used per agent</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div className="h-64 bg-gray-100 rounded animate-pulse" />
+					<div className="h-64 bg-muted rounded animate-pulse" />
 				</CardContent>
 			</Card>
 		);
@@ -75,13 +68,13 @@ export function AgentUsageChart({
 		if (active && payload && payload.length) {
 			const data = payload[0].payload;
 			return (
-				<div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
-					<p className="font-medium text-gray-900">{data.agentName}</p>
-					<p className="text-blue-600">
+				<div className="bg-card border border-border rounded-lg shadow-lg p-3">
+					<p className="font-medium text-foreground">{data.agentName}</p>
+					<p className="text-primary">
 						<span className="font-medium">{data.creditsUsed}</span> credits (
 						{data.percentage.toFixed(1)}%)
 					</p>
-					<p className="text-gray-500 text-sm">
+					<p className="text-muted-foreground text-sm">
 						Last used: {formatLastUsed(data.lastUsed)}
 					</p>
 				</div>
@@ -108,7 +101,7 @@ export function AgentUsageChart({
 								{entry.payload.agentName}
 							</span>
 						</div>
-						<div className="text-gray-600">
+						<div className="text-muted-foreground">
 							<span className="font-medium">{entry.payload.creditsUsed}</span>
 							<span className="text-xs ml-1">
 								({entry.payload.percentage.toFixed(1)}%)
@@ -127,7 +120,7 @@ export function AgentUsageChart({
 			</CardHeader>
 			<CardContent>
 				{agents.length === 0 ? (
-					<div className="flex items-center justify-center h-64 text-gray-500">
+					<div className="flex items-center justify-center h-64 text-muted-foreground">
 						<div className="text-center">
 							<p className="font-medium">No agent usage data</p>
 							<p className="text-sm">
@@ -159,8 +152,8 @@ export function AgentUsageChart({
 						</div>
 
 						{/* Legend */}
-						<div className="border-t pt-4">
-							<h4 className="font-medium text-sm mb-3 text-gray-700">
+						<div className="border-t pt-4 border-border">
+							<h4 className="font-medium text-sm mb-3 text-muted-foreground">
 								Agent Breakdown
 							</h4>
 							<CustomLegend payload={chartData} />

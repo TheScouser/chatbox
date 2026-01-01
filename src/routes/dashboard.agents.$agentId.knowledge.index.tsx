@@ -12,11 +12,11 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
-import { Button } from "../components/ui/button";
-import { PageHeader } from "../components/ui/page-header";
-import { PageLayout, ThreeColumnGrid } from "../components/ui/layout";
 import { Alert, AlertDescription } from "../components/ui/alert";
+import { Button } from "../components/ui/button";
 import { ContentCard } from "../components/ui/content-card";
+import { PageLayout } from "../components/ui/layout";
+import { PageHeader } from "../components/ui/page-header";
 
 export const Route = createFileRoute("/dashboard/agents/$agentId/knowledge/")({
 	component: AgentKnowledgeOverview,
@@ -121,7 +121,9 @@ function AgentKnowledgeOverview() {
 					<div className="flex items-center">
 						<BookOpen className="h-8 w-8 text-primary" />
 						<div className="ml-4">
-							<p className="text-sm font-medium text-muted-foreground">Total Entries</p>
+							<p className="text-sm font-medium text-muted-foreground">
+								Total Entries
+							</p>
 							<p className="text-2xl font-semibold text-card-foreground">
 								{stats.total}
 							</p>
@@ -132,7 +134,9 @@ function AgentKnowledgeOverview() {
 					<div className="flex items-center">
 						<Brain className="h-8 w-8 text-green-600" />
 						<div className="ml-4">
-							<p className="text-sm font-medium text-muted-foreground">Trained</p>
+							<p className="text-sm font-medium text-muted-foreground">
+								Trained
+							</p>
 							<p className="text-2xl font-semibold text-card-foreground">
 								{stats.trained}
 							</p>
@@ -225,7 +229,9 @@ function AgentKnowledgeOverview() {
 										</div>
 										<Plus className="h-5 w-5 text-muted-foreground group-hover:text-muted-foreground/80 transition-colors" />
 									</div>
-									<p className="text-sm text-muted-foreground">{source.description}</p>
+									<p className="text-sm text-muted-foreground">
+										{source.description}
+									</p>
 								</div>
 							</Link>
 						);
@@ -240,7 +246,10 @@ function AgentKnowledgeOverview() {
 						<div className="space-y-4">
 							<div>
 								<p className="font-medium mb-2">Add Sources</p>
-								<p>Your agent needs knowledge to provide helpful responses. Start by adding content from any of these sources:</p>
+								<p>
+									Your agent needs knowledge to provide helpful responses. Start
+									by adding content from any of these sources:
+								</p>
 							</div>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 								{knowledgeSources.map((source) => {

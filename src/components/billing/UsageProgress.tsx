@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useUsageLimit } from "@/hooks/useFeatureAccess";
-import { AlertTriangle, TrendingUp } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
 interface UsageProgressProps {
 	metric: string;
@@ -79,7 +79,7 @@ export function UsageProgress({
 				</div>
 
 				{!canPerformAction && (
-					<div className="flex items-center gap-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+					<div className="flex items-center gap-2 p-2 bg-destructive/10 border border-destructive/20 rounded text-sm text-destructive">
 						<AlertTriangle className="h-4 w-4" />
 						<span>Limit exceeded. Upgrade your plan to continue.</span>
 					</div>

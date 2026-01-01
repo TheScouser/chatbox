@@ -1,5 +1,5 @@
-import type * as React from "react";
 import { cn } from "@/lib/utils";
+import type * as React from "react";
 
 interface AlertProps {
 	variant?: "default" | "destructive" | "success" | "warning";
@@ -7,7 +7,11 @@ interface AlertProps {
 	className?: string;
 }
 
-export function Alert({ variant = "default", children, className }: AlertProps) {
+export function Alert({
+	variant = "default",
+	children,
+	className,
+}: AlertProps) {
 	const variants = {
 		default: "bg-muted/50 border-border/30 text-foreground",
 		destructive: "bg-destructive/10 border-destructive/20 text-destructive",
@@ -16,20 +20,15 @@ export function Alert({ variant = "default", children, className }: AlertProps) 
 	};
 
 	return (
-		<div className={cn(
-			"rounded-md border p-4",
-			variants[variant],
-			className
-		)}>
+		<div className={cn("rounded-md border p-4", variants[variant], className)}>
 			{children}
 		</div>
 	);
 }
 
-export function AlertDescription({ children, className }: { children: React.ReactNode; className?: string }) {
-	return (
-		<p className={cn("text-sm", className)}>
-			{children}
-		</p>
-	);
+export function AlertDescription({
+	children,
+	className,
+}: { children: React.ReactNode; className?: string }) {
+	return <p className={cn("text-sm", className)}>{children}</p>;
 }

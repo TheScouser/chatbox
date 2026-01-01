@@ -4,10 +4,17 @@ import { ArrowLeft, Bot } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Button } from "../components/ui/button";
+import {
+	FormActions,
+	FormCard,
+	FormField,
+	FormSection,
+} from "../components/ui/form-card";
 import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
 import { PageLayout } from "../components/ui/layout";
-import { FormCard, FormSection, FormField, FormActions } from "../components/ui/form-card";
+import { Textarea } from "../components/ui/textarea";
+
+import { useOrganization } from "../contexts/OrganizationContext";
 
 export const Route = createFileRoute("/dashboard/agents/new")({
 	component: CreateAgent,
@@ -15,6 +22,7 @@ export const Route = createFileRoute("/dashboard/agents/new")({
 
 function CreateAgent() {
 	const navigate = useNavigate();
+	const { currentOrganization } = useOrganization();
 	const createAgent = useMutation(api.agents.createAgent);
 
 	const [formData, setFormData] = useState({
@@ -55,7 +63,13 @@ function CreateAgent() {
 		setIsSubmitting(true);
 
 		try {
+			if (!currentOrganization?._id) {
+				setErrors({ name: "No organization selected" });
+				return;
+			}
+
 			await createAgent({
+				organizationId: currentOrganization._id,
 				name: formData.name.trim(),
 				description: formData.description.trim() || undefined,
 			});
@@ -100,8 +114,8 @@ function CreateAgent() {
 				>
 					<form onSubmit={handleSubmit}>
 						<FormSection>
-							<FormField 
-								label="Agent Name" 
+							<FormField
+								label="Agent Name"
 								required
 								error={errors.name}
 								hint={`${formData.name.length}/50 characters`}
@@ -114,15 +128,17 @@ function CreateAgent() {
 								/>
 							</FormField>
 
-							<FormField 
-								label="Description (Optional)" 
+							<FormField
+								label="Description (Optional)"
 								error={errors.description}
 								hint={`${formData.description.length}/500 characters`}
 							>
 								<Textarea
 									rows={4}
 									value={formData.description}
-									onChange={(e) => handleInputChange("description", e.target.value)}
+									onChange={(e) =>
+										handleInputChange("description", e.target.value)
+									}
 									placeholder="Describe what this agent will help with..."
 									maxLength={500}
 								/>

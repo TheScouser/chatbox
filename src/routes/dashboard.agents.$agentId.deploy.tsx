@@ -1,30 +1,18 @@
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import {
-	Bot,
-	Check,
-	Copy,
-	ExternalLink,
-	Globe,
-	MessageSquare,
-	Settings,
-} from "lucide-react";
+import { Check, Copy, ExternalLink, Globe, Settings } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Button } from "../components/ui/button";
+import {
+	ContentCard,
+	ContentCardEmpty,
+	ContentCardListItem,
+} from "../components/ui/content-card";
+import { FormCard, FormField, FormSection } from "../components/ui/form-card";
 import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
 import { PageHeader } from "../components/ui/page-header";
-import { ContentCard, ContentCardEmpty, ContentCardListItem } from "../components/ui/content-card";
-import { FormCard, FormSection, FormField } from "../components/ui/form-card";
 
 export const Route = createFileRoute("/dashboard/agents/$agentId/deploy")({
 	component: AgentDeploy,
@@ -55,7 +43,6 @@ function AgentDeploy() {
 
 	// Generate embed URLs
 	const baseUrl = window.location.origin;
-	const publicChatUrl = `${baseUrl}/chat/${agent?._id}`;
 	const embedUrl = `${baseUrl}/embed/${agent?._id}`;
 	const iframeCode = `<iframe 
 	src="${embedUrl}?primaryColor=${encodeURIComponent(primaryColor)}" 
@@ -68,8 +55,8 @@ function AgentDeploy() {
 	if (agents === undefined) {
 		return (
 			<div className="animate-pulse">
-				<div className="h-8 bg-muted rounded w-1/4 mb-4"></div>
-				<div className="h-96 bg-muted rounded"></div>
+				<div className="h-8 bg-muted rounded w-1/4 mb-4" />
+				<div className="h-96 bg-muted rounded" />
 			</div>
 		);
 	}
@@ -110,7 +97,9 @@ function AgentDeploy() {
 							<Button
 								size="sm"
 								variant="outline"
-								onClick={() => window.open(`${baseUrl}/widget-demo/${agent._id}`, '_blank')}
+								onClick={() =>
+									window.open(`${baseUrl}/widget-demo/${agent._id}`, "_blank")
+								}
 							>
 								<ExternalLink className="h-3 w-3 mr-1" />
 								Preview
@@ -205,7 +194,7 @@ function AgentDeploy() {
 							<Button
 								size="sm"
 								variant="outline"
-								onClick={() => window.open(embedUrl, '_blank')}
+								onClick={() => window.open(embedUrl, "_blank")}
 							>
 								<ExternalLink className="h-3 w-3 mr-1" />
 								Preview

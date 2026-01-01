@@ -1,16 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { FileText, Upload } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import FileUpload from "../components/FileUpload";
-import { Button } from "../components/ui/button";
-import { PageHeader } from "../components/ui/page-header";
-import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { FormCard } from "../components/ui/form-card";
-import { ContentCard, ContentCardEmpty, ContentCardList, ContentCardListItem } from "../components/ui/content-card";
+import {
+	ContentCard,
+	ContentCardEmpty,
+	ContentCardList,
+	ContentCardListItem,
+} from "../components/ui/content-card";
 import { EntryItem } from "../components/ui/entry-item";
+import { FormCard } from "../components/ui/form-card";
+import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
+import { PageHeader } from "../components/ui/page-header";
 
 export const Route = createFileRoute(
 	"/dashboard/agents/$agentId/knowledge/upload",
@@ -22,14 +26,12 @@ function AgentKnowledgeUpload() {
 	const { agentId } = Route.useParams();
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
-	const [expandedFile, setExpandedFile] = useState<string | null>(null);
-
 	// Queries and mutations
 	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
 		agentId: agentId as any,
 	});
 	const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry);
-	const extractText = useAction(api.knowledge.extractTextFromFile);
+	// const extractText = useAction(api.knowledge.extractTextFromFile);
 
 	// Get uploaded files with their chunks
 	const documentEntries =
@@ -113,7 +115,9 @@ function AgentKnowledgeUpload() {
 
 			{success && (
 				<Alert>
-					<AlertDescription>File uploaded and processed successfully!</AlertDescription>
+					<AlertDescription>
+						File uploaded and processed successfully!
+					</AlertDescription>
 				</Alert>
 			)}
 
@@ -148,27 +152,32 @@ function AgentKnowledgeUpload() {
 								<ContentCardListItem key={file._id}>
 									<EntryItem
 										title={file.filename}
-										content={file.chunks.length === 0
-											? file.status === "processing"
-												? "Processing file content..."
-												: file.status === "error"
-													? "Failed to process file"
-													: "No content extracted"
-											: file.chunks
-												.sort((a: any, b: any) => {
-													const extractPartNumber = (title: string) => {
-														const match = title.match(/Part (\d+)\/\d+/);
-														return match ? Number.parseInt(match[1], 10) : 0;
-													};
-													const aPartNum = extractPartNumber(a.title || "");
-													const bPartNum = extractPartNumber(b.title || "");
-													if (aPartNum > 0 && bPartNum > 0) {
-														return aPartNum - bPartNum;
-													}
-													return (a._creationTime || 0) - (b._creationTime || 0);
-												})
-												.map((chunk: any) => chunk.content)
-												.join("")
+										content={
+											file.chunks.length === 0
+												? file.status === "processing"
+													? "Processing file content..."
+													: file.status === "error"
+														? "Failed to process file"
+														: "No content extracted"
+												: file.chunks
+														.sort((a: any, b: any) => {
+															const extractPartNumber = (title: string) => {
+																const match = title.match(/Part (\d+)\/\d+/);
+																return match
+																	? Number.parseInt(match[1], 10)
+																	: 0;
+															};
+															const aPartNum = extractPartNumber(a.title || "");
+															const bPartNum = extractPartNumber(b.title || "");
+															if (aPartNum > 0 && bPartNum > 0) {
+																return aPartNum - bPartNum;
+															}
+															return (
+																(a._creationTime || 0) - (b._creationTime || 0)
+															);
+														})
+														.map((chunk: any) => chunk.content)
+														.join("")
 										}
 										metadata={`${file.status} • ${(file.size / 1024 / 1024).toFixed(2)} MB • ${file.chunks.length} chunks • Uploaded ${new Date(file._creationTime).toLocaleDateString()}`}
 										onDelete={() => handleDeleteFile(file)}

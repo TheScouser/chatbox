@@ -1,11 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-	Bot,
-	ChevronDown,
-	ChevronRight,
-	Menu,
-	X,
-} from "lucide-react";
+import { Bot, ChevronDown, ChevronRight, Menu, X } from "lucide-react";
 import type { ReactNode } from "react";
 
 export interface NavItem {
@@ -97,7 +91,9 @@ export function Sidebar({
 
 			{/* Sidebar Footer */}
 			{footerContent && (
-				<div className="border-t border-sidebar-border p-3">{footerContent}</div>
+				<div className="border-t border-sidebar-border p-3">
+					{footerContent}
+				</div>
 			)}
 		</div>
 	);

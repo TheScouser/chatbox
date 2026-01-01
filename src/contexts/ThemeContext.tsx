@@ -30,7 +30,10 @@ export function ThemeProvider({
 	const [actualTheme, setActualTheme] = useState<"light" | "dark">(() => {
 		if (theme === "system") {
 			try {
-				if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+				if (
+					typeof window !== "undefined" &&
+					typeof window.matchMedia === "function"
+				) {
 					return window.matchMedia("(prefers-color-scheme: dark)").matches
 						? "dark"
 						: "light";
@@ -44,7 +47,11 @@ export function ThemeProvider({
 	useEffect(() => {
 		// Only listen to system changes when theme follows system
 		if (theme !== "system") return;
-		if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+		if (
+			typeof window === "undefined" ||
+			typeof window.matchMedia !== "function"
+		)
+			return;
 
 		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 		const handleChange = () => {

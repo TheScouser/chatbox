@@ -47,7 +47,8 @@ export const createUser = internalMutation({
 
     // Create default organization for the user
     const defaultOrgName = args.name ? `${args.name}'s Team` : `${args.email.split('@')[0]}'s Team`;
-    const orgId = await ctx.scheduler.runAfter(0, internal.organizations.createOrganization, {
+    // We use runMutation to ensure the organization is created immediately and we could use the ID if needed
+    await ctx.runMutation(internal.organizations.createOrganization, {
       name: defaultOrgName,
       createdBy: userId,
       isDefault: true,

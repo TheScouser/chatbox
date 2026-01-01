@@ -1,6 +1,7 @@
 import { internalMutation, mutation, query, internalQuery, action } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 
 // Helper function to generate organization slug
 function generateSlug(name: string): string {
@@ -24,7 +25,7 @@ export const createOrganization = internalMutation({
     createdBy: v.id("users"),
     isDefault: v.optional(v.boolean()), // true for default user organizations
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<Id<"organizations">> => {
     let slug = generateSlug(args.name);
     
     // Ensure slug is unique
@@ -150,7 +151,7 @@ export const createNewOrganization = mutation({
     name: v.string(),
     description: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<Id<"organizations">> => {
     const identity = await ctx.auth.getUserIdentity();
     if (identity === null) {
       throw new Error("Not authenticated");
@@ -166,7 +167,7 @@ export const createNewOrganization = mutation({
     }
 
     // Create organization using internal mutation
-    const orgId = await ctx.scheduler.runAfter(0, internal.organizations.createOrganization, {
+    const orgId = await ctx.runMutation(internal.organizations.createOrganization, {
       name: args.name,
       createdBy: user._id,
     });
@@ -300,6 +301,10 @@ export const inviteToOrganization = mutation({
       throw new Error("User already invited");
     }
 
+    if (existingMember.length > 0) {
+      throw new Error("User is already a member or invited");
+    }
+
     // Create invitation
     const token = generateInvitationToken();
     const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
@@ -315,9 +320,9 @@ export const inviteToOrganization = mutation({
     });
 
     // Send invitation email (schedule as action)
-    await ctx.scheduler.runAfter(0, internal.organizations.sendInvitationEmail, {
-      invitationId,
-    });
+    // await ctx.scheduler.runAfter(0, internal.organizations.sendInvitationEmail, {
+    //   invitationId,
+    // });
 
     return invitationId;
   },

@@ -14,26 +14,24 @@ interface ChatInterfaceSettingsProps {
 	agent: any;
 }
 
-export default function ChatInterfaceSettings({
-	agent,
-}: ChatInterfaceSettingsProps) {
+export default function ChatInterfaceSettings({ }: ChatInterfaceSettingsProps) {
 	// Chat interface state
 	const [embedWidth, setEmbedWidth] = useState("400");
 	const [embedHeight, setEmbedHeight] = useState("600");
 	const [primaryColor, setPrimaryColor] = useState("#2563eb");
 
 	return (
-		<div className="bg-white shadow rounded-lg">
+		<div className="bg-card shadow-sm border border-border rounded-lg">
 			<div className="p-6">
 				{/* Customization Options */}
-				<div className="bg-white shadow rounded-lg p-6">
+				<div className="bg-card shadow-sm border border-border rounded-lg p-6">
 					<div className="flex items-start gap-3 mb-6">
-						<Settings className="h-5 w-5 text-blue-600 mt-0.5" />
+						<Settings className="h-5 w-5 text-primary mt-0.5" />
 						<div>
-							<h4 className="text-sm font-medium text-gray-900">
+							<h4 className="text-sm font-medium text-foreground">
 								Customize Widget
 							</h4>
-							<p className="text-sm text-gray-600 mt-1">
+							<p className="text-sm text-muted-foreground mt-1">
 								Adjust the appearance and size of your chat widget
 							</p>
 						</div>
@@ -100,13 +98,13 @@ export default function ChatInterfaceSettings({
 					</div>
 
 					{/* Preview */}
-					<div className="mt-6 p-4 bg-gray-50 rounded-lg">
-						<h5 className="text-sm font-medium text-gray-900 mb-2">Preview</h5>
-						<div className="text-xs text-gray-600 mb-3">
+					<div className="mt-6 p-4 bg-muted/30 rounded-lg">
+						<h5 className="text-sm font-medium text-foreground mb-2">Preview</h5>
+						<div className="text-xs text-muted-foreground mb-3">
 							Widget size: {embedWidth} × {embedHeight}
 						</div>
 						<div
-							className="border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 text-sm"
+							className="border-2 border-dashed border-border rounded-lg flex items-center justify-center text-muted-foreground text-sm"
 							style={{
 								width: embedWidth === "100%" ? "100%" : `${embedWidth}px`,
 								height: "120px",

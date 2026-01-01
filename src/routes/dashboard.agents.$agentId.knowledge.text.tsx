@@ -4,14 +4,24 @@ import { FileText } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import RichTextEditor from "../components/RichTextEditor";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { PageHeader } from "../components/ui/page-header";
-import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
 import { Alert, AlertDescription } from "../components/ui/alert";
-import { FormCard, FormSection, FormField, FormActions } from "../components/ui/form-card";
-import { ContentCard, ContentCardEmpty, ContentCardList, ContentCardListItem } from "../components/ui/content-card";
+import { Button } from "../components/ui/button";
+import {
+	ContentCard,
+	ContentCardEmpty,
+	ContentCardList,
+	ContentCardListItem,
+} from "../components/ui/content-card";
 import { EntryItem } from "../components/ui/entry-item";
+import {
+	FormActions,
+	FormCard,
+	FormField,
+	FormSection,
+} from "../components/ui/form-card";
+import { Input } from "../components/ui/input";
+import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
+import { PageHeader } from "../components/ui/page-header";
 
 export const Route = createFileRoute(
 	"/dashboard/agents/$agentId/knowledge/text",
@@ -163,9 +173,9 @@ function AgentKnowledgeText() {
 									editingEntry
 										? handleCancelEdit
 										: () => {
-											setTitle("");
-											setContent("");
-										}
+												setTitle("");
+												setContent("");
+											}
 								}
 							>
 								{editingEntry ? "Cancel" : "Clear"}

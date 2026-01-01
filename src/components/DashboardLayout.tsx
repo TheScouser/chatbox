@@ -18,9 +18,9 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useOrganization } from "../contexts/OrganizationContext";
-import { useAgent, type Agent } from "../hooks/useAgent";
-import { Header, Sidebar, type NavItem } from "./layout";
+import { type Agent, useAgent } from "../hooks/useAgent";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { Header, type NavItem, Sidebar } from "./layout";
 
 interface DashboardLayoutProps {
 	children: React.ReactNode;
@@ -36,10 +36,19 @@ const globalNavigation: NavItem[] = [
 		icon: Settings,
 		expandable: true,
 		children: [
-			{ name: "General", href: "/dashboard/settings", icon: Settings, exact: true },
+			{
+				name: "General",
+				href: "/dashboard/settings",
+				icon: Settings,
+				exact: true,
+			},
 			{ name: "Members", href: "/dashboard/settings/members", icon: Users },
 			{ name: "Plans", href: "/dashboard/settings/plans", icon: FolderOpen },
-			{ name: "Billing", href: "/dashboard/settings/billing", icon: CreditCard },
+			{
+				name: "Billing",
+				href: "/dashboard/settings/billing",
+				icon: CreditCard,
+			},
 		],
 	},
 ];
@@ -69,7 +78,11 @@ const agentNavigation: NavItem[] = [
 		children: [
 			{ name: "General", href: "/settings", icon: User },
 			{ name: "AI", href: "/settings/ai", icon: Bot },
-			{ name: "Chat Interface", href: "/settings/chat-interface", icon: MessageSquare },
+			{
+				name: "Chat Interface",
+				href: "/settings/chat-interface",
+				icon: MessageSquare,
+			},
 			{ name: "Security", href: "/settings/security", icon: Shield },
 		],
 	},
@@ -81,11 +94,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 	// UI State
 	const [showAgentsDropdown, setShowAgentsDropdown] = useState(false);
-	const [showOrganizationsDropdown, setShowOrganizationsDropdown] = useState(false);
+	const [showOrganizationsDropdown, setShowOrganizationsDropdown] =
+		useState(false);
 	const [agentSearch, setAgentSearch] = useState("");
 	const [organizationSearch, setOrganizationSearch] = useState("");
 	const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-	const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+	const [expandedSections, setExpandedSections] = useState<
+		Record<string, boolean>
+	>({});
 
 	// Organization context
 	const {
@@ -101,12 +117,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	// Auto-sync organization when viewing an agent from different org
 	useEffect(() => {
 		if (currentAgent && organizations) {
-			const agentOrg = organizations.find((org: any) => org._id === currentAgent.organizationId);
+			const agentOrg = organizations.find(
+				(org: any) => org._id === currentAgent.organizationId,
+			);
 			if (agentOrg && agentOrg._id !== selectedOrganizationId) {
 				setSelectedOrganizationId(agentOrg._id);
 			}
 		}
-	}, [currentAgent, organizations, selectedOrganizationId, setSelectedOrganizationId]);
+	}, [
+		currentAgent,
+		organizations,
+		selectedOrganizationId,
+		setSelectedOrganizationId,
+	]);
 
 	// Auto-expand sections based on current route
 	useEffect(() => {
@@ -160,12 +183,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	};
 
 	// Filter agents by current organization
-	const filteredAgents = agents?.filter((agent: Agent) => {
-		const matchesOrg = currentOrganization
-			? agent.organizationId === currentOrganization._id
-			: true;
-		return matchesOrg;
-	}) || [];
+	const filteredAgents =
+		agents?.filter((agent: Agent) => {
+			const matchesOrg = currentOrganization
+				? agent.organizationId === currentOrganization._id
+				: true;
+			return matchesOrg;
+		}) || [];
 
 	return (
 		<div className="min-h-screen bg-background flex">
@@ -218,8 +242,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 					agents={filteredAgents}
 					showOrganizationsDropdown={showOrganizationsDropdown}
 					showAgentsDropdown={showAgentsDropdown}
-					onToggleOrganizationsDropdown={() => setShowOrganizationsDropdown(!showOrganizationsDropdown)}
-					onToggleAgentsDropdown={() => setShowAgentsDropdown(!showAgentsDropdown)}
+					onToggleOrganizationsDropdown={() =>
+						setShowOrganizationsDropdown(!showOrganizationsDropdown)
+					}
+					onToggleAgentsDropdown={() =>
+						setShowAgentsDropdown(!showAgentsDropdown)
+					}
 					onSelectOrganization={handleSelectOrganization}
 					onSelectAgent={handleSelectAgent}
 					organizationSearch={organizationSearch}
@@ -232,10 +260,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
 				{/* Main content */}
 				<main className="flex-1">
-					<div className={`mx-auto px-4 lg:px-6 ${showAgentSidebar ? "max-w-full" : "max-w-[1600px]"}`}>
-						<ErrorBoundary>
-							{children}
-						</ErrorBoundary>
+					<div
+						className={`mx-auto px-4 lg:px-6 ${showAgentSidebar ? "max-w-full" : "max-w-[1600px]"}`}
+					>
+						<ErrorBoundary>{children}</ErrorBoundary>
 					</div>
 				</main>
 			</div>
@@ -255,7 +283,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 				<div
 					className="fixed inset-0 z-40"
 					onClick={() => setShowOrganizationsDropdown(false)}
-					onKeyDown={(e) => e.key === "Escape" && setShowOrganizationsDropdown(false)}
+					onKeyDown={(e) =>
+						e.key === "Escape" && setShowOrganizationsDropdown(false)
+					}
 					role="button"
 					tabIndex={-1}
 					aria-label="Close organizations dropdown"

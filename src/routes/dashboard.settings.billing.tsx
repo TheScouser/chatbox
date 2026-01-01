@@ -10,7 +10,7 @@ import {
 import { useUserPlan, useUserSubscription } from "@/hooks/useFeatureAccess";
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { Calendar, CreditCard, Download, ExternalLink } from "lucide-react";
+import { Calendar, CreditCard, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/settings/billing")({
 	component: BillingSettings,

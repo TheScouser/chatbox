@@ -27,9 +27,9 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
 	if (!hasAccess) {
 		return (
 			fallback || (
-				<Card className="border-dashed border-gray-300 bg-gray-50">
+				<Card className="border-dashed border-border bg-muted/30">
 					<CardContent className="flex flex-col items-center justify-center py-8">
-						<Lock className="h-8 w-8 text-gray-400 mb-2" />
+						<Lock className="h-8 w-8 text-muted-foreground/50 mb-2" />
 						<h3 className="text-lg font-medium text-gray-900 mb-1">
 							Premium Feature
 						</h3>
@@ -98,13 +98,17 @@ export function AdvancedAnalyticsExample() {
 				</CardHeader>
 				<CardContent>
 					<div className="grid grid-cols-2 gap-4">
-						<div className="text-center p-4 bg-blue-50 rounded-lg">
-							<div className="text-2xl font-bold text-blue-600">1,234</div>
-							<div className="text-sm text-gray-600">Total Conversations</div>
+						<div className="text-center p-4 bg-primary/5 rounded-lg">
+							<div className="text-2xl font-bold text-primary">1,234</div>
+							<div className="text-sm text-muted-foreground">
+								Total Conversations
+							</div>
 						</div>
-						<div className="text-center p-4 bg-green-50 rounded-lg">
+						<div className="text-center p-4 bg-green-500/10 rounded-lg">
 							<div className="text-2xl font-bold text-green-600">89%</div>
-							<div className="text-sm text-gray-600">Satisfaction Rate</div>
+							<div className="text-sm text-muted-foreground">
+								Satisfaction Rate
+							</div>
 						</div>
 					</div>
 				</CardContent>

@@ -1,14 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { MessageSquare, RefreshCw, Filter, Download, Trash } from "lucide-react";
+import {
+	Download,
+	Filter,
+	MessageSquare,
+	RefreshCw,
+	Trash,
+} from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import ChatWidget from "../components/ChatWidget";
 import { Button } from "../components/ui/button";
-import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
-import { PageHeader } from "../components/ui/page-header";
 import { ContentCard, ContentCardEmpty } from "../components/ui/content-card";
+import { PageLayout } from "../components/ui/layout";
+import { PageHeader } from "../components/ui/page-header";
 
 export const Route = createFileRoute(
 	"/dashboard/agents/$agentId/conversations",
@@ -36,8 +42,8 @@ function AgentConversations() {
 	if (agents === undefined) {
 		return (
 			<div className="animate-pulse">
-				<div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-				<div className="h-96 bg-gray-200 rounded"></div>
+				<div className="h-8 bg-muted/40 rounded w-1/4 mb-4" />
+				<div className="h-96 bg-muted/40 rounded" />
 			</div>
 		);
 	}
@@ -59,29 +65,28 @@ function AgentConversations() {
 			<PageHeader
 				title="Conversations"
 				description="View and manage all conversations with your agent."
-				action={
-					<div className="flex items-center gap-3">
-						<Button variant="outline" size="sm">
-							<RefreshCw className="h-4 w-4 mr-2" />
-							Refresh
-						</Button>
-						<Button variant="outline" size="sm">
-							<Filter className="h-4 w-4 mr-2" />
-							Filter
-						</Button>
-						<Button size="sm">
-							<Download className="h-4 w-4 mr-2" />
-							Export
-						</Button>
-					</div>
-				}
-			/>
+			>
+				<div className="flex items-center gap-3">
+					<Button variant="outline" size="sm">
+						<RefreshCw className="h-4 w-4 mr-2" />
+						Refresh
+					</Button>
+					<Button variant="outline" size="sm">
+						<Filter className="h-4 w-4 mr-2" />
+						Filter
+					</Button>
+					<Button size="sm">
+						<Download className="h-4 w-4 mr-2" />
+						Export
+					</Button>
+				</div>
+			</PageHeader>
 
 			{conversations === undefined ? (
 				<div className="animate-pulse">
 					<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[700px]">
-						<div className="bg-gray-100 rounded-lg"></div>
-						<div className="lg:col-span-3 bg-gray-100 rounded-lg"></div>
+						<div className="bg-muted/20 rounded-lg" />
+						<div className="lg:col-span-3 bg-muted/20 rounded-lg" />
 					</div>
 				</div>
 			) : conversations.length === 0 ? (
@@ -89,27 +94,22 @@ function AgentConversations() {
 					icon={MessageSquare}
 					title="No conversations yet"
 					description="Conversations will appear here once users start chatting with your agent."
-					action={
-						<Button
-							onClick={() =>
-								(window.location.href = `/dashboard/agents/${agentId}/chat`)
-							}
-						>
-							<MessageSquare className="mr-2 h-4 w-4" />
-							Test Your Agent
-						</Button>
-					}
-				/>
+				>
+					<Button
+						onClick={() =>
+							(window.location.href = `/dashboard/agents/${agentId}/chat`)
+						}
+					>
+						<MessageSquare className="mr-2 h-4 w-4" />
+						Test Your Agent
+					</Button>
+				</ContentCardEmpty>
 			) : (
 				<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[700px]">
 					{/* Conversations List */}
-					<ContentCard
-						title="Chat Logs"
-						icon={MessageSquare}
-						className="overflow-hidden"
-					>
+					<ContentCard title="Chat Logs" className="overflow-hidden">
 						<div className="overflow-y-auto h-full">
-							{conversations.map((conversation, index) => {
+							{conversations.map((conversation) => {
 								const isSelected = currentConversationId === conversation._id;
 								const timeAgo = new Date(conversation._creationTime);
 								const now = new Date();
@@ -132,14 +132,13 @@ function AgentConversations() {
 									<div
 										key={conversation._id}
 										onClick={() => setCurrentConversationId(conversation._id)}
-										className={`p-5 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-											isSelected
-												? "bg-blue-50 border-l-4 border-l-blue-500"
-												: ""
-										}`}
+										className={`p-5 border-b border-border cursor-pointer hover:bg-accent/50 transition-all duration-200 ${isSelected
+												? "bg-accent border-l-4 border-l-primary"
+												: "border-l-4 border-l-transparent"
+											}`}
 									>
 										<div className="flex justify-between items-start mb-3">
-											<p className="text-sm font-medium text-gray-900 truncate pr-2 leading-relaxed">
+											<p className="text-sm font-medium text-foreground truncate pr-2 leading-relaxed">
 												{conversation.title || "Untitled Conversation"}
 											</p>
 											<Button
@@ -155,9 +154,9 @@ function AgentConversations() {
 												<Trash className="h-4 w-4" />
 											</Button>
 										</div>
-										<p className="text-xs text-gray-500 mb-3">{timeDisplay}</p>
+										<p className="text-xs text-muted-foreground mb-3">{timeDisplay}</p>
 										<div className="flex items-center gap-2">
-											<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+											<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
 												Source: Playground
 											</span>
 										</div>
@@ -168,18 +167,21 @@ function AgentConversations() {
 					</ContentCard>
 
 					{/* Conversation Content */}
-					<ContentCard className="lg:col-span-3 overflow-hidden">
+					<ContentCard
+						title="Conversation Details"
+						className="lg:col-span-3 overflow-hidden"
+					>
 						{currentConversationId ? (
 							<div className="h-full flex flex-col">
-								<div className="bg-gray-50 px-6 py-5 border-b border-gray-200">
+								<div className="bg-muted/30 px-6 py-5 border-b border-border">
 									<div className="flex items-center justify-between">
 										<div>
-											<h4 className="text-xl font-medium text-gray-900">
+											<h4 className="text-xl font-medium text-foreground">
 												{conversations.find(
 													(c) => c._id === currentConversationId,
 												)?.title || "Conversation Details"}
 											</h4>
-											<p className="text-sm text-gray-500 mt-1">
+											<p className="text-sm text-muted-foreground mt-1">
 												Started{" "}
 												{new Date(
 													conversations.find(
@@ -189,7 +191,7 @@ function AgentConversations() {
 											</p>
 										</div>
 										<div className="flex items-center gap-2">
-											<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+											<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
 												Active
 											</span>
 										</div>

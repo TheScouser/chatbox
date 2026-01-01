@@ -1,15 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { Bot, Building2, Calendar, MessageSquare, Plus } from "lucide-react";
+import { Bot, Calendar, MessageSquare, Plus } from "lucide-react";
 import { useMemo } from "react";
 import { api } from "../../convex/_generated/api";
-import { useOrganization } from "../contexts/OrganizationContext";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
+import { ContentCardEmpty } from "../components/ui/content-card";
 import { PageLayout } from "../components/ui/layout";
 import { PageHeader } from "../components/ui/page-header";
-import { ContentCard, ContentCardEmpty } from "../components/ui/content-card";
-import { Alert, AlertDescription } from "../components/ui/alert";
+import { useOrganization } from "../contexts/OrganizationContext";
 
 export const Route = createFileRoute("/dashboard/agents/")({
 	component: AgentsList,
@@ -35,28 +34,33 @@ function AgentsList() {
 	return (
 		<PageLayout>
 			<PageHeader
-				title={currentOrganization
-					? `${currentOrganization.name} Agents`
-					: "My Agents"}
-				description={currentOrganization ? (
-					<>
-						Create and manage AI agents for{" "}
-						<span className="font-medium text-foreground">{currentOrganization.name}</span>.
-						Each agent can be trained with specific knowledge and deployed
-						anywhere.
-					</>
-				) : (
-					"Create and manage your AI agents. Each agent can be trained with specific knowledge and deployed anywhere."
-				)}
-				action={
-					<Button
-						onClick={() => navigate({ to: "/dashboard/agents/new" })}
-					>
+				title={
+					currentOrganization
+						? `${currentOrganization.name} Agents`
+						: "My Agents"
+				}
+				description={
+					currentOrganization ? (
+						<>
+							Create and manage AI agents for{" "}
+							<span className="font-medium text-foreground">
+								{currentOrganization.name}
+							</span>
+							. Each agent can be trained with specific knowledge and deployed
+							anywhere.
+						</>
+					) : (
+						"Create and manage your AI agents. Each agent can be trained with specific knowledge and deployed anywhere."
+					)
+				}
+			>
+				<Link to="/dashboard/agents/new">
+					<Button>
 						<Plus className="mr-2 h-4 w-4" />
 						Create Agent
 					</Button>
-				}
-			/>
+				</Link>
+			</PageHeader>
 
 			{/* Organization Context Indicator removed per UX request */}
 
@@ -68,15 +72,15 @@ function AgentsList() {
 						<Card key={i} className="animate-pulse">
 							<CardContent>
 								<div className="flex items-center">
-									<div className="w-10 h-10 bg-muted rounded-lg"></div>
+									<div className="w-10 h-10 bg-muted rounded-lg" />
 									<div className="ml-4 flex-1">
-										<div className="h-4 bg-muted rounded w-3/4"></div>
-										<div className="h-3 bg-muted rounded w-1/2 mt-2"></div>
+										<div className="h-4 bg-muted rounded w-3/4" />
+										<div className="h-3 bg-muted rounded w-1/2 mt-2" />
 									</div>
 								</div>
 								<div className="mt-4 space-y-2">
-									<div className="h-3 bg-muted rounded"></div>
-									<div className="h-3 bg-muted rounded w-5/6"></div>
+									<div className="h-3 bg-muted rounded" />
+									<div className="h-3 bg-muted rounded w-5/6" />
 								</div>
 							</CardContent>
 						</Card>
@@ -86,27 +90,29 @@ function AgentsList() {
 				/* Empty State */
 				<ContentCardEmpty
 					icon={Bot}
-					title={currentOrganization
-						? `No agents in ${currentOrganization.name} yet`
-						: "No agents yet"}
-					description={currentOrganization ? (
-						<>
-							Get started by creating your first AI agent for{" "}
-							{currentOrganization.name}.
-						</>
-					) : (
-						"Get started by creating your first AI agent."
-					)}
-					action={
-						<Button
-							onClick={() => navigate({ to: "/dashboard/agents/new" })}
-							size="lg"
-						>
+					title={
+						currentOrganization
+							? `No agents in ${currentOrganization.name} yet`
+							: "No agents yet"
+					}
+					description={
+						currentOrganization ? (
+							<>
+								Get started by creating your first AI agent for{" "}
+								{currentOrganization.name}.
+							</>
+						) : (
+							"Get started by creating your first AI agent."
+						)
+					}
+				>
+					<Link to="/dashboard/agents/new">
+						<Button size="lg">
 							<Plus className="mr-2 h-4 w-4" />
 							Create your first agent
 						</Button>
-					}
-				/>
+					</Link>
+				</ContentCardEmpty>
 			) : (
 				/* Agents Grid */
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import {
 	CTASection,
 	FeaturesSection,
@@ -10,6 +9,7 @@ import {
 	SocialProofSection,
 	TestimonialsSection,
 } from "@/components/marketing";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
 	component: HomePage,
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
 	return (
-		<div className="min-h-screen bg-white dark:bg-background">
+		<div className="min-h-screen bg-background">
 			<Navbar />
 			<HeroSection />
 			<SocialProofSection />

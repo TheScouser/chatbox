@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { useOrganization } from "../contexts/OrganizationContext";
 
 export const Route = createFileRoute("/dashboard/settings/plans")({
 	component: PlansSettings,
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/dashboard/settings/plans")({
 
 function PlansSettings() {
 	const plans = useQuery(api.billing.getSubscriptionPlans, {});
+	const { currentOrganization } = useOrganization();
 	const { plan: currentPlan, isLoading: currentPlanLoading } = useUserPlan();
 	const createCheckoutSession = useMutation(api.billing.createCheckoutSession);
 	const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
@@ -18,7 +20,10 @@ function PlansSettings() {
 	const handleSelectPlan = async (planId: string) => {
 		setSelectedPlanId(planId);
 		try {
+			if (!currentOrganization?._id) return;
+
 			const checkoutUrl = await createCheckoutSession({
+				organizationId: currentOrganization._id,
 				planId: planId as any,
 				successUrl: `${window.location.origin}/dashboard/settings/billing?success=true`,
 				cancelUrl: `${window.location.origin}/dashboard/settings/plans?canceled=true`,

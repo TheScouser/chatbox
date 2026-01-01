@@ -200,7 +200,7 @@ function extractContentWithAdvancedCheerio(html: string, url: string) {
 }
 
 // Helper function to extract text with proper spacing and formatting
-function extractTextWithSpacing($element: any): string {
+function extractTextWithSpacing($element: cheerio.Cheerio<any>): string {
   // Simple approach: extract text and add proper spacing
   let text = $element.text();
   
@@ -218,7 +218,7 @@ export const fetchUrlContent = action({
   args: {
     url: v.string(),
   },
-  handler: async (ctx, { url }): Promise<{
+  handler: async (_ctx, { url }): Promise<{
     url: string;
     title: string;
     description: string;

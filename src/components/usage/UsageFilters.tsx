@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
 	Select,
@@ -8,8 +7,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useDateRange, useOrganizationAgents } from "@/hooks/useUsageDashboard";
-import { Calendar, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { Calendar } from "lucide-react";
 
 interface UsageFiltersProps {
 	selectedDateRange: "7d" | "30d" | "90d";
@@ -39,8 +37,8 @@ export function UsageFilters({
 				<div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
 					{/* Left side - Title */}
 					<div>
-						<h2 className="text-xl font-semibold text-gray-900">Usage</h2>
-						<p className="text-sm text-gray-600 mt-1">
+						<h2 className="text-xl font-semibold text-foreground">Usage</h2>
+						<p className="text-sm text-muted-foreground mt-1">
 							Monitor your usage and track consumption patterns
 						</p>
 					</div>
@@ -91,8 +89,8 @@ export function UsageFilters({
 				</div>
 
 				{/* Date Range Display */}
-				<div className="mt-4 pt-4 border-t border-gray-100">
-					<div className="flex items-center justify-between text-sm text-gray-600">
+				<div className="mt-4 pt-4 border-t border-border">
+					<div className="flex items-center justify-between text-sm text-muted-foreground">
 						<span>Showing data for: {dateRange.label}</span>
 						<span className="text-xs">
 							{selectedAgentId

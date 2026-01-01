@@ -8,6 +8,7 @@ export default defineSchema({
     clerkId: v.string(),
     createdAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
+    imageUrl: v.optional(v.string()),
   }).index("clerkId", ["clerkId"]),
   
   // Organizations table
@@ -116,6 +117,9 @@ export default defineSchema({
       url: v.optional(v.string()),
       chunkIndex: v.optional(v.number()),
       totalChunks: v.optional(v.number()),
+      fileId: v.optional(v.id("files")),
+      fileSize: v.optional(v.number()),
+      status: v.optional(v.string()),
     })),
     embedding: v.optional(v.array(v.number())),
     fileId: v.optional(v.id("files")),

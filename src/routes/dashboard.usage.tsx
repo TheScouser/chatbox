@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { AlertTriangle, ArrowUpRight, TrendingUp } from "lucide-react";
+import { AlertTriangle, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 
 import { AgentUsageChart } from "@/components/usage/AgentUsageChart";

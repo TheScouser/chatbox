@@ -7,6 +7,7 @@ import { useMutation, useQuery } from "convex/react";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { useOrganization } from "../contexts/OrganizationContext";
 
 export const Route = createFileRoute("/dashboard/billing/plans")({
 	component: BillingPlans,
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/dashboard/billing/plans")({
 
 function BillingPlans() {
 	const plans = useQuery(api.billing.getSubscriptionPlans, {});
+	const { currentOrganization } = useOrganization();
 	const { plan: currentPlan, isLoading: currentPlanLoading } = useUserPlan();
 	const createCheckoutSession = useMutation(api.billing.createCheckoutSession);
 	const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
@@ -21,7 +23,10 @@ function BillingPlans() {
 	const handleSelectPlan = async (planId: string) => {
 		setSelectedPlanId(planId);
 		try {
+			if (!currentOrganization?._id) return;
+
 			const checkoutUrl = await createCheckoutSession({
+				organizationId: currentOrganization._id,
 				planId: planId as any,
 				successUrl: `${window.location.origin}/dashboard/billing?success=true`,
 				cancelUrl: `${window.location.origin}/dashboard/billing/plans?canceled=true`,

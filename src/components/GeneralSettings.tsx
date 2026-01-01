@@ -80,13 +80,13 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 	};
 
 	return (
-		<div className="bg-white shadow rounded-lg">
+		<div className="bg-card shadow-sm border border-border rounded-lg">
 			<div className="p-6 space-y-8">
 				{/* Agent ID */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-gray-700">Agent ID</Label>
+					<Label className="text-sm font-medium text-muted-foreground">Agent ID</Label>
 					<div className="flex items-center gap-2">
-						<div className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md font-mono text-sm text-gray-900">
+						<div className="flex-1 px-3 py-2 bg-muted/30 border border-border rounded-md font-mono text-sm text-foreground">
 							{agent._id}
 						</div>
 						<Button
@@ -106,8 +106,8 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 
 				{/* Size */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-gray-700">Size</Label>
-					<div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-900">
+					<Label className="text-sm font-medium text-muted-foreground">Size</Label>
+					<div className="px-3 py-2 bg-muted/30 border border-border rounded-md text-sm text-foreground">
 						4 KB
 					</div>
 				</div>
@@ -116,7 +116,7 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 				<div className="space-y-2">
 					<Label
 						htmlFor="agent-name"
-						className="text-sm font-medium text-gray-700"
+						className="text-sm font-medium text-muted-foreground"
 					>
 						Name
 					</Label>
@@ -138,7 +138,7 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 				</div>
 
 				{/* Danger Zone */}
-				<div className="pt-8 border-t border-gray-200">
+				<div className="pt-8 border-t border-border">
 					<div className="text-center mb-6">
 						<span className="inline-block px-3 py-1 text-xs font-semibold text-red-600 bg-red-100 rounded-full">
 							DANGER ZONE

@@ -1,10 +1,4 @@
-import {
-	Link,
-	Outlet,
-	createFileRoute,
-	useLocation,
-} from "@tanstack/react-router";
-import { CreditCard, FolderOpen, Settings, Users } from "lucide-react";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/dashboard/settings")({
 	component: SettingsLayout,

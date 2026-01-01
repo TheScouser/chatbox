@@ -1,5 +1,5 @@
-import type * as React from "react";
 import { cn } from "@/lib/utils";
+import type * as React from "react";
 
 interface TwoColumnLayoutProps {
 	children: [React.ReactNode, React.ReactNode];
@@ -8,9 +8,14 @@ interface TwoColumnLayoutProps {
 
 export function TwoColumnLayout({ children, className }: TwoColumnLayoutProps) {
 	const [left, right] = children;
-	
+
 	return (
-		<div className={cn("grid grid-cols-1 lg:grid-cols-2 gap-6 items-start", className)}>
+		<div
+			className={cn(
+				"grid grid-cols-1 lg:grid-cols-2 gap-6 items-start",
+				className,
+			)}
+		>
 			<div>{left}</div>
 			<div>{right}</div>
 		</div>
@@ -23,11 +28,7 @@ interface PageLayoutProps {
 }
 
 export function PageLayout({ children, className }: PageLayoutProps) {
-	return (
-		<div className={cn("space-y-6", className)}>
-			{children}
-		</div>
-	);
+	return <div className={cn("space-y-6", className)}>{children}</div>;
 }
 
 interface ThreeColumnGridProps {
@@ -37,7 +38,12 @@ interface ThreeColumnGridProps {
 
 export function ThreeColumnGrid({ children, className }: ThreeColumnGridProps) {
 	return (
-		<div className={cn("grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3", className)}>
+		<div
+			className={cn(
+				"grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3",
+				className,
+			)}
+		>
 			{children}
 		</div>
 	);

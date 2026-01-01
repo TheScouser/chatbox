@@ -1,6 +1,6 @@
+import { ConvexProvider, ConvexReactClient } from "convex/react";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
 import ChatBubbleWidget from "../components/ChatBubbleWidget";
 
 // Widget initialization function
@@ -30,7 +30,7 @@ function initChatboxWidget() {
 		return;
 	}
 
-    // Get configuration from script attributes or URL params
+	// Get configuration from script attributes or URL params
 	const config = {
 		agentId,
 		apiUrl: scriptTag.getAttribute("data-api-url") || window.location.origin,
@@ -45,33 +45,33 @@ function initChatboxWidget() {
 		},
 	};
 
-    // Resolve Convex URL (from attribute or build-time env)
-    const convexUrl =
-      scriptTag.getAttribute("data-convex-url") ||
-      (import.meta as any).env?.VITE_CONVEX_URL;
+	// Resolve Convex URL (from attribute or build-time env)
+	const convexUrl =
+		scriptTag.getAttribute("data-convex-url") ||
+		(import.meta as any).env?.VITE_CONVEX_URL;
 
-    if (!convexUrl) {
-      console.error(
-        "Chatbox Widget: Missing Convex URL. Provide VITE_CONVEX_URL at build time or set data-convex-url on the script tag.",
-      );
-      return;
-    }
+	if (!convexUrl) {
+		console.error(
+			"Chatbox Widget: Missing Convex URL. Provide VITE_CONVEX_URL at build time or set data-convex-url on the script tag.",
+		);
+		return;
+	}
 
-    // Create widget container
+	// Create widget container
 	const widgetContainer = document.createElement("div");
 	widgetContainer.id = "chatbox-widget-container";
 	document.body.appendChild(widgetContainer);
 
-    // Render the widget with Convex provider
+	// Render the widget with Convex provider
 	const root = createRoot(widgetContainer);
-    const convex = new ConvexReactClient(convexUrl);
-    root.render(
-      React.createElement(
-        ConvexProvider,
-        { client: convex },
-        React.createElement(ChatBubbleWidget, config),
-      ),
-    );
+	const convex = new ConvexReactClient(convexUrl);
+	root.render(
+		React.createElement(
+			ConvexProvider,
+			{ client: convex },
+			React.createElement(ChatBubbleWidget, config),
+		),
+	);
 
 	// Set state to initialized
 	if (window.ChatboxWidget) {

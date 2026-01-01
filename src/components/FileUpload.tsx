@@ -41,7 +41,7 @@ export default function FileUpload({
 
 		// Check file type
 		const allowedTypes = accept.split(",").map((type) => type.trim());
-		const fileExtension = "." + file.name.split(".").pop()?.toLowerCase();
+		const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
 
 		if (!allowedTypes.includes(fileExtension)) {
 			return `File type not supported. Allowed types: ${accept}`;
@@ -186,8 +186,8 @@ export default function FileUpload({
 				onDragLeave={handleDragLeave}
 				className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
 					isDragOver
-						? "border-blue-400 bg-blue-50"
-						: "border-gray-300 hover:border-gray-400"
+						? "border-primary bg-primary/5"
+						: "border-border hover:border-muted-foreground/50"
 				}`}
 			>
 				<input
@@ -201,7 +201,7 @@ export default function FileUpload({
 				/>
 
 				<svg
-					className="mx-auto h-12 w-12 text-gray-400"
+					className="mx-auto h-12 w-12 text-muted-foreground"
 					stroke="currentColor"
 					fill="none"
 					viewBox="0 0 48 48"
@@ -216,13 +216,13 @@ export default function FileUpload({
 
 				<div className="mt-4">
 					<label htmlFor="file-upload" className="cursor-pointer">
-						<span className="mt-2 block text-sm font-medium text-gray-900">
+						<span className="mt-2 block text-sm font-medium text-foreground">
 							{isDragOver
 								? "Drop files here"
 								: "Drop files here or click to browse"}
 						</span>
 					</label>
-					<p className="mt-2 text-sm text-gray-500">
+					<p className="mt-2 text-sm text-muted-foreground">
 						{accept.replace(/\./g, "").toUpperCase()} up to {maxSize}MB
 					</p>
 				</div>
@@ -232,9 +232,9 @@ export default function FileUpload({
 			{uploadingFiles.length > 0 && (
 				<div className="space-y-3">
 					{uploadingFiles.map((uploadingFile, index) => (
-						<div key={index} className="bg-gray-50 rounded-lg p-4">
+						<div key={index} className="bg-muted/30 rounded-lg p-4">
 							<div className="flex items-center justify-between mb-2">
-								<span className="text-sm font-medium text-gray-900 truncate">
+								<span className="text-sm font-medium text-foreground truncate">
 									{uploadingFile.file.name}
 								</span>
 								<span className="text-xs text-gray-500">
@@ -242,14 +242,14 @@ export default function FileUpload({
 								</span>
 							</div>
 
-							<div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+							<div className="w-full bg-muted rounded-full h-2 mb-2">
 								<div
 									className={`h-2 rounded-full transition-all duration-300 ${
 										uploadingFile.status === "error"
-											? "bg-red-500"
+											? "bg-destructive"
 											: uploadingFile.status === "complete"
 												? "bg-green-500"
-												: "bg-blue-500"
+												: "bg-primary"
 									}`}
 									style={{ width: `${uploadingFile.progress}%` }}
 								/>
@@ -259,10 +259,10 @@ export default function FileUpload({
 								<span
 									className={`text-xs ${
 										uploadingFile.status === "error"
-											? "text-red-600"
+											? "text-destructive"
 											: uploadingFile.status === "complete"
 												? "text-green-600"
-												: "text-blue-600"
+												: "text-primary"
 									}`}
 								>
 									{uploadingFile.status === "uploading" && "Uploading..."}
