@@ -1,5 +1,5 @@
 import { UserButton } from "@clerk/clerk-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Bell, Bot, Building2, ChevronDown, Plus, Search } from "lucide-react";
 import { ThemeToggleCompact } from "../ThemeToggle";
 
@@ -34,6 +34,7 @@ interface HeaderProps {
 	onAgentSearchChange: (value: string) => void;
 	isOrganizationsLoading?: boolean;
 	isAgentsLoading?: boolean;
+	onToggleSidebar: () => void;
 }
 
 export function Header({
@@ -53,6 +54,7 @@ export function Header({
 	onAgentSearchChange,
 	isOrganizationsLoading,
 	isAgentsLoading,
+	onToggleSidebar,
 }: HeaderProps) {
 	const navigate = useNavigate();
 
@@ -71,80 +73,94 @@ export function Header({
 	});
 
 	return (
-		<header className="bg-background/80 border-b border-border/30 sticky top-0 z-50 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
-			<div className="mx-auto max-w-full px-4 lg:px-6">
-				<div className="flex h-12 items-center justify-between">
+		<header className="w-full bg-background/60 backdrop-blur-xl border-b border-border/40 transition-all duration-200 supports-[backdrop-filter]:bg-background/60 py-3">
+			<div className="h-full mx-auto max-w-full px-4 lg:px-6">
+				<div className="flex h-full items-center justify-between gap-4">
 					{/* Logo and Selectors */}
-					<div className="flex items-center space-x-4">
-						<Link
-							to="/dashboard/agents"
-							className="flex items-center space-x-2.5 text-base font-medium text-foreground hover:text-foreground/80 transition-colors"
+					<div className="flex items-center gap-4 lg:gap-6">
+						<button
+							onClick={onToggleSidebar}
+							className="p-2 -ml-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
+							type="button"
 						>
-							<div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
-								<Bot className="w-3.5 h-3.5 text-primary-foreground" />
+							<ChevronDown className="h-5 w-5 rotate-90" />
+						</button>
+
+						<div className="hidden sm:flex items-center space-x-2.5">
+							<div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center">
+								<Bot className="w-4 h-4 text-primary-foreground" />
 							</div>
-							<span>Chatbox</span>
-						</Link>
+							<span className="text-sm font-bold tracking-tight">Chatbox</span>
+						</div>
 
-						{/* Organization Selector */}
-						<OrgSelector
-							currentOrganization={currentOrganization}
-							organizations={filteredOrganizations}
-							isOpen={showOrganizationsDropdown}
-							onToggle={onToggleOrganizationsDropdown}
-							onSelect={onSelectOrganization}
-							searchValue={organizationSearch}
-							onSearchChange={onOrganizationSearchChange}
-							isLoading={isOrganizationsLoading}
-						/>
+						<div className="h-6 w-px bg-border/50 hidden md:block" />
 
-						{/* Agent Selector */}
-						<AgentSelector
-							currentAgent={currentAgent}
-							currentOrganization={currentOrganization}
-							agents={filteredAgents}
-							isOpen={showAgentsDropdown}
-							onToggle={onToggleAgentsDropdown}
-							onSelect={onSelectAgent}
-							searchValue={agentSearch}
-							onSearchChange={onAgentSearchChange}
-							isLoading={isAgentsLoading}
-						/>
+						<div className="flex items-center gap-3">
+							{/* Organization Selector */}
+							<OrgSelector
+								currentOrganization={currentOrganization}
+								organizations={filteredOrganizations}
+								isOpen={showOrganizationsDropdown}
+								onToggle={onToggleOrganizationsDropdown}
+								onSelect={onSelectOrganization}
+								searchValue={organizationSearch}
+								onSearchChange={onOrganizationSearchChange}
+								isLoading={isOrganizationsLoading}
+							/>
+
+							{/* Agent Selector */}
+							<AgentSelector
+								currentAgent={currentAgent}
+								currentOrganization={currentOrganization}
+								agents={filteredAgents}
+								isOpen={showAgentsDropdown}
+								onToggle={onToggleAgentsDropdown}
+								onSelect={onSelectAgent}
+								searchValue={agentSearch}
+								onSearchChange={onAgentSearchChange}
+								isLoading={isAgentsLoading}
+							/>
+						</div>
 					</div>
 
 					{/* Right side actions */}
-					<div className="flex items-center space-x-3">
-						<button
-							className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-							type="button"
-						>
-							<Search className="h-4 w-4" />
-						</button>
+					<div className="flex items-center gap-2 sm:gap-4">
+						<div className="hidden sm:flex items-center bg-muted/40 rounded-full px-3 py-1.5 border border-border/50 hover:bg-muted/60 transition-colors w-64">
+							<Search className="h-3.5 w-3.5 text-muted-foreground mr-2" />
+							<input
+								type="text"
+								placeholder="Search..."
+								className="bg-transparent border-none outline-none text-xs w-full placeholder:text-muted-foreground"
+							/>
+							<div className="flex text-[10px] font-mono text-muted-foreground/70 border border-border/50 rounded px-1">⌘K</div>
+						</div>
 
-						<button
-							className="p-2 text-muted-foreground hover:text-foreground transition-colors relative"
-							type="button"
-						>
-							<Bell className="h-4 w-4" />
-							<span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
-						</button>
+						<div className="flex items-center gap-1 sm:gap-2">
+							<button
+								className="p-2 text-muted-foreground hover:text-foreground transition-colors relative hover:bg-muted/50 rounded-full"
+								type="button"
+							>
+								<Bell className="h-4 w-4" />
+								<span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border border-background" />
+							</button>
 
-						<ThemeToggleCompact />
+							<ThemeToggleCompact />
+						</div>
 
 						<button
 							onClick={() => navigate({ to: "/dashboard/agents/new" })}
-							className="hidden sm:flex items-center px-3 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors"
+							className="hidden sm:flex items-center px-4 py-2 text-xs font-semibold text-primary-foreground bg-primary rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200"
 							type="button"
 						>
-							<Plus className="mr-1.5 h-4 w-4" />
+							<Plus className="mr-1.5 h-3.5 w-3.5" />
 							New Agent
 						</button>
 
-						<div className="relative">
+						<div className="relative pl-2 border-l border-border/50">
 							<UserButton
 								appearance={{
 									elements: {
-										avatarBox: "w-7 h-7",
+										avatarBox: "w-8 h-8 ring-2 ring-border/50 hover:ring-primary/20 transition-all",
 									},
 								}}
 							/>
@@ -229,11 +245,10 @@ function OrgSelector({
 											<button
 												key={org._id}
 												onClick={() => onSelect(org)}
-												className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
-													currentOrganization?._id === org._id
-														? "bg-accent text-accent-foreground"
-														: "hover:bg-accent/50 text-foreground"
-												}`}
+												className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${currentOrganization?._id === org._id
+													? "bg-accent text-accent-foreground"
+													: "hover:bg-accent/50 text-foreground"
+													}`}
 												type="button"
 											>
 												<Building2 className="w-4 h-4 mr-3 text-muted-foreground" />
@@ -355,11 +370,10 @@ function AgentSelector({
 											<button
 												key={agent._id}
 												onClick={() => onSelect(agent)}
-												className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
-													currentAgent?._id === agent._id
-														? "bg-accent text-accent-foreground"
-														: "hover:bg-accent/50 text-foreground"
-												}`}
+												className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${currentAgent?._id === agent._id
+													? "bg-accent text-accent-foreground"
+													: "hover:bg-accent/50 text-foreground"
+													}`}
 												type="button"
 											>
 												<Bot className="w-4 h-4 mr-3 text-muted-foreground" />

@@ -2,6 +2,7 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { Bot, Calendar, MessageSquare, Plus } from "lucide-react";
 import { useMemo } from "react";
+import { cn } from "@/lib/utils";
 import { api } from "../../convex/_generated/api";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -116,7 +117,7 @@ function AgentsList() {
 			) : (
 				/* Agents Grid */
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-					{agents.map((agent: any) => (
+					{agents.map((agent: any, index: number) => (
 						<Card
 							key={agent._id}
 							onClick={() =>
@@ -125,42 +126,48 @@ function AgentsList() {
 									params: { agentId: agent._id },
 								})
 							}
-							className="cursor-pointer transition-all duration-200 hover:border-border group"
+							className={cn(
+								"group relative overflow-hidden animate-fade-in-up",
+								index < 6 ? `stagger-${(index % 5) + 1}` : ""
+							)}
 						>
-							<CardContent>
-								<div className="flex items-center">
-									<div className="flex-shrink-0">
-										<div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+							<CardContent className="p-0">
+								<div className="p-6">
+									<div className="flex items-start justify-between mb-4">
+										<div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
 											<Bot className="h-6 w-6 text-primary" />
 										</div>
+										<div className="flex flex-col items-end">
+											<span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/60 mb-1">Status</span>
+											<div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-success/10 border border-success/20">
+												<div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+												<span className="text-[10px] font-bold text-success uppercase tracking-wider">Active</span>
+											</div>
+										</div>
 									</div>
-									<div className="ml-4 flex-1 min-w-0">
-										<h3 className="text-lg font-semibold text-foreground truncate">
+
+									<div className="min-w-0 mb-4">
+										<h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors truncate">
 											{agent.name}
 										</h3>
-										<p className="text-sm text-muted-foreground">
-											Created{" "}
-											{new Date(agent._creationTime).toLocaleDateString()}
+										<p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed mt-1 font-medium">
+											{agent.description || "Building the future of AI interactions..."}
 										</p>
 									</div>
-								</div>
 
-								<div className="mt-4">
-									<p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-										{agent.description || "No description provided"}
-									</p>
-								</div>
-
-								<div className="mt-6 flex items-center justify-between text-sm text-muted-foreground">
-									<div className="flex items-center">
-										<Calendar className="h-4 w-4 mr-1.5" />
-										{new Date(agent._creationTime).toLocaleDateString()}
-									</div>
-									<div className="flex items-center">
-										<MessageSquare className="h-4 w-4 mr-1.5" />
-										<span>0 conversations</span>
+									<div className="flex items-center gap-4 py-3 border-t border-border/40">
+										<div className="flex items-center text-xs font-semibold text-muted-foreground">
+											<MessageSquare className="h-3.5 w-3.5 mr-1.5 text-primary/60" />
+											<span>243 chats</span>
+										</div>
+										<div className="flex items-center text-xs font-semibold text-muted-foreground">
+											<Calendar className="h-3.5 w-3.5 mr-1.5 text-primary/60" />
+											<span>{new Date(agent._creationTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+										</div>
 									</div>
 								</div>
+
+								<div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 							</CardContent>
 						</Card>
 					))}

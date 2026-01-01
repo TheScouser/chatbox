@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Bot, ChevronDown, ChevronRight, Menu, X } from "lucide-react";
+import { Bot, ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 export interface NavItem {
 	name: string;
@@ -31,7 +32,6 @@ export function Sidebar({
 	navigation,
 	footerContent,
 	collapsed,
-	onToggleCollapse,
 	isNavActive,
 	buildHref,
 	expandedSections,
@@ -39,41 +39,38 @@ export function Sidebar({
 }: SidebarProps) {
 	return (
 		<div
-			className={`${collapsed ? "w-16" : "w-64"} bg-sidebar border-r border-sidebar-border/50 flex flex-col transition-all duration-300`}
+			className={cn(
+				"bg-sidebar/80 backdrop-blur-md border-r border-sidebar-border flex flex-col transition-all duration-300 ease-in-out relative z-30",
+				collapsed ? "w-20" : "w-72"
+			)}
 		>
 			{/* Sidebar Header */}
-			<div className="flex items-center justify-between px-5 py-4 border-b border-sidebar-border/30">
-				<div className="flex items-center min-w-0">
-					<div className="w-6 h-6 bg-sidebar-primary rounded-md flex items-center justify-center mr-3 flex-shrink-0">
-						<Bot className="w-3.5 h-3.5 text-sidebar-primary-foreground" />
+			<div className="flex items-center justify-between px-6 py-5 border-b border-sidebar-border/30">
+				<div className={cn("flex items-center min-w-0 transition-opacity duration-200", collapsed ? "opacity-0 invisible absolute" : "opacity-100 visible")}>
+					<div className="w-8 h-8 bg-gradient-to-br from-sidebar-primary to-sidebar-primary/80 rounded-xl shadow-lg shadow-sidebar-primary/20 flex items-center justify-center mr-3 flex-shrink-0">
+						<Bot className="w-4 h-4 text-sidebar-primary-foreground" />
 					</div>
-					{!collapsed && (
-						<div className="min-w-0">
-							<h2 className="text-sm font-medium text-sidebar-foreground truncate">
-								{title}
-							</h2>
-							<p className="text-xs text-muted-foreground/80 truncate">
-								{subtitle}
-							</p>
-						</div>
-					)}
+					<div className="min-w-0">
+						<h2 className="text-sm font-semibold text-sidebar-foreground tracking-tight truncate">
+							{title}
+						</h2>
+						<p className="text-xs text-muted-foreground truncate font-medium">
+							{subtitle}
+						</p>
+					</div>
 				</div>
-				<button
-					onClick={onToggleCollapse}
-					className="p-1.5 hover:bg-sidebar-accent rounded-md transition-colors"
-					type="button"
-				>
-					{collapsed ? (
-						<Menu className="w-4 h-4 text-sidebar-foreground" />
-					) : (
-						<X className="w-4 h-4 text-sidebar-foreground" />
-					)}
-				</button>
+
+				{/* Collapsed Logo View */}
+				<div className={cn("absolute left-0 right-0 flex justify-center transition-opacity duration-200", collapsed ? "opacity-100 visible" : "opacity-0 invisible")}>
+					<div className="w-8 h-8 bg-gradient-to-br from-sidebar-primary to-sidebar-primary/80 rounded-xl shadow-lg shadow-sidebar-primary/20 flex items-center justify-center">
+						<Bot className="w-4 h-4 text-sidebar-primary-foreground" />
+					</div>
+				</div>
 			</div>
 
 			{/* Sidebar Navigation */}
-			<nav className="flex-1 px-3 py-3">
-				<div className="space-y-0.5">
+			<nav className="flex-1 px-4 py-4 overflow-y-auto scrollbar-none">
+				<div className="space-y-1">
 					{navigation.map((item) => (
 						<NavItemComponent
 							key={item.name}
@@ -91,7 +88,7 @@ export function Sidebar({
 
 			{/* Sidebar Footer */}
 			{footerContent && (
-				<div className="border-t border-sidebar-border p-3">
+				<div className="px-4 py-4 border-t border-sidebar-border/50 bg-sidebar/50">
 					{footerContent}
 				</div>
 			)}
@@ -125,14 +122,17 @@ function NavItemComponent({
 	if (item.disabled) {
 		return (
 			<div
-				className={`flex items-center px-3 py-1.5 text-sm font-normal text-muted-foreground/60 cursor-not-allowed ${collapsed ? "justify-center" : ""}`}
+				className={cn(
+					"flex items-center px-3 py-2 text-sm font-medium text-muted-foreground/50 cursor-not-allowed transition-all duration-200 rounded-lg",
+					collapsed ? "justify-center" : "mx-1"
+				)}
 				title={collapsed ? item.name : undefined}
 			>
-				<Icon className={`h-4 w-4 ${collapsed ? "" : "mr-3"}`} />
+				<Icon className={cn("w-4 h-4 transition-colors", collapsed ? "w-5 h-5" : "mr-3")} />
 				{!collapsed && (
 					<>
 						{item.name}
-						<span className="ml-auto text-xs bg-muted/50 text-muted-foreground/60 px-1.5 py-0.5 rounded text-[10px]">
+						<span className="ml-auto text-[10px] uppercase font-bold tracking-wider bg-muted/50 text-muted-foreground/50 px-1.5 py-0.5 rounded-md">
 							Soon
 						</span>
 					</>
@@ -143,40 +143,41 @@ function NavItemComponent({
 
 	// Expandable items with children
 	if (item.expandable && item.children) {
-		const isParentActive =
-			isActive || item.children.some((child) => isNavActive(child.href));
+		const isParentActive = isActive || item.children.some((child) => isNavActive(child.href));
 
 		return (
-			<div>
+			<div className="mb-1">
 				{/* Parent Item */}
-				<div
-					className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors cursor-pointer ${
+				<button
+					className={cn(
+						"w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 group outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/50",
 						isParentActive
-							? "bg-sidebar-accent/80 text-sidebar-primary"
-							: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
-					} ${collapsed ? "justify-center" : ""}`}
+							? "text-sidebar-foreground"
+							: "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50",
+						collapsed ? "justify-center" : "mx-1"
+					)}
 					title={collapsed ? item.name : undefined}
 					onClick={onToggleExpand}
-					onKeyDown={(e) => e.key === "Enter" && onToggleExpand()}
-					role="button"
-					tabIndex={0}
 				>
-					<Icon className={`h-4 w-4 ${collapsed ? "" : "mr-3"}`} />
+					<Icon className={cn(
+						"w-4 h-4 transition-colors duration-200",
+						collapsed ? "w-5 h-5" : "mr-3",
+						isParentActive ? "text-sidebar-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"
+					)} />
 					{!collapsed && (
 						<>
-							{item.name}
-							{isExpanded ? (
-								<ChevronDown className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
-							) : (
-								<ChevronRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" />
-							)}
+							<span className="flex-1 text-left">{item.name}</span>
+							<ChevronDown className={cn(
+								"w-3.5 h-3.5 text-muted-foreground transition-transform duration-200",
+								isExpanded ? "transform rotate-180" : ""
+							)} />
 						</>
 					)}
-				</div>
+				</button>
 
 				{/* Child Items */}
 				{isExpanded && !collapsed && (
-					<div className="ml-6 mt-0.5 space-y-0.5">
+					<div className="mt-1 ml-4 space-y-0.5 border-l border-sidebar-border pl-2 my-1 animate-fade-in-down duration-200">
 						{item.children.map((child) => {
 							const ChildIcon = child.icon;
 							const childHref = buildHref(child.href);
@@ -186,13 +187,20 @@ function NavItemComponent({
 								<Link
 									key={child.name}
 									to={childHref}
-									className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${
+									className={cn(
+										"flex items-center px-3 py-2 text-sm rounded-md transition-all duration-200 group relative overflow-hidden",
 										childActive
-											? "bg-sidebar-accent text-sidebar-primary"
-											: "text-muted-foreground/80 hover:bg-sidebar-accent/30 hover:text-sidebar-foreground"
-									}`}
+											? "text-sidebar-primary font-medium bg-sidebar-primary/5"
+											: "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/30"
+									)}
 								>
-									<ChildIcon className="mr-3 h-3.5 w-3.5" />
+									{childActive && (
+										<div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-sidebar-primary rounded-r-full" />
+									)}
+									<ChildIcon className={cn(
+										"w-3.5 h-3.5 mr-3 transition-colors",
+										childActive ? "text-sidebar-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"
+									)} />
 									{child.name}
 								</Link>
 							);
@@ -207,15 +215,25 @@ function NavItemComponent({
 	return (
 		<Link
 			to={href}
-			className={`flex items-center px-3 py-1.5 text-sm font-normal rounded-md transition-colors ${
+			className={cn(
+				"flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 group relative outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/50",
 				isActive
-					? "bg-sidebar-accent/80 text-sidebar-primary"
-					: "text-sidebar-foreground/90 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
-			} ${collapsed ? "justify-center" : ""}`}
+					? "bg-gradient-to-r from-sidebar-primary/10 to-transparent text-sidebar-primary"
+					: "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50",
+				collapsed ? "justify-center" : "mx-1"
+			)}
 			title={collapsed ? item.name : undefined}
 		>
-			<Icon className={`h-4 w-4 ${collapsed ? "" : "mr-3"}`} />
+			{isActive && !collapsed && (
+				<div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-sidebar-primary rounded-r-full shadow-lg shadow-sidebar-primary/20" />
+			)}
+			<Icon className={cn(
+				"w-4 h-4 transition-colors duration-200",
+				collapsed ? "w-5 h-5" : "mr-3",
+				isActive ? "text-sidebar-primary" : "text-muted-foreground group-hover:text-sidebar-foreground"
+			)} />
 			{!collapsed && item.name}
 		</Link>
 	);
 }
+

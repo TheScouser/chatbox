@@ -256,12 +256,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 					onAgentSearchChange={setAgentSearch}
 					isOrganizationsLoading={organizations === undefined}
 					isAgentsLoading={agents === undefined}
+					onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
 				/>
 
 				{/* Main content */}
-				<main className="flex-1">
+				<main className="flex-1 overflow-x-hidden">
 					<div
-						className={`mx-auto px-4 lg:px-6 ${showAgentSidebar ? "max-w-full" : "max-w-[1600px]"}`}
+						key={location.pathname}
+						className={`mx-auto p-6 lg:p-8 animate-fade-in ${showAgentSidebar ? "max-w-full" : "max-w-[1600px]"}`}
 					>
 						<ErrorBoundary>{children}</ErrorBoundary>
 					</div>
