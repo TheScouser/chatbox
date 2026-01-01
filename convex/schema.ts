@@ -6,6 +6,8 @@ export default defineSchema({
     email: v.string(),
     name: v.optional(v.string()),
     clerkId: v.string(),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("clerkId", ["clerkId"]),
   
   // Organizations table
@@ -20,6 +22,8 @@ export default defineSchema({
       defaultMemberRole: v.optional(v.string()),
       enableAuditLogs: v.optional(v.boolean()),
     })),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("slug", ["slug"]),
 
   // Organization membership table with roles
@@ -40,6 +44,8 @@ export default defineSchema({
       v.literal("invited"),
       v.literal("suspended")
     ),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("userId", ["userId"])
     .index("organizationId", ["organizationId"])
     .index("userId_organizationId", ["userId", "organizationId"]),
@@ -62,6 +68,8 @@ export default defineSchema({
       v.literal("expired"),
       v.literal("revoked")
     ),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("email", ["email"])
     .index("token", ["token"])
     .index("organizationId", ["organizationId"]),
@@ -88,6 +96,8 @@ export default defineSchema({
     customCorsOrigins: v.optional(v.array(v.string())),
     enableFingerprinting: v.optional(v.boolean()),
     suspiciousActivityThreshold: v.optional(v.number()),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("organizationId", ["organizationId"])
     .index("createdBy", ["createdBy"]),
   
@@ -109,6 +119,8 @@ export default defineSchema({
     })),
     embedding: v.optional(v.array(v.number())),
     fileId: v.optional(v.id("files")),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("agentId", ["agentId"])
     .vectorIndex("byEmbedding", {
       vectorField: "embedding",
@@ -119,6 +131,21 @@ export default defineSchema({
     agentId: v.id("agents"),
     title: v.optional(v.string()),
     isActive: v.boolean(),
+    channelType: v.union(
+      v.literal("widget"),
+      v.literal("whatsapp"),
+      v.literal("web"),
+      v.literal("fb"),
+    ),
+    status: v.union(
+      v.literal("open"),
+      v.literal("waiting"),
+      v.literal("resolved"),
+      v.literal("handover"),
+    ),
+    locale: v.optional(v.string()),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("agentId", ["agentId"]),
   
   messages: defineTable({
@@ -132,6 +159,8 @@ export default defineSchema({
       knowledgeUsed: v.optional(v.number()), // Number of knowledge sources used
       error: v.optional(v.string()), // Error message if response failed
     })),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("conversationId", ["conversationId"]),
   
   files: defineTable({
@@ -146,6 +175,8 @@ export default defineSchema({
       v.literal("processed"),
       v.literal("error")
     ),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("agentId", ["agentId"]),
 
   // Usage tracking and security monitoring - updated to include organizationId
@@ -163,6 +194,8 @@ export default defineSchema({
     isBlocked: v.optional(v.boolean()),
     suspiciousActivity: v.optional(v.boolean()),
     lastActivity: v.number(), // timestamp
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("agentId", ["agentId"])
     .index("organizationId", ["organizationId"])
     .index("ipAddress", ["ipAddress"])
@@ -179,6 +212,8 @@ export default defineSchema({
     windowType: v.union(v.literal("minute"), v.literal("hour"), v.literal("day")),
     isBlocked: v.optional(v.boolean()),
     blockExpiry: v.optional(v.number()), // timestamp when block expires
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("agentId_ip", ["agentId", "ipAddress"])
     .index("organizationId", ["organizationId"])
     .index("windowStart", ["windowStart"]),
@@ -202,6 +237,8 @@ export default defineSchema({
     details: v.optional(v.string()),
     severity: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
     resolved: v.optional(v.boolean()),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("agentId", ["agentId"])
     .index("organizationId", ["organizationId"])
     .index("incidentType", ["incidentType"])
@@ -234,6 +271,8 @@ export default defineSchema({
     }),
     isActive: v.boolean(),
     sortOrder: v.number(),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("stripeProductId", ["stripeProductId"]),
 
   // Updated subscriptions to belong to organizations
@@ -252,6 +291,8 @@ export default defineSchema({
     currentPeriodStart: v.number(),
     currentPeriodEnd: v.number(),
     cancelAtPeriodEnd: v.boolean(),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("organizationId", ["organizationId"])
     .index("stripeCustomerId", ["stripeCustomerId"])
     .index("stripeSubscriptionId", ["stripeSubscriptionId"]),
@@ -269,6 +310,8 @@ export default defineSchema({
       apiCallsMade: v.number(),
     }),
     lastUpdated: v.number(),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("organizationId_period", ["organizationId", "period"]),
 
   // Audit logs for organization activities
@@ -285,6 +328,8 @@ export default defineSchema({
     })),
     ipAddress: v.optional(v.string()),
     userAgent: v.optional(v.string()),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
   }).index("organizationId", ["organizationId"])
     .index("userId", ["userId"])
     .index("action", ["action"])
