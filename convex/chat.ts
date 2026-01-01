@@ -3,36 +3,11 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { generateChatCompletion, embedText } from "./openai";
 import type { Doc, Id } from "./_generated/dataModel";
+import { validateOrganizationAccessAction } from "./helpers";
 
-// Helper function to get user and validate organization access (modified for action context)
-async function validateOrganizationAccess(
-  ctx: any,
-  organizationId: string,
-  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
-) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (identity === null) {
-    throw new Error("Not authenticated");
-  }
+// Use the shared helper function for action context
+const validateOrganizationAccess = validateOrganizationAccessAction;
 
-  const user = await ctx.runQuery(internal.users.getUserByClerkId, { clerkId: identity.subject });
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  // Check if user has required role in organization
-  const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
-    userId: user._id,
-    organizationId: organizationId as any,
-    requiredRole,
-  });
-
-  if (!hasPermission) {
-    throw new Error(`Insufficient permissions. Required role: ${requiredRole}`);
-  }
-
-  return { user, identity };
-}
 
 // Action to generate AI response for a user message
 export const generateAIResponse = action({
@@ -65,7 +40,7 @@ export const generateAIResponse = action({
     await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
 
     // First, add the user message
-    const userMessageId = await ctx.runMutation(internal.conversations.addMessageInternal, {
+    const _userMessageId = await ctx.runMutation(internal.conversations.addMessageInternal, {
       conversationId: args.conversationId,
       role: "user",
       content: args.userMessage,
@@ -96,7 +71,7 @@ export const generateAIResponse = action({
           source: entry.source,
           _score: entry._score,
         })), // Only pass required fields, not full database objects
-        conversationHistory: messages.slice(-10).map((msg: any) => ({
+        conversationHistory: messages.slice(-10).map((msg: Doc<"messages">) => ({
           role: msg.role,
           content: msg.content,
         })), // Only pass role and content, not full message objects

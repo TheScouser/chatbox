@@ -1,5 +1,4 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "convex/react";
 import {
 	BarChart3,
 	Bot,
@@ -18,22 +17,14 @@ import {
 	Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
 import { useOrganization } from "../contexts/OrganizationContext";
+import { useAgent, type Agent } from "../hooks/useAgent";
 import { Header, Sidebar, type NavItem } from "./layout";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 interface DashboardLayoutProps {
 	children: React.ReactNode;
 }
-
-interface Agent {
-	_id: Id<"agents">;
-	name: string;
-	description?: string;
-	organizationId: Id<"organizations">;
-}
-
 
 // Navigation configurations
 const globalNavigation: NavItem[] = [
@@ -104,25 +95,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 		organizations,
 	} = useOrganization();
 
-	// Fetch data
-	const agents = useQuery(api.agents.getAgentsForUser);
-
-	// Get current agent from URL
-	const getCurrentAgent = () => {
-		const agentIdMatch = location.pathname.match(/\/dashboard\/agents\/([^/]+)/);
-		if (agentIdMatch && agents) {
-			return agents.find((agent: Agent) => agent._id === agentIdMatch[1]) || null;
-		}
-		return null;
-	};
-
-	const currentAgent = getCurrentAgent();
-	const showAgentSidebar = location.pathname.includes("/dashboard/agents/") && currentAgent;
+	// Agent context
+	const { agents, currentAgent, showAgentSidebar } = useAgent();
 
 	// Auto-sync organization when viewing an agent from different org
 	useEffect(() => {
 		if (currentAgent && organizations) {
-			const agentOrg = organizations.find((org) => org._id === currentAgent.organizationId);
+			const agentOrg = organizations.find((org: any) => org._id === currentAgent.organizationId);
 			if (agentOrg && agentOrg._id !== selectedOrganizationId) {
 				setSelectedOrganizationId(agentOrg._id);
 			}
@@ -254,7 +233,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 				{/* Main content */}
 				<main className="flex-1">
 					<div className={`mx-auto px-4 lg:px-6 ${showAgentSidebar ? "max-w-full" : "max-w-[1600px]"}`}>
-						{children}
+						<ErrorBoundary>
+							{children}
+						</ErrorBoundary>
 					</div>
 				</main>
 			</div>

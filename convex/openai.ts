@@ -26,7 +26,7 @@ export async function embedTexts(texts: string[]): Promise<number[][]> {
       dimensions: 1536, // Standard dimension for this model
     });
     
-    return data.map((item: any) => item.embedding);
+    return data.map((item) => item.embedding);
   } catch (error) {
     console.error('OpenAI embedding error:', error);
     throw new Error(`Failed to generate embeddings: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -125,7 +125,7 @@ Please provide only the extracted text without any additional commentary.`
 }
 
 // PDF text extraction - Currently limited in serverless environment
-export async function extractTextFromPDF(pdfBuffer: ArrayBuffer): Promise<string> {
+export async function extractTextFromPDF(_pdfBuffer: ArrayBuffer): Promise<string> {
   // Note: Advanced PDF processing (OCR, image-based PDFs) requires system dependencies
   // that aren't available in Convex's serverless environment.
   

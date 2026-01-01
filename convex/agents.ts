@@ -1,40 +1,11 @@
 import { mutation, query, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
-import { internal } from "./_generated/api";
+import { validateOrganizationAccessQuery } from "./helpers";
 
-// Helper function to get user and validate organization access
-async function validateOrganizationAccess(
-  ctx: any,
-  organizationId: string,
-  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
-) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (identity === null) {
-    throw new Error("Not authenticated");
-  }
 
-  const user = await ctx.db
-    .query("users")
-    .withIndex("clerkId", (q: any) => q.eq("clerkId", identity.subject))
-    .first();
+// Use the shared helper function
+const validateOrganizationAccess = validateOrganizationAccessQuery;
 
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  // Check if user has required role in organization
-  const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
-    userId: user._id,
-    organizationId: organizationId as any,
-    requiredRole,
-  });
-
-  if (!hasPermission) {
-    throw new Error(`Insufficient permissions. Required role: ${requiredRole}`);
-  }
-
-  return { user, identity };
-}
 
 // Get agents for a specific organization (with role-based access)
 export const getAgentsForOrganization = query({
@@ -181,7 +152,7 @@ export const updateAgent = mutation({
     await validateOrganizationAccess(ctx, agent.organizationId, "editor");
     
     // Update the agent with only the provided fields
-    const updateData: any = {};
+    const updateData: Partial<typeof args> = {};
     if (args.name !== undefined) updateData.name = args.name;
     if (args.description !== undefined) updateData.description = args.description;
     if (args.instructions !== undefined) updateData.instructions = args.instructions;

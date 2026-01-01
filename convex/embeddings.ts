@@ -4,35 +4,9 @@ import { internal } from "./_generated/api";
 import { embedTexts } from "./openai";
 import type { Doc, Id } from "./_generated/dataModel";
 
+import { validateOrganizationAccessAction } from "./helpers";
 // Helper function to get user and validate organization access (modified for action context)
-async function validateOrganizationAccess(
-  ctx: any,
-  organizationId: string,
-  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
-) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (identity === null) {
-    throw new Error("Not authenticated");
-  }
-
-  const user = await ctx.runQuery(internal.users.getUserByClerkId, { clerkId: identity.subject });
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  // Check if user has required role in organization
-  const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
-    userId: user._id,
-    organizationId: organizationId as any,
-    requiredRole,
-  });
-
-  if (!hasPermission) {
-    throw new Error(`Insufficient permissions. Required role: ${requiredRole}`);
-  }
-
-  return { user, identity };
-}
+// Replaced with import from ./helpers
 
 // Internal query to get knowledge entries that need embeddings
 export const getKnowledgeEntriesNeedingEmbeddings = internalQuery({
@@ -133,7 +107,7 @@ export const generateEmbeddingsForAgent = action({
     }
     
     // Validate user has editor access to generate embeddings
-    await validateOrganizationAccess(ctx, agent.organizationId, "editor");
+    await validateOrganizationAccessAction(ctx, agent.organizationId, "editor");
     
     // Get knowledge entries that need embeddings
     const entries = await ctx.runQuery(internal.embeddings.getKnowledgeEntriesNeedingEmbeddings, {

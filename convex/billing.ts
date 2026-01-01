@@ -1,14 +1,19 @@
-import { query, mutation, internalMutation } from "./_generated/server";
+import { query, mutation, internalMutation, type MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
+import type { Id } from "./_generated/dataModel";
 import Stripe from "stripe";
+import { validateOrganizationAccessQuery } from "./helpers";
 
 // Initialize Stripe (will be undefined in development if not configured)
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2025-05-28.basil",
+      apiVersion: "2025-05-28.basil" as any, // Cast to any to avoid type mismatch with old types
     })
   : null;
+
+// Use shared helper
+const validateOrganizationAccess = validateOrganizationAccessQuery;
 
 // Get all active subscription plans
 export const getSubscriptionPlans = query({
@@ -31,21 +36,18 @@ export const getUserSubscription = query({
       throw new Error("Not authenticated");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-
-    if (!user) {
-      return null;
-    }
-
-    // If organizationId is provided, check subscription for that organization
-    // Otherwise, get subscription for user's default organization
+    // If organizationId is provided, use it
     let targetOrgId = args.organizationId;
     
     if (!targetOrgId) {
       // Get user's first organization (for backward compatibility)
+      const user = await ctx.db
+        .query("users")
+        .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
+        .first();
+        
+      if (!user) return null;
+      
       const membership = await ctx.db
         .query("organizationMembers")
         .withIndex("userId", (q) => q.eq("userId", user._id))
@@ -60,20 +62,11 @@ export const getUserSubscription = query({
     }
 
     // Verify user has access to this organization
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("userId_organizationId", (q) => 
-        q.eq("userId", user._id).eq("organizationId", targetOrgId))
-      .filter((q) => q.eq(q.field("status"), "active"))
-      .first();
-
-    if (!membership) {
-      throw new Error("Not authorized to access this organization's subscription");
-    }
+    await validateOrganizationAccess(ctx, targetOrgId, "viewer");
 
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("organizationId", (q) => q.eq("organizationId", targetOrgId))
+      .withIndex("organizationId", (q) => q.eq("organizationId", targetOrgId!))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
@@ -98,21 +91,18 @@ export const getUserPlan = query({
       throw new Error("Not authenticated");
     }
     
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-
-    if (!user) {
-      return null;
-    }
-
-    // If organizationId is provided, check plan for that organization
-    // Otherwise, get plan for user's default organization
+    // If organizationId is provided, use it
     let targetOrgId = args.organizationId;
     
     if (!targetOrgId) {
       // Get user's first organization (for backward compatibility)
+      const user = await ctx.db
+        .query("users")
+        .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
+        .first();
+        
+      if (!user) return null;
+
       const membership = await ctx.db
         .query("organizationMembers")
         .withIndex("userId", (q) => q.eq("userId", user._id))
@@ -127,20 +117,11 @@ export const getUserPlan = query({
     }
 
     // Verify user has access to this organization
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("userId_organizationId", (q) => 
-        q.eq("userId", user._id).eq("organizationId", targetOrgId))
-      .filter((q) => q.eq(q.field("status"), "active"))
-      .first();
-
-    if (!membership) {
-      throw new Error("Not authorized to access this organization's plan");
-    }
+    await validateOrganizationAccess(ctx, targetOrgId, "viewer");
 
     const subscription = await ctx.db
       .query("subscriptions")
-      .withIndex("organizationId", (q) => q.eq("organizationId", targetOrgId))
+      .withIndex("organizationId", (q) => q.eq("organizationId", targetOrgId!))
       .filter((q) => q.eq(q.field("status"), "active"))
       .first();
 
@@ -185,31 +166,8 @@ export const createStripeCustomer = mutation({
       throw new Error("Stripe not configured");
     }
 
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
     // Verify user has admin access to this organization
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("userId_organizationId", (q) => 
-        q.eq("userId", user._id).eq("organizationId", args.organizationId))
-      .filter((q) => q.eq(q.field("status"), "active"))
-      .first();
-
-    if (!membership || (membership.role !== "admin" && membership.role !== "owner")) {
-      throw new Error("Not authorized to manage billing for this organization");
-    }
+    const { user, identity } = await validateOrganizationAccess(ctx, args.organizationId, "admin");
 
     // Check if customer already exists
     const existingSubscription = await ctx.db
@@ -255,31 +213,8 @@ export const createCheckoutSession = mutation({
       throw new Error("Stripe not configured");
     }
 
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
     // Verify user has admin access to this organization
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("userId_organizationId", (q) => 
-        q.eq("userId", user._id).eq("organizationId", args.organizationId))
-      .filter((q) => q.eq(q.field("status"), "active"))
-      .first();
-
-    if (!membership || (membership.role !== "admin" && membership.role !== "owner")) {
-      throw new Error("Not authorized to manage billing for this organization");
-    }
+    const { user, identity } = await validateOrganizationAccess(ctx, args.organizationId, "admin");
 
     const plan = await ctx.db.get(args.planId);
     if (!plan) {
@@ -347,31 +282,8 @@ export const createPortalSession = mutation({
       throw new Error("Stripe not configured");
     }
 
-    const identity = await ctx.auth.getUserIdentity();
-    if (identity === null) {
-      throw new Error("Not authenticated");
-    }
-    
-    const user = await ctx.db
-      .query("users")
-      .withIndex("clerkId", (q) => q.eq("clerkId", identity.subject))
-      .first();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
     // Verify user has admin access to this organization
-    const membership = await ctx.db
-      .query("organizationMembers")
-      .withIndex("userId_organizationId", (q) => 
-        q.eq("userId", user._id).eq("organizationId", args.organizationId))
-      .filter((q) => q.eq(q.field("status"), "active"))
-      .first();
-
-    if (!membership || (membership.role !== "admin" && membership.role !== "owner")) {
-      throw new Error("Not authorized to manage billing for this organization");
-    }
+    await validateOrganizationAccess(ctx, args.organizationId, "admin");
 
     const subscription = await ctx.db
       .query("subscriptions")
@@ -419,7 +331,7 @@ export const handleStripeWebhook = internalMutation({
 });
 
 // Helper functions
-async function handleSubscriptionUpdate(ctx: any, subscription: any) {
+async function handleSubscriptionUpdate(ctx: MutationCtx, subscription: any) {
   const customerId = subscription.customer;
   const subscriptionId = subscription.id;
   const status = subscription.status;
@@ -427,7 +339,7 @@ async function handleSubscriptionUpdate(ctx: any, subscription: any) {
   // Find the plan by Stripe price ID
   const plan = await ctx.db
     .query("subscriptionPlans")
-    .filter((q: any) => q.eq(q.field("stripePriceId"), subscription.items.data[0].price.id))
+    .filter((q) => q.eq(q.field("stripePriceId"), subscription.items.data[0].price.id))
     .first();
 
   if (!plan) {
@@ -436,7 +348,7 @@ async function handleSubscriptionUpdate(ctx: any, subscription: any) {
   }
 
   // Get user by metadata or customer ID
-  const userId = subscription.metadata?.userId;
+  const userId = subscription.metadata?.userId as Id<"users"> | undefined;
   if (!userId) {
     console.error("User ID not found in subscription metadata");
     return;
@@ -452,7 +364,7 @@ async function handleSubscriptionUpdate(ctx: any, subscription: any) {
   // Update or create subscription record
   const existingSubscription = await ctx.db
     .query("subscriptions")
-    .withIndex("stripeSubscriptionId", (q: any) => q.eq("stripeSubscriptionId", subscriptionId))
+    .withIndex("stripeSubscriptionId", (q) => q.eq("stripeSubscriptionId", subscriptionId))
     .first();
 
   const subscriptionData = {
@@ -464,12 +376,21 @@ async function handleSubscriptionUpdate(ctx: any, subscription: any) {
     currentPeriodStart: subscription.current_period_start * 1000,
     currentPeriodEnd: subscription.current_period_end * 1000,
     cancelAtPeriodEnd: subscription.cancel_at_period_end,
-  };
+  } as any; 
+  
+  if (subscription.metadata?.organizationId) {
+      subscriptionData.organizationId = subscription.metadata.organizationId;
+  }
 
   let isNewSubscription = false;
   if (existingSubscription) {
     await ctx.db.patch(existingSubscription._id, subscriptionData);
   } else {
+    // We must ensure organizationId is present for new subscriptions
+    if (!subscriptionData.organizationId) {
+        console.error("Cannot create subscription without organizationId");
+        return;
+    }
     await ctx.db.insert("subscriptions", subscriptionData);
     isNewSubscription = true;
   }
@@ -490,38 +411,45 @@ async function handleSubscriptionUpdate(ctx: any, subscription: any) {
   }
 }
 
-async function handleSubscriptionDeleted(ctx: any, subscription: any) {
+async function handleSubscriptionDeleted(ctx: MutationCtx, subscription: any) {
   const subscriptionId = subscription.id;
   
   const existingSubscription = await ctx.db
     .query("subscriptions")
-    .withIndex("stripeSubscriptionId", (q: any) => q.eq("stripeSubscriptionId", subscriptionId))
+    .withIndex("stripeSubscriptionId", (q) => q.eq("stripeSubscriptionId", subscriptionId))
     .first();
 
   if (existingSubscription) {
     await ctx.db.patch(existingSubscription._id, { status: "canceled" });
 
-    // Get user details for email
-    const user = await ctx.db.get(existingSubscription.userId);
-    const plan = await ctx.db.get(existingSubscription.planId);
-    
-    if (user && user.email && plan) {
-      try {
-        await ctx.scheduler.runAfter(0, internal.emails.sendBillingNotification, {
-          to: user.email,
-          name: user.name || "Customer",
-          type: "subscription_cancelled",
-          planName: plan.name,
-        });
-      } catch (error) {
-        console.error("Failed to schedule cancellation notification email:", error);
-      }
+    const admin = await ctx.db
+      .query("organizationMembers")
+      .withIndex("organizationId", (q) => q.eq("organizationId", existingSubscription.organizationId))
+      .filter((q) => q.eq(q.field("role"), "owner"))
+      .first();
+      
+    if (admin) {
+        const user = await ctx.db.get(admin.userId);
+        const plan = await ctx.db.get(existingSubscription.planId);
+        
+        if (user && user.email && plan) {
+          try {
+            await ctx.scheduler.runAfter(0, internal.emails.sendBillingNotification, {
+              to: user.email,
+              name: user.name || "Customer",
+              type: "subscription_cancelled",
+              planName: plan.name,
+            });
+          } catch (error) {
+            console.error("Failed to schedule cancellation notification email:", error);
+          }
+        }
     }
   }
 }
 
-async function handlePaymentSucceeded(ctx: any, invoice: any) {
-  // Handle successful payment - could trigger usage reset, send confirmation email, etc.
+async function handlePaymentSucceeded(ctx: MutationCtx, invoice: any) {
+  // Handle successful payment
   console.log("Payment succeeded for invoice:", invoice.id);
   
   // Get subscription and user details
@@ -530,32 +458,40 @@ async function handlePaymentSucceeded(ctx: any, invoice: any) {
 
   const subscription = await ctx.db
     .query("subscriptions")
-    .withIndex("stripeSubscriptionId", (q: any) => q.eq("stripeSubscriptionId", subscriptionId))
+    .withIndex("stripeSubscriptionId", (q) => q.eq("stripeSubscriptionId", subscriptionId))
     .first();
 
   if (subscription) {
-    const user = await ctx.db.get(subscription.userId);
-    const plan = await ctx.db.get(subscription.planId);
-    
-    if (user && user.email && plan) {
-      try {
-        await ctx.scheduler.runAfter(0, internal.emails.sendBillingNotification, {
-          to: user.email,
-          name: user.name || "Customer",
-          type: "payment_success",
-          planName: plan.name,
-          amount: invoice.amount_paid,
-          nextBillingDate: new Date(subscription.currentPeriodEnd).toLocaleDateString(),
-        });
-      } catch (error) {
-        console.error("Failed to schedule payment success notification email:", error);
-      }
+    const admin = await ctx.db
+      .query("organizationMembers")
+      .withIndex("organizationId", (q) => q.eq("organizationId", subscription.organizationId))
+      .filter((q) => q.eq(q.field("role"), "owner"))
+      .first();
+      
+    if (admin) {
+        const user = await ctx.db.get(admin.userId);
+        const plan = await ctx.db.get(subscription.planId);
+        
+        if (user && user.email && plan) {
+          try {
+            await ctx.scheduler.runAfter(0, internal.emails.sendBillingNotification, {
+              to: user.email,
+              name: user.name || "Customer",
+              type: "payment_success",
+              planName: plan.name,
+              amount: invoice.amount_paid,
+              nextBillingDate: new Date(subscription.currentPeriodEnd).toLocaleDateString(), // currentPeriodEnd is number
+            });
+          } catch (error) {
+            console.error("Failed to schedule payment success notification email:", error);
+          }
+        }
     }
   }
 }
 
-async function handlePaymentFailed(ctx: any, invoice: any) {
-  // Handle failed payment - could send notification, pause service, etc.
+async function handlePaymentFailed(ctx: MutationCtx, invoice: any) {
+  // Handle failed payment
   console.log("Payment failed for invoice:", invoice.id);
   
   // Get subscription and user details
@@ -564,24 +500,33 @@ async function handlePaymentFailed(ctx: any, invoice: any) {
 
   const subscription = await ctx.db
     .query("subscriptions")
-    .withIndex("stripeSubscriptionId", (q: any) => q.eq("stripeSubscriptionId", subscriptionId))
+    .withIndex("stripeSubscriptionId", (q) => q.eq("stripeSubscriptionId", subscriptionId))
     .first();
 
   if (subscription) {
-    const user = await ctx.db.get(subscription.userId);
-    const plan = await ctx.db.get(subscription.planId);
-    
-    if (user && user.email && plan) {
-      try {
-        await ctx.scheduler.runAfter(0, internal.emails.sendBillingNotification, {
-          to: user.email,
-          name: user.name || "Customer",
-          type: "payment_failed",
-          planName: plan.name,
-        });
-      } catch (error) {
-        console.error("Failed to schedule payment failed notification email:", error);
-      }
+    const admin = await ctx.db
+      .query("organizationMembers")
+      .withIndex("organizationId", (q) => q.eq("organizationId", subscription.organizationId))
+      .filter((q) => q.eq(q.field("role"), "owner"))
+      .first();
+      
+    if (admin) {
+        const user = await ctx.db.get(admin.userId);
+        const plan = await ctx.db.get(subscription.planId);
+        
+        if (user && user.email && plan) {
+          try {
+            await ctx.scheduler.runAfter(0, internal.emails.sendBillingNotification, {
+              to: user.email,
+              name: user.name || "Customer",
+              type: "payment_failed",
+              planName: plan.name,
+            });
+          } catch (error) {
+            console.error("Failed to schedule payment failed notification email:", error);
+          }
+        }
     }
   }
-} 
+}
+ 

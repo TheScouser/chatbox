@@ -13,7 +13,7 @@ export const sendWelcomeEmail = internalAction({
     to: v.string(),
     name: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     if (!resend) {
       console.warn("Resend not configured, skipping welcome email");
       return { success: false, error: "Email service not configured" };
@@ -57,7 +57,7 @@ export const sendBillingNotification = internalAction({
     amount: v.optional(v.number()),
     nextBillingDate: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     if (!resend) {
       console.warn("Resend not configured, skipping billing notification");
       return { success: false, error: "Email service not configured" };
@@ -97,7 +97,7 @@ export const sendUsageAlert = internalAction({
     percentUsed: v.number(),
     planName: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     if (!resend) {
       console.warn("Resend not configured, skipping usage alert");
       return { success: false, error: "Email service not configured" };
@@ -138,7 +138,7 @@ export const sendGeneralNotification = action({
       v.literal("newsletter")
     ),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     if (!resend) {
       console.warn("Resend not configured, skipping general notification");
       return { success: false, error: "Email service not configured" };
@@ -174,7 +174,7 @@ export const sendOrganizationInvitationEmail = internalAction({
     role: v.string(),
     invitationToken: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     if (!resend) {
       console.warn("Resend not configured, skipping organization invitation");
       return { success: false, error: "Email service not configured" };
@@ -269,7 +269,13 @@ function generateWelcomeEmailHTML(name: string): string {
   `;
 }
 
-function generateBillingNotificationHTML(args: any): string {
+function generateBillingNotificationHTML(args: {
+  name: string;
+  type: string;
+  planName?: string;
+  amount?: number;
+  nextBillingDate?: string;
+}): string {
   const { name, type, planName, amount, nextBillingDate } = args;
   
   const typeConfig = {
@@ -365,7 +371,14 @@ function generateBillingNotificationHTML(args: any): string {
   `;
 }
 
-function generateUsageAlertHTML(args: any): string {
+function generateUsageAlertHTML(args: {
+  name: string;
+  metric: string;
+  currentUsage: number;
+  limit: number;
+  percentUsed: number;
+  planName: string;
+}): string {
   const { name, metric, currentUsage, limit, percentUsed, planName } = args;
   
   return `
@@ -435,7 +448,11 @@ function generateUsageAlertHTML(args: any): string {
   `;
 }
 
-function generateGeneralNotificationHTML(args: any): string {
+function generateGeneralNotificationHTML(args: {
+  name: string;
+  content: string;
+  type: string;
+}): string {
   const { name, content, type } = args;
   
   const typeConfig = {
@@ -500,7 +517,12 @@ function getBillingEmailSubject(type: string): string {
   return subjects[type as keyof typeof subjects] || "Billing Notification - AI Agent Platform";
 }
 
-function generateOrganizationInvitationHTML(args: any): string {
+function generateOrganizationInvitationHTML(args: {
+  organizationName: string;
+  inviterName: string;
+  role: string;
+  invitationToken: string;
+}): string {
   const { organizationName, inviterName, role, invitationToken } = args;
   const invitationUrl = `${process.env.SERVER_URL || 'https://yourapp.com'}/invitations/accept?token=${invitationToken}`;
   

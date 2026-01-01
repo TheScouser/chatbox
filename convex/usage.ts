@@ -1,11 +1,13 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
+import type { OrganizationRole } from "./types";
 
 // Helper function to validate organization access
 async function validateOrganizationAccess(
   ctx: any,
-  organizationId: string,
-  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
+  organizationId: string | Id<"organizations">,
+  requiredRole: OrganizationRole = "viewer"
 ) {
   const identity = await ctx.auth.getUserIdentity();
   if (identity === null) {
@@ -33,8 +35,8 @@ async function validateOrganizationAccess(
     throw new Error("Not authorized to access this organization");
   }
 
-  const roleHierarchy = ["viewer", "editor", "admin", "owner"];
-  const userRoleIndex = roleHierarchy.indexOf(membership.role);
+  const roleHierarchy: OrganizationRole[] = ["viewer", "editor", "admin", "owner"];
+  const userRoleIndex = roleHierarchy.indexOf(membership.role as OrganizationRole);
   const requiredRoleIndex = roleHierarchy.indexOf(requiredRole);
 
   if (userRoleIndex < requiredRoleIndex) {
@@ -43,6 +45,7 @@ async function validateOrganizationAccess(
 
   return { user, membership };
 }
+
 
 // Get usage overview for organization
 export const getUsageOverview = query({

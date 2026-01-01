@@ -378,7 +378,7 @@ async function checkAndSendUsageAlert(ctx: any, organizationId: string, metric: 
   }
 }
 
-async function sendUsageAlert(ctx: any, organizationId: string, metric: string, currentUsage: number, limit: number, percentUsed: number, planName: string, severity: string) {
+async function sendUsageAlert(ctx: any, organizationId: string, metric: string, currentUsage: number, limit: number, percentUsed: number, planName: string, _severity: string) {
   // Get organization owners and admins to send alerts to
   const memberships = await ctx.db
     .query("organizationMembers")

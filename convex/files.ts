@@ -1,40 +1,10 @@
 import { mutation, query, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
-import { internal } from "./_generated/api";
+import { validateOrganizationAccessQuery } from "./helpers";
 
-// Helper function to get user and validate organization access (copied from agents.ts)
-async function validateOrganizationAccess(
-  ctx: any,
-  organizationId: string,
-  requiredRole: "viewer" | "editor" | "admin" | "owner" = "viewer"
-) {
-  const identity = await ctx.auth.getUserIdentity();
-  if (identity === null) {
-    throw new Error("Not authenticated");
-  }
+// Use the shared helper function
+const validateOrganizationAccess = validateOrganizationAccessQuery;
 
-  const user = await ctx.db
-    .query("users")
-    .withIndex("clerkId", (q: any) => q.eq("clerkId", identity.subject))
-    .first();
-
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  // Check if user has required role in organization
-  const hasPermission = await ctx.runQuery(internal.organizations.checkPermission, {
-    userId: user._id,
-    organizationId: organizationId as any,
-    requiredRole,
-  });
-
-  if (!hasPermission) {
-    throw new Error(`Insufficient permissions. Required role: ${requiredRole}`);
-  }
-
-  return { user, identity };
-}
 
 export const generateUploadUrl = mutation({
   handler: async (ctx) => {
