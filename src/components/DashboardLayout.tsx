@@ -8,6 +8,7 @@ import {
 	FileText,
 	FolderOpen,
 	Globe,
+	Layout,
 	MessageSquare,
 	Settings,
 	Shield,
@@ -68,6 +69,7 @@ const agentNavigation: NavItem[] = [
 		],
 	},
 	{ name: "Conversations", href: "/conversations", icon: MessageSquare },
+	{ name: "Widget", href: "/widget", icon: Layout },
 	{ name: "Deploy", href: "/deploy", icon: Globe },
 	{ name: "Analytics", href: "/analytics", icon: BarChart3, disabled: true },
 	{

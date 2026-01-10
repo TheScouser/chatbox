@@ -27,8 +27,8 @@ interface TextsTabProps {
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
     return (
-        <div className="space-y-3">
-            <h3 className="text-sm font-semibold">{title}</h3>
+        <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-foreground">{title}</h3>
             {children}
         </div>
     );
@@ -75,7 +75,7 @@ export function TextsTab({ texts, onChange, widgetConfigId }: TextsTabProps) {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <FormSection title="Header Title">
                 <Input
                     value={texts.headerTitle}

@@ -229,25 +229,26 @@ function WidgetDesigner() {
     }
 
     return (
-        <div className="flex h-[calc(100vh-64px)]">
+        <div className="flex h-[calc(100vh-12rem)] -mx-6 -my-6 bg-background min-h-[600px]">
             {/* Left Panel - Settings */}
-            <div className="w-[400px] border-r flex flex-col bg-background">
+            <div className="w-[420px] border-r border-border flex flex-col bg-background">
                 {/* Header with Back, Widget selector, Save button */}
-                <div className="p-4 border-b flex items-center justify-between gap-2">
+                <div className="px-6 py-4 border-b border-border flex items-center gap-3">
                     <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => navigate({ to: `/dashboard/agents/${agentId}` })}
+                        className="shrink-0"
                     >
-                        <ArrowLeft className="h-4 w-4 mr-1" />
+                        <ArrowLeft className="h-4 w-4 mr-1.5" />
                         Back
                     </Button>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                         <Select
                             value={selectedWidgetId || ""}
                             onValueChange={(value) => setSelectedWidgetId(value as Id<"widgetConfigurations">)}
                         >
-                            <SelectTrigger>
+                            <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select widget" />
                             </SelectTrigger>
                             <SelectContent>
@@ -259,46 +260,48 @@ function WidgetDesigner() {
                             </SelectContent>
                         </Select>
                     </div>
-                    <Button
-                        size="sm"
-                        onClick={handleCreateNew}
-                        variant="outline"
-                    >
-                        <Plus className="h-4 w-4 mr-1" />
-                        New
-                    </Button>
-                    <Button
-                        size="sm"
-                        onClick={handleSave}
-                        disabled={!isDirty}
-                    >
-                        Save
-                    </Button>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <Button
+                            size="sm"
+                            onClick={handleCreateNew}
+                            variant="outline"
+                        >
+                            <Plus className="h-4 w-4 mr-1.5" />
+                            New
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={handleSave}
+                            disabled={!isDirty}
+                        >
+                            Save
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Tabs */}
-                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="flex-1 flex flex-col">
-                    <TabsList className="w-full rounded-none border-b">
-                        <TabsTrigger value="branding" className="flex-1">
-                            <Brush className="h-4 w-4 mr-1" />
-                            Branding
+                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="flex-1 flex flex-col min-h-0">
+                    <TabsList className="w-full rounded-none border-b border-border bg-transparent px-6 h-12">
+                        <TabsTrigger value="branding" className="flex-1 gap-1.5 data-[state=active]:bg-transparent">
+                            <Brush className="h-4 w-4" />
+                            <span>Branding</span>
                         </TabsTrigger>
-                        <TabsTrigger value="interface" className="flex-1">
-                            <Layout className="h-4 w-4 mr-1" />
-                            Interface
+                        <TabsTrigger value="interface" className="flex-1 gap-1.5 data-[state=active]:bg-transparent">
+                            <Layout className="h-4 w-4" />
+                            <span>Interface</span>
                         </TabsTrigger>
-                        <TabsTrigger value="texts" className="flex-1">
-                            <Type className="h-4 w-4 mr-1" />
-                            Texts
+                        <TabsTrigger value="texts" className="flex-1 gap-1.5 data-[state=active]:bg-transparent">
+                            <Type className="h-4 w-4" />
+                            <span>Texts</span>
                         </TabsTrigger>
-                        <TabsTrigger value="configure" className="flex-1">
-                            <Settings className="h-4 w-4 mr-1" />
-                            Configure
+                        <TabsTrigger value="configure" className="flex-1 gap-1.5 data-[state=active]:bg-transparent">
+                            <Settings className="h-4 w-4" />
+                            <span>Configure</span>
                         </TabsTrigger>
                     </TabsList>
 
                     {/* Tab Content */}
-                    <div className="flex-1 overflow-y-auto p-4">
+                    <div className="flex-1 overflow-y-auto px-6 py-6">
                         <TabsContent value="branding" className="mt-0">
                             <BrandingTab
                                 config={localConfig}
@@ -330,10 +333,11 @@ function WidgetDesigner() {
             </div>
 
             {/* Right Panel - Preview */}
-            <div className="flex-1 bg-muted/30 flex items-center justify-center p-8">
-                <div className="w-full max-w-md">
-                    <div className="text-center mb-4">
-                        <h3 className="text-lg font-semibold">Chatbot Preview</h3>
+            <div className="flex-1 bg-muted/20 flex items-center justify-center p-12">
+                <div className="w-full max-w-lg">
+                    <div className="text-center mb-6">
+                        <h3 className="text-lg font-semibold text-foreground mb-1">Chatbot Preview</h3>
+                        <p className="text-sm text-muted-foreground">See how your widget will look to users</p>
                     </div>
                     <WidgetPreview config={localConfig} texts={localTexts} />
                 </div>

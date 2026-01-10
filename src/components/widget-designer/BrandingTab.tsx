@@ -29,8 +29,8 @@ interface BrandingTabProps {
 
 function FormSection({ title, children }: { title: string; children: React.ReactNode }) {
     return (
-        <div className="space-y-3">
-            <h3 className="text-sm font-semibold">{title}</h3>
+        <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-foreground">{title}</h3>
             {children}
         </div>
     );
@@ -230,7 +230,7 @@ export function BrandingTab({ config, onChange, agentId }: BrandingTabProps) {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             {/* Logo section */}
             <FormSection title="Logo">
                 <FileDropzone
