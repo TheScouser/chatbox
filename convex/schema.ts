@@ -372,6 +372,7 @@ export default defineSchema({
       offsetY: v.number(),
       width: v.number(),                 // Widget width in pixels
       height: v.number(),                // Widget height in pixels
+      language: v.optional(v.string()),  // "auto" or locale code like "en", "es", etc.
     }),
     
     // AI settings for this widget specifically

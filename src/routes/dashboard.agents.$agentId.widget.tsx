@@ -38,6 +38,7 @@ type WidgetConfig = {
         offsetY: number;
         width: number;
         height: number;
+        language?: string; // "auto" or locale code
     };
     aiSettings: {
         model: string;

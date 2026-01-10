@@ -2,6 +2,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { LANGUAGES } from "@/lib/languages";
+import { Info } from "lucide-react";
 
 type WidgetConfig = {
     interface: {
@@ -10,6 +12,7 @@ type WidgetConfig = {
         offsetY: number;
         width: number;
         height: number;
+        language?: string; // "auto" or locale code like "en", "es", etc.
     };
 };
 
@@ -28,8 +31,50 @@ function FormSection({ title, children }: { title: string; children: React.React
 }
 
 export function InterfaceTab({ config, onChange }: InterfaceTabProps) {
+    const currentLanguage = config.interface.language || "auto";
+
     return (
         <div className="space-y-8">
+            <FormSection title="General">
+                <div className="space-y-2">
+                    <Label>Widget Language</Label>
+                    <Select
+                        value={currentLanguage}
+                        onValueChange={(value) => onChange({
+                            interface: { ...config.interface, language: value },
+                        })}
+                    >
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="auto">
+                                <span className="flex items-center gap-2">
+                                    <span>Auto</span>
+                                </span>
+                            </SelectItem>
+                            {LANGUAGES.map((lang) => (
+                                <SelectItem key={lang.code} value={lang.code}>
+                                    <span className="flex items-center gap-2">
+                                        <span>{lang.flag}</span>
+                                        <span>{lang.name}</span>
+                                        <span className="text-muted-foreground">
+                                            ({lang.nativeName})
+                                        </span>
+                                    </span>
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md border border-blue-200 dark:border-blue-800">
+                        <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                        <p className="text-xs text-blue-800 dark:text-blue-200">
+                            "Auto" sets the language automatically based on the user's browser settings.
+                        </p>
+                    </div>
+                </div>
+            </FormSection>
+
             <FormSection title="Position">
                 <div className="space-y-2">
                     <Label>Widget Position</Label>

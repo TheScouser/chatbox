@@ -23,6 +23,7 @@ const defaultInterface = {
   offsetY: 20,
   width: 350,
   height: 500,
+  language: "auto",
 };
 
 const defaultAiSettings = {
@@ -223,6 +224,7 @@ export const createWidgetConfig = mutation({
       offsetY: v.optional(v.number()),
       width: v.optional(v.number()),
       height: v.optional(v.number()),
+      language: v.optional(v.string()),
     })),
     aiSettings: v.optional(v.object({
       model: v.optional(v.string()),
@@ -341,6 +343,7 @@ export const updateWidgetConfig = mutation({
       offsetY: v.optional(v.number()),
       width: v.optional(v.number()),
       height: v.optional(v.number()),
+      language: v.optional(v.string()),
     })),
     aiSettings: v.optional(v.object({
       model: v.optional(v.string()),
