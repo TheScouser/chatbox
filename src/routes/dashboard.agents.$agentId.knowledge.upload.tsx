@@ -182,24 +182,24 @@ function AgentKnowledgeUpload() {
 														? "Failed to process file"
 														: "No content extracted"
 												: file.chunks
-														.sort((a: any, b: any) => {
-															const extractPartNumber = (title: string) => {
-																const match = title.match(/Part (\d+)\/\d+/);
-																return match
-																	? Number.parseInt(match[1], 10)
-																	: 0;
-															};
-															const aPartNum = extractPartNumber(a.title || "");
-															const bPartNum = extractPartNumber(b.title || "");
-															if (aPartNum > 0 && bPartNum > 0) {
-																return aPartNum - bPartNum;
-															}
-															return (
-																(a._creationTime || 0) - (b._creationTime || 0)
-															);
-														})
-														.map((chunk: any) => chunk.content)
-														.join("")
+													.sort((a: any, b: any) => {
+														const extractPartNumber = (title: string) => {
+															const match = title.match(/Part (\d+)\/\d+/);
+															return match
+																? Number.parseInt(match[1], 10)
+																: 0;
+														};
+														const aPartNum = extractPartNumber(a.title || "");
+														const bPartNum = extractPartNumber(b.title || "");
+														if (aPartNum > 0 && bPartNum > 0) {
+															return aPartNum - bPartNum;
+														}
+														return (
+															(a._creationTime || 0) - (b._creationTime || 0)
+														);
+													})
+													.map((chunk: any) => chunk.content)
+													.join("")
 										}
 										metadata={`${file.status} • ${(file.size / 1024 / 1024).toFixed(2)} MB • ${file.chunks.length} chunks • Uploaded ${new Date(file._creationTime).toLocaleDateString()}`}
 										onDelete={() => handleDeleteFile(file)}

@@ -191,9 +191,9 @@ function AgentKnowledgeText() {
 									editingEntry
 										? handleCancelEdit
 										: () => {
-												setTitle("");
-												setContent("");
-											}
+											setTitle("");
+											setContent("");
+										}
 								}
 							>
 								{editingEntry ? "Cancel" : "Clear"}
