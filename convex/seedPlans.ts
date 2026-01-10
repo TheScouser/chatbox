@@ -13,64 +13,78 @@ export const seedSubscriptionPlans = internalMutation({
 
     const plans = [
       {
-        name: "Starter",
-        stripeProductId: "prod_starter", // Replace with actual Stripe product ID
-        stripePriceId: "price_starter", // Replace with actual Stripe price ID
-        price: 900, // $9 in cents
+        name: "Free",
+        stripeProductId: "prod_free",
+        stripePriceId: "price_free",
+        price: 0,
         interval: "month" as const,
         features: {
-          maxAgents: 3,
-          maxKnowledgeEntries: 500,
-          maxMessagesPerMonth: 5000,
-          maxFileUploads: 50,
-          maxFileSizeMB: 10,
+          aiCredits: 100,
+          knowledgeCharacters: 500000,        // 500K
+          emailCredits: 25,
+          maxChatbots: 2,
+          maxSeats: 1,
+          maxAiActionsPerAgent: 1,
+          voiceMinutes: 0,
+          resyncCredits: 0,
+          maxFileSizeMB: 1,
           prioritySupport: false,
-          customDomains: true,
+          customDomains: false,
           advancedAnalytics: false,
           apiAccess: false,
           webhookIntegrations: false,
           customBranding: false,
-          ssoIntegration: false,
-          auditLogs: false,
+          exportChats: false,
+          exportLeads: false,
+          downloadTranscripts: false,
+        },
+        isActive: true,
+        sortOrder: 0,
+      },
+      {
+        name: "Starter",
+        stripeProductId: "prod_starter",
+        stripePriceId: "price_starter_monthly",
+        price: 2900, // $29.00 in cents
+        interval: "month" as const,
+        features: {
+          aiCredits: 3000,
+          knowledgeCharacters: 20000000,      // 20M
+          emailCredits: 1500,
+          maxChatbots: 5,
+          maxSeats: 2,
+          maxAiActionsPerAgent: 3,
+          voiceMinutes: 400,
+          resyncCredits: 10000,
+          maxFileSizeMB: 25,
+          prioritySupport: false,
+          customDomains: false,
+          advancedAnalytics: true,
+          apiAccess: true,
+          webhookIntegrations: true,
+          customBranding: false,
+          exportChats: true,
+          exportLeads: true,
+          downloadTranscripts: false,
         },
         isActive: true,
         sortOrder: 1,
       },
       {
-        name: "Standard",
-        stripeProductId: "prod_standard", // Replace with actual Stripe product ID
-        stripePriceId: "price_standard", // Replace with actual Stripe price ID
-        price: 2900, // $29 in cents
+        name: "Ultimate",
+        stripeProductId: "prod_ultimate",
+        stripePriceId: "price_ultimate_monthly",
+        price: 9900, // $99.00 in cents
         interval: "month" as const,
         features: {
-          maxAgents: 10,
-          maxKnowledgeEntries: 2000,
-          maxMessagesPerMonth: 25000,
-          maxFileUploads: 200,
-          maxFileSizeMB: 25,
-          prioritySupport: true,
-          customDomains: true,
-          advancedAnalytics: true,
-          apiAccess: true,
-          webhookIntegrations: true,
-          customBranding: false,
-          ssoIntegration: false,
-          auditLogs: false,
-        },
-        isActive: true,
-        sortOrder: 2,
-      },
-      {
-        name: "Pro",
-        stripeProductId: "prod_pro", // Replace with actual Stripe product ID
-        stripePriceId: "price_pro", // Replace with actual Stripe price ID
-        price: 9900, // $99 in cents
-        interval: "month" as const,
-        features: {
-          maxAgents: 50,
-          maxKnowledgeEntries: 10000,
-          maxMessagesPerMonth: 100000,
-          maxFileUploads: 1000,
+          aiCredits: 12000,
+          knowledgeCharacters: 90000000,      // 90M
+          emailCredits: 10000,
+          maxChatbots: 35,
+          maxSeats: 6,
+          maxAiActionsPerAgent: 6,
+          voiceMinutes: 1500,
+          resyncCredits: 50000,
           maxFileSizeMB: 100,
           prioritySupport: true,
           customDomains: true,
@@ -78,11 +92,12 @@ export const seedSubscriptionPlans = internalMutation({
           apiAccess: true,
           webhookIntegrations: true,
           customBranding: true,
-          ssoIntegration: true,
-          auditLogs: true,
+          exportChats: true,
+          exportLeads: true,
+          downloadTranscripts: true,
         },
         isActive: true,
-        sortOrder: 3,
+        sortOrder: 2,
       },
     ];
 
