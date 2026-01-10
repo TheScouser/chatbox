@@ -50,6 +50,36 @@ async function getPlanLimits(ctx: any, organizationId: Id<"organizations">) {
   return getFreePlanLimits();
 }
 
+// Get billing usage (for queries - doesn't create if missing)
+async function getBillingUsage(
+  ctx: any,
+  organizationId: Id<"organizations">,
+  period: string
+) {
+  const existing = await ctx.db
+    .query("billingUsage")
+    .withIndex("organizationId_period", (q: any) =>
+      q.eq("organizationId", organizationId).eq("period", period)
+    )
+    .first();
+
+  if (existing) {
+    return existing;
+  }
+
+  // Return default usage if not found (for queries)
+  return {
+    metrics: {
+      aiCreditsUsed: 0,
+      knowledgeCharactersUsed: 0,
+      emailCreditsUsed: 0,
+      voiceMinutesUsed: 0,
+      resyncCreditsUsed: 0,
+    },
+  };
+}
+
+// Get or create billing usage (for mutations - can create if missing)
 async function getOrCreateBillingUsage(
   ctx: any,
   organizationId: Id<"organizations">,
@@ -66,7 +96,7 @@ async function getOrCreateBillingUsage(
     return existing;
   }
 
-  // Create new usage record
+  // Create new usage record (only works in mutations)
   const newUsageId = await ctx.db.insert("billingUsage", {
     organizationId,
     period,
@@ -96,7 +126,7 @@ export const checkAiCreditAvailable = internalQuery({
     const planLimits = await getPlanLimits(ctx, args.organizationId);
 
     // 3. Get current usage from billingUsage
-    const usage = await getOrCreateBillingUsage(ctx, args.organizationId, period);
+    const usage = await getBillingUsage(ctx, args.organizationId, period);
     const current = usage.metrics.aiCreditsUsed;
     const limit = planLimits.aiCredits;
 
@@ -211,7 +241,7 @@ export const getUsageSummary = query({
 
     const period = getCurrentPeriod();
     const planLimits = await getPlanLimits(ctx, args.organizationId);
-    const usage = await getOrCreateBillingUsage(ctx, args.organizationId, period);
+    const usage = await getBillingUsage(ctx, args.organizationId, period);
 
     // Count chatbots
     const agents = await ctx.db

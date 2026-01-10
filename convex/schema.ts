@@ -141,12 +141,12 @@ export default defineSchema({
       v.literal("web"),
       v.literal("fb"),
     )),
-    status: v.union(
+    status: v.optional(v.union(
       v.literal("open"),
       v.literal("waiting"),
       v.literal("resolved"),
       v.literal("handover"),
-    ),
+    )),
     locale: v.optional(v.string()),
     createdAt: v.optional(v.number()),
     updatedAt: v.optional(v.number()),
