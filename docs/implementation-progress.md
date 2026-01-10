@@ -10,11 +10,11 @@
 
 | Phase | Status | Progress |
 |-------|--------|----------|
-| Phase 1: Credits System | In Progress | 1/6 tasks |
+| Phase 1: Credits System | In Progress | 2/6 tasks |
 | Phase 2: Widget Designer | Not Started | 0/10 tasks |
 | Phase 3: Multi-Language | Not Started | 0/4 tasks |
 
-**Overall Progress**: 1/20 tasks complete (5%)
+**Overall Progress**: 2/20 tasks complete (10%)
 
 ---
 
@@ -23,7 +23,7 @@
 | Task | Status | Assignee | Notes |
 |------|--------|----------|-------|
 | 1.1 Schema Updates | ✅ Complete | | Update subscriptionPlans and billingUsage |
-| 1.2 Usage Service | ⬜ Not Started | | Create convex/usageService.ts |
+| 1.2 Usage Service | ✅ Complete | | Create convex/usageService.ts |
 | 1.3 Chat Integration | ⬜ Not Started | | Integrate credits into chat.ts |
 | 1.4 Knowledge Integration | ⬜ Not Started | | Track KB characters |
 | 1.5 Seed Plans | ⬜ Not Started | | Update plan definitions |
@@ -41,12 +41,12 @@
 
 #### 1.2 Create Usage Tracking Service
 - **File**: `convex/usageService.ts` (new)
-- **Status**: ⬜ Not Started
+- **Status**: ✅ Complete
 - **Dependencies**: Task 1.1
-- **Started**: 
-- **Completed**: 
-- **Blockers**: 
-- **Notes**: 
+- **Started**: 2025-01-27
+- **Completed**: 2025-01-27
+- **Blockers**: None
+- **Notes**: Created centralized usage tracking service with internal queries for checking credit availability (AI credits, knowledge characters, chatbots), internal mutations for tracking usage, and public query for usage summary dashboard. Includes helper functions for getting plan limits and sending usage alerts to admins. 
 
 #### 1.3 Integrate Credits into Chat Flow
 - **File**: `convex/chat.ts`
@@ -259,6 +259,7 @@
 | Date | Task | Change | By |
 |------|------|--------|-----|
 | 2025-01-27 | 1.1 | Completed schema updates for credits system | AI Assistant |
+| 2025-01-27 | 1.2 | Created usage tracking service with credit checks and tracking | AI Assistant |
 
 ---
 
