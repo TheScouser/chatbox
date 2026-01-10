@@ -6,6 +6,7 @@ import ReactDOM from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 
 import "./styles.css";
+import "./lib/i18n"; // Initialize i18n
 import reportWebVitals from "./reportWebVitals.ts";
 
 // Create a new router instance

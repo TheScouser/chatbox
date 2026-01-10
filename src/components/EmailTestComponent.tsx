@@ -18,9 +18,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useAction } from "convex/react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
 
 export function EmailTestComponent() {
+	const { t } = useTranslation();
 	const [emailType, setEmailType] = useState<string>("");
 	const [recipient, setRecipient] = useState("");
 	const [recipientName, setRecipientName] = useState("");
@@ -32,7 +34,7 @@ export function EmailTestComponent() {
 
 	const handleSendTestEmail = async () => {
 		if (!recipient || !recipientName || !emailType) {
-			alert("Please fill in all required fields");
+			alert(t("settings.emailTesting.fillAllFields"));
 			return;
 		}
 
@@ -42,15 +44,15 @@ export function EmailTestComponent() {
 				await sendGeneralNotification({
 					to: recipient,
 					name: recipientName,
-					subject: subject || "Test Email from AI Agent Platform",
+					subject: subject || t("settings.emailTesting.defaultSubject"),
 					content:
 						content ||
-						"<p>This is a test email to verify the email system is working correctly.</p>",
+						t("settings.emailTesting.defaultContent"),
 					type: "announcement" as any,
 				});
 			}
 
-			alert("Test email sent successfully!");
+			alert(t("settings.emailTesting.success"));
 			// Reset form
 			setRecipient("");
 			setRecipientName("");
@@ -58,7 +60,7 @@ export function EmailTestComponent() {
 			setContent("");
 		} catch (error) {
 			console.error("Failed to send test email:", error);
-			alert("Failed to send test email. Check the console for details.");
+			alert(t("settings.emailTesting.error"));
 		} finally {
 			setLoading(false);
 		}
@@ -67,43 +69,42 @@ export function EmailTestComponent() {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Email Testing</CardTitle>
+				<CardTitle>{t("settings.emailTesting.title")}</CardTitle>
 				<CardDescription>
-					Test different types of emails to ensure the email system is working
-					correctly
+					{t("settings.emailTesting.description")}
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<Label htmlFor="recipient">Recipient Email</Label>
+						<Label htmlFor="recipient">{t("settings.emailTesting.recipientEmail")}</Label>
 						<Input
 							id="recipient"
 							type="email"
 							value={recipient}
 							onChange={(e) => setRecipient(e.target.value)}
-							placeholder="test@example.com"
+							placeholder={t("settings.emailTesting.recipientEmailPlaceholder")}
 						/>
 					</div>
 					<div>
-						<Label htmlFor="recipientName">Recipient Name</Label>
+						<Label htmlFor="recipientName">{t("settings.emailTesting.recipientName")}</Label>
 						<Input
 							id="recipientName"
 							value={recipientName}
 							onChange={(e) => setRecipientName(e.target.value)}
-							placeholder="John Doe"
+							placeholder={t("settings.emailTesting.recipientNamePlaceholder")}
 						/>
 					</div>
 				</div>
 
 				<div>
-					<Label htmlFor="emailType">Email Type</Label>
+					<Label htmlFor="emailType">{t("settings.emailTesting.emailType")}</Label>
 					<Select value={emailType} onValueChange={setEmailType}>
 						<SelectTrigger>
-							<SelectValue placeholder="Select email type to test" />
+							<SelectValue placeholder={t("settings.emailTesting.selectEmailType")} />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="general">General Notification</SelectItem>
+							<SelectItem value="general">{t("settings.emailTesting.generalNotification")}</SelectItem>
 							{/* Other email types would be tested through their respective flows */}
 						</SelectContent>
 					</Select>
@@ -112,21 +113,21 @@ export function EmailTestComponent() {
 				{emailType === "general" && (
 					<>
 						<div>
-							<Label htmlFor="subject">Subject</Label>
+							<Label htmlFor="subject">{t("settings.emailTesting.subject")}</Label>
 							<Input
 								id="subject"
 								value={subject}
 								onChange={(e) => setSubject(e.target.value)}
-								placeholder="Test Email Subject"
+								placeholder={t("settings.emailTesting.subjectPlaceholder")}
 							/>
 						</div>
 						<div>
-							<Label htmlFor="content">Content (HTML)</Label>
+							<Label htmlFor="content">{t("settings.emailTesting.content")}</Label>
 							<Textarea
 								id="content"
 								value={content}
 								onChange={(e) => setContent(e.target.value)}
-								placeholder="<p>Email content goes here...</p>"
+								placeholder={t("settings.emailTesting.contentPlaceholder")}
 								className="min-h-[100px]"
 							/>
 						</div>
@@ -138,25 +139,22 @@ export function EmailTestComponent() {
 					disabled={loading || !emailType}
 					className="w-full"
 				>
-					{loading ? "Sending..." : "Send Test Email"}
+					{loading ? t("settings.emailTesting.sending") : t("settings.emailTesting.sendTestEmail")}
 				</Button>
 
 				<div className="text-sm text-gray-600 space-y-1">
 					<p>
-						<strong>Note:</strong> Other email types are automatically
-						triggered:
+						<strong>{t("settings.emailTesting.note")}</strong> {t("settings.emailTesting.noteText")}
 					</p>
 					<ul className="list-disc list-inside space-y-1 ml-4">
 						<li>
-							<strong>Welcome Email:</strong> Sent when new users register
+							<strong>{t("settings.emailTesting.welcomeEmail")}:</strong> {t("settings.emailTesting.welcomeEmailDesc")}
 						</li>
 						<li>
-							<strong>Billing Notifications:</strong> Sent during Stripe webhook
-							events
+							<strong>{t("settings.emailTesting.billingNotifications")}:</strong> {t("settings.emailTesting.billingNotificationsDesc")}
 						</li>
 						<li>
-							<strong>Usage Alerts:</strong> Sent when users approach plan
-							limits
+							<strong>{t("settings.emailTesting.usageAlerts")}:</strong> {t("settings.emailTesting.usageAlertsDesc")}
 						</li>
 					</ul>
 				</div>

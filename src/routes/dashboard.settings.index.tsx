@@ -9,18 +9,56 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Skeleton, SkeletonForm, SkeletonPageHeader } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
+import { detectUserLocale } from "@/lib/locale";
+import { LANGUAGES } from "@/lib/languages";
 
 export const Route = createFileRoute("/dashboard/settings/")({
 	component: GeneralSettings,
 });
 
 function GeneralSettings() {
+	const { t, i18n } = useTranslation();
 	const user = useQuery(api.users.getCurrentUser);
+	const [selectedLocale, setSelectedLocale] = useState<string>(i18n.language || "en");
+	const [localeSaved, setLocaleSaved] = useState(false);
+
+	// Load current locale preference
+	useEffect(() => {
+		const currentLocale = detectUserLocale();
+		setSelectedLocale(currentLocale);
+		i18n.changeLanguage(currentLocale);
+	}, [i18n]);
+
+	const handleLocaleChange = (locale: string) => {
+		setSelectedLocale(locale);
+		setLocaleSaved(false);
+	};
+
+	const handleSaveLocale = () => {
+		if (typeof window !== "undefined") {
+			localStorage.setItem("chatbox_locale", selectedLocale);
+			i18n.changeLanguage(selectedLocale);
+			setLocaleSaved(true);
+			// Reload page to apply new locale
+			setTimeout(() => {
+				window.location.reload();
+			}, 500);
+		}
+	};
 
 	if (!user) {
 		return (
@@ -35,56 +73,106 @@ function GeneralSettings() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h2 className="text-2xl font-bold">General Settings</h2>
+				<h2 className="text-2xl font-bold">{t("settings.title")}</h2>
 				<p className="text-gray-600">
-					Manage your account settings and preferences
+					{t("settings.description")}
 				</p>
 			</div>
 
 			{/* Profile Information */}
 			<Card>
 				<CardHeader>
-					<CardTitle>Profile Information</CardTitle>
+					<CardTitle>{t("settings.profile.title")}</CardTitle>
 					<CardDescription>
-						Update your account information and how others see you
+						{t("settings.profile.description")}
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<Label htmlFor="name">Full Name</Label>
+							<Label htmlFor="name">{t("settings.profile.fullName")}</Label>
 							<Input
 								id="name"
 								defaultValue={user.name || ""}
-								placeholder="Enter your full name"
+								placeholder={t("settings.profile.fullNamePlaceholder")}
 							/>
 						</div>
 						<div>
-							<Label htmlFor="email">Email Address</Label>
+							<Label htmlFor="email">{t("settings.profile.email")}</Label>
 							<Input
 								id="email"
 								type="email"
 								defaultValue={user.email || ""}
-								placeholder="Enter your email"
+								placeholder={t("settings.profile.emailPlaceholder")}
 								disabled
 							/>
 							<p className="text-xs text-gray-500 mt-1">
-								Email changes are managed through your account provider
+								{t("settings.profile.emailNote")}
 							</p>
 						</div>
 					</div>
 
 					<div>
-						<Label htmlFor="bio">Bio</Label>
+						<Label htmlFor="bio">{t("settings.profile.bio")}</Label>
 						<Textarea
 							id="bio"
-							placeholder="Tell us a bit about yourself..."
+							placeholder={t("settings.profile.bioPlaceholder")}
 							className="min-h-[100px]"
 						/>
 					</div>
 
 					<div className="flex justify-end">
-						<Button>Save Changes</Button>
+						<Button>{t("settings.profile.saveChanges")}</Button>
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Interface Language */}
+			<Card>
+				<CardHeader>
+					<CardTitle>{t("settings.interfaceLanguage.title")}</CardTitle>
+					<CardDescription>
+						{t("settings.interfaceLanguage.description")}
+					</CardDescription>
+				</CardHeader>
+				<CardContent className="space-y-4">
+					<div className="space-y-2">
+						<Label htmlFor="language">{t("settings.interfaceLanguage.dashboardLanguage")}</Label>
+						<Select value={selectedLocale} onValueChange={handleLocaleChange}>
+							<SelectTrigger id="language" className="w-full">
+								<SelectValue placeholder={t("settings.interfaceLanguage.selectLanguage")} />
+							</SelectTrigger>
+							<SelectContent>
+								{LANGUAGES.map((lang) => (
+									<SelectItem key={lang.code} value={lang.code}>
+										<span className="flex items-center gap-2">
+											<span>{lang.flag}</span>
+											<span>{lang.name}</span>
+											<span className="text-muted-foreground">
+												({lang.nativeName})
+											</span>
+										</span>
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+						<p className="text-xs text-gray-500">
+							{t("settings.interfaceLanguage.note")}
+						</p>
+						{localeSaved && (
+							<p className="text-xs text-green-600">
+								{t("settings.interfaceLanguage.saved")}
+							</p>
+						)}
+					</div>
+					<div className="flex justify-end">
+						<Button
+							variant="outline"
+							onClick={handleSaveLocale}
+							disabled={localeSaved}
+						>
+							{localeSaved ? t("settings.interfaceLanguage.saving") : t("settings.interfaceLanguage.save")}
+						</Button>
 					</div>
 				</CardContent>
 			</Card>
@@ -92,18 +180,18 @@ function GeneralSettings() {
 			{/* Notification Preferences */}
 			<Card>
 				<CardHeader>
-					<CardTitle>Notification Preferences</CardTitle>
+					<CardTitle>{t("settings.notifications.title")}</CardTitle>
 					<CardDescription>
-						Choose how you want to be notified about important updates
+						{t("settings.notifications.description")}
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="font-medium">Email Notifications</p>
+								<p className="font-medium">{t("settings.notifications.emailNotifications")}</p>
 								<p className="text-sm text-gray-600">
-									Receive email updates about your agents and usage
+									{t("settings.notifications.emailNotificationsDesc")}
 								</p>
 							</div>
 							<input type="checkbox" defaultChecked className="rounded" />
@@ -111,9 +199,9 @@ function GeneralSettings() {
 
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="font-medium">Usage Alerts</p>
+								<p className="font-medium">{t("settings.notifications.usageAlerts")}</p>
 								<p className="text-sm text-gray-600">
-									Get notified when approaching plan limits
+									{t("settings.notifications.usageAlertsDesc")}
 								</p>
 							</div>
 							<input type="checkbox" defaultChecked className="rounded" />
@@ -121,9 +209,9 @@ function GeneralSettings() {
 
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="font-medium">Product Updates</p>
+								<p className="font-medium">{t("settings.notifications.productUpdates")}</p>
 								<p className="text-sm text-gray-600">
-									Stay informed about new features and improvements
+									{t("settings.notifications.productUpdatesDesc")}
 								</p>
 							</div>
 							<input type="checkbox" className="rounded" />
@@ -131,7 +219,7 @@ function GeneralSettings() {
 					</div>
 
 					<div className="flex justify-end">
-						<Button variant="outline">Update Preferences</Button>
+						<Button variant="outline">{t("settings.notifications.updatePreferences")}</Button>
 					</div>
 				</CardContent>
 			</Card>
@@ -142,24 +230,24 @@ function GeneralSettings() {
 			{/* Account Actions */}
 			<Card>
 				<CardHeader>
-					<CardTitle>Account Actions</CardTitle>
-					<CardDescription>Manage your account and data</CardDescription>
+					<CardTitle>{t("settings.accountActions.title")}</CardTitle>
+					<CardDescription>{t("settings.accountActions.description")}</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<Button variant="outline">Export Data</Button>
-						<Button variant="outline">Download Invoice History</Button>
+						<Button variant="outline">{t("settings.accountActions.exportData")}</Button>
+						<Button variant="outline">{t("settings.accountActions.downloadInvoices")}</Button>
 					</div>
 
 					<hr />
 
 					<div className="space-y-2">
-						<p className="font-medium text-red-600">Danger Zone</p>
+						<p className="font-medium text-red-600">{t("settings.accountActions.dangerZone")}</p>
 						<p className="text-sm text-gray-600">
-							These actions cannot be undone. Please be careful.
+							{t("settings.accountActions.dangerZoneDesc")}
 						</p>
 						<Button variant="destructive" size="sm">
-							Delete Account
+							{t("settings.accountActions.deleteAccount")}
 						</Button>
 					</div>
 				</CardContent>
