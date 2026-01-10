@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
-import { Bot } from "lucide-react";
+import { Bot, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -15,39 +15,72 @@ function EmbedChat() {
 	const [currentConversationId, setCurrentConversationId] = useState<
 		Id<"conversations"> | undefined
 	>(undefined);
-	const [primaryColor, setPrimaryColor] = useState("#2563eb");
+
+	// Extract widgetId and locale from URL parameters
+	const [widgetId, setWidgetId] = useState<Id<"widgetConfigurations"> | undefined>(undefined);
+	const [detectedLocale, setDetectedLocale] = useState<string>(() => {
+		// Check URL param first
+		const urlParams = new URLSearchParams(window.location.search);
+		const requestedLocale = urlParams.get("lang");
+		if (requestedLocale) return requestedLocale;
+		// Then localStorage
+		const stored = localStorage.getItem("preferred_locale");
+		if (stored) return stored;
+		// Then browser
+		return navigator.language.split("-")[0] || "en";
+	});
+
+	useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const widgetIdParam = urlParams.get("widgetId");
+		if (widgetIdParam) {
+			setWidgetId(widgetIdParam as Id<"widgetConfigurations">);
+		}
+	}, []);
 
 	// Get agent details
 	const agent = useQuery(api.agents.getAgentById, {
 		agentId: agentId as Id<"agents">,
 	});
 
-	// Extract primaryColor from URL parameters
-	useEffect(() => {
-		const urlParams = new URLSearchParams(window.location.search);
-		const colorParam = urlParams.get("primaryColor");
-		if (colorParam) {
-			setPrimaryColor(colorParam);
-		}
-	}, []);
+	// Fetch widget config (uses default if no widgetId)
+	const widgetData = useQuery(
+		api.widgetConfig.getWidgetConfigForEmbed,
+		agent
+			? {
+					agentId: agentId as Id<"agents">,
+					widgetId: widgetId,
+					locale: detectedLocale,
+				}
+			: "skip"
+	);
 
-	// Apply custom CSS variables for theming
+	// Apply widget configuration styles
 	useEffect(() => {
-		if (primaryColor) {
-			document.documentElement.style.setProperty(
-				"--primary-color",
-				primaryColor,
-			);
-			// Set additional color variations
-			const rgb = hexToRgb(primaryColor);
-			if (rgb) {
+		if (widgetData) {
+			const { branding } = widgetData;
+			if (branding.primaryColor) {
 				document.documentElement.style.setProperty(
-					"--primary-color-rgb",
-					`${rgb.r}, ${rgb.g}, ${rgb.b}`,
+					"--primary-color",
+					branding.primaryColor,
+				);
+				// Set additional color variations
+				const rgb = hexToRgb(branding.primaryColor);
+				if (rgb) {
+					document.documentElement.style.setProperty(
+						"--primary-color-rgb",
+						`${rgb.r}, ${rgb.g}, ${rgb.b}`,
+					);
+				}
+			}
+			if (branding.foregroundColor) {
+				document.documentElement.style.setProperty(
+					"--foreground-color",
+					branding.foregroundColor,
 				);
 			}
 		}
-	}, [primaryColor]);
+	}, [widgetData]);
 
 	const handleConversationCreate = (conversationId: Id<"conversations">) => {
 		setCurrentConversationId(conversationId);
@@ -76,11 +109,36 @@ function EmbedChat() {
 		);
 	}
 
+	if (widgetData === undefined) {
+		return (
+			<div className="h-screen flex items-center justify-center bg-white">
+				<div className="text-center p-4">
+					<Loader2 className="mx-auto h-8 w-8 text-gray-400 mb-2 animate-spin" />
+					<p className="text-sm text-gray-600">Loading widget...</p>
+				</div>
+			</div>
+		);
+	}
+
+	if (!widgetData) {
+		return (
+			<div className="h-screen flex items-center justify-center bg-white">
+				<div className="text-center p-4">
+					<Bot className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+					<p className="text-sm text-gray-600">Widget configuration not found</p>
+				</div>
+			</div>
+		);
+	}
+
+	const { branding, config } = widgetData;
+
 	return (
 		<div className="h-screen bg-white">
 			<style>{`
 				:root {
-					--primary-color: ${primaryColor};
+					--primary-color: ${branding.primaryColor};
+					--foreground-color: ${branding.foregroundColor};
 				}
 				.chat-widget-primary {
 					background-color: var(--primary-color) !important;

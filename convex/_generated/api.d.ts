@@ -21,16 +21,21 @@ import type * as emails from "../emails.js";
 import type * as embeddings from "../embeddings.js";
 import type * as featureGates from "../featureGates.js";
 import type * as files from "../files.js";
+import type * as helpers from "../helpers.js";
 import type * as knowledge from "../knowledge.js";
 import type * as openai from "../openai.js";
 import type * as organizations from "../organizations.js";
 import type * as security from "../security.js";
 import type * as seedPlans from "../seedPlans.js";
 import type * as textExtraction from "../textExtraction.js";
+import type * as types from "../types.js";
 import type * as usage from "../usage.js";
+import type * as usageService from "../usageService.js";
 import type * as users from "../users.js";
 import type * as vectorSearch from "../vectorSearch.js";
 import type * as webCrawling from "../webCrawling.js";
+import type * as widgetConfig from "../widgetConfig.js";
+import type * as widgetTexts from "../widgetTexts.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -49,16 +54,21 @@ declare const fullApi: ApiFromModules<{
   embeddings: typeof embeddings;
   featureGates: typeof featureGates;
   files: typeof files;
+  helpers: typeof helpers;
   knowledge: typeof knowledge;
   openai: typeof openai;
   organizations: typeof organizations;
   security: typeof security;
   seedPlans: typeof seedPlans;
   textExtraction: typeof textExtraction;
+  types: typeof types;
   usage: typeof usage;
+  usageService: typeof usageService;
   users: typeof users;
   vectorSearch: typeof vectorSearch;
   webCrawling: typeof webCrawling;
+  widgetConfig: typeof widgetConfig;
+  widgetTexts: typeof widgetTexts;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

@@ -32,6 +32,7 @@ import { Route as DashboardBillingPlansImport } from './routes/dashboard.billing
 import { Route as DashboardAgentsNewImport } from './routes/dashboard.agents.new'
 import { Route as DashboardAgentsAgentIdImport } from './routes/dashboard.agents.$agentId'
 import { Route as DashboardAgentsAgentIdIndexImport } from './routes/dashboard.agents.$agentId.index'
+import { Route as DashboardAgentsAgentIdWidgetImport } from './routes/dashboard.agents.$agentId.widget'
 import { Route as DashboardAgentsAgentIdSettingsImport } from './routes/dashboard.agents.$agentId.settings'
 import { Route as DashboardAgentsAgentIdKnowledgeImport } from './routes/dashboard.agents.$agentId.knowledge'
 import { Route as DashboardAgentsAgentIdDeployImport } from './routes/dashboard.agents.$agentId.deploy'
@@ -173,6 +174,13 @@ const DashboardAgentsAgentIdIndexRoute =
   DashboardAgentsAgentIdIndexImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => DashboardAgentsAgentIdRoute,
+  } as any)
+
+const DashboardAgentsAgentIdWidgetRoute =
+  DashboardAgentsAgentIdWidgetImport.update({
+    id: '/widget',
+    path: '/widget',
     getParentRoute: () => DashboardAgentsAgentIdRoute,
   } as any)
 
@@ -454,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsAgentIdSettingsImport
       parentRoute: typeof DashboardAgentsAgentIdImport
     }
+    '/dashboard/agents/$agentId/widget': {
+      id: '/dashboard/agents/$agentId/widget'
+      path: '/widget'
+      fullPath: '/dashboard/agents/$agentId/widget'
+      preLoaderRoute: typeof DashboardAgentsAgentIdWidgetImport
+      parentRoute: typeof DashboardAgentsAgentIdImport
+    }
     '/dashboard/agents/$agentId/': {
       id: '/dashboard/agents/$agentId/'
       path: '/'
@@ -586,6 +601,7 @@ interface DashboardAgentsAgentIdRouteChildren {
   DashboardAgentsAgentIdDeployRoute: typeof DashboardAgentsAgentIdDeployRoute
   DashboardAgentsAgentIdKnowledgeRoute: typeof DashboardAgentsAgentIdKnowledgeRouteWithChildren
   DashboardAgentsAgentIdSettingsRoute: typeof DashboardAgentsAgentIdSettingsRouteWithChildren
+  DashboardAgentsAgentIdWidgetRoute: typeof DashboardAgentsAgentIdWidgetRoute
   DashboardAgentsAgentIdIndexRoute: typeof DashboardAgentsAgentIdIndexRoute
 }
 
@@ -599,6 +615,7 @@ const DashboardAgentsAgentIdRouteChildren: DashboardAgentsAgentIdRouteChildren =
       DashboardAgentsAgentIdKnowledgeRouteWithChildren,
     DashboardAgentsAgentIdSettingsRoute:
       DashboardAgentsAgentIdSettingsRouteWithChildren,
+    DashboardAgentsAgentIdWidgetRoute: DashboardAgentsAgentIdWidgetRoute,
     DashboardAgentsAgentIdIndexRoute: DashboardAgentsAgentIdIndexRoute,
   }
 
@@ -699,6 +716,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
   '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRouteWithChildren
   '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRouteWithChildren
+  '/dashboard/agents/$agentId/widget': typeof DashboardAgentsAgentIdWidgetRoute
   '/dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
   '/dashboard/agents/$agentId/knowledge/qna': typeof DashboardAgentsAgentIdKnowledgeQnaRoute
   '/dashboard/agents/$agentId/knowledge/text': typeof DashboardAgentsAgentIdKnowledgeTextRoute
@@ -730,6 +748,7 @@ export interface FileRoutesByTo {
   '/dashboard/agents/$agentId/chat': typeof DashboardAgentsAgentIdChatRoute
   '/dashboard/agents/$agentId/conversations': typeof DashboardAgentsAgentIdConversationsRoute
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
+  '/dashboard/agents/$agentId/widget': typeof DashboardAgentsAgentIdWidgetRoute
   '/dashboard/agents/$agentId': typeof DashboardAgentsAgentIdIndexRoute
   '/dashboard/agents/$agentId/knowledge/qna': typeof DashboardAgentsAgentIdKnowledgeQnaRoute
   '/dashboard/agents/$agentId/knowledge/text': typeof DashboardAgentsAgentIdKnowledgeTextRoute
@@ -769,6 +788,7 @@ export interface FileRoutesById {
   '/dashboard/agents/$agentId/deploy': typeof DashboardAgentsAgentIdDeployRoute
   '/dashboard/agents/$agentId/knowledge': typeof DashboardAgentsAgentIdKnowledgeRouteWithChildren
   '/dashboard/agents/$agentId/settings': typeof DashboardAgentsAgentIdSettingsRouteWithChildren
+  '/dashboard/agents/$agentId/widget': typeof DashboardAgentsAgentIdWidgetRoute
   '/dashboard/agents/$agentId/': typeof DashboardAgentsAgentIdIndexRoute
   '/dashboard/agents/$agentId/knowledge/qna': typeof DashboardAgentsAgentIdKnowledgeQnaRoute
   '/dashboard/agents/$agentId/knowledge/text': typeof DashboardAgentsAgentIdKnowledgeTextRoute
@@ -809,6 +829,7 @@ export interface FileRouteTypes {
     | '/dashboard/agents/$agentId/deploy'
     | '/dashboard/agents/$agentId/knowledge'
     | '/dashboard/agents/$agentId/settings'
+    | '/dashboard/agents/$agentId/widget'
     | '/dashboard/agents/$agentId/'
     | '/dashboard/agents/$agentId/knowledge/qna'
     | '/dashboard/agents/$agentId/knowledge/text'
@@ -839,6 +860,7 @@ export interface FileRouteTypes {
     | '/dashboard/agents/$agentId/chat'
     | '/dashboard/agents/$agentId/conversations'
     | '/dashboard/agents/$agentId/deploy'
+    | '/dashboard/agents/$agentId/widget'
     | '/dashboard/agents/$agentId'
     | '/dashboard/agents/$agentId/knowledge/qna'
     | '/dashboard/agents/$agentId/knowledge/text'
@@ -876,6 +898,7 @@ export interface FileRouteTypes {
     | '/dashboard/agents/$agentId/deploy'
     | '/dashboard/agents/$agentId/knowledge'
     | '/dashboard/agents/$agentId/settings'
+    | '/dashboard/agents/$agentId/widget'
     | '/dashboard/agents/$agentId/'
     | '/dashboard/agents/$agentId/knowledge/qna'
     | '/dashboard/agents/$agentId/knowledge/text'
@@ -994,6 +1017,7 @@ export const routeTree = rootRoute
         "/dashboard/agents/$agentId/deploy",
         "/dashboard/agents/$agentId/knowledge",
         "/dashboard/agents/$agentId/settings",
+        "/dashboard/agents/$agentId/widget",
         "/dashboard/agents/$agentId/"
       ]
     },
@@ -1061,6 +1085,10 @@ export const routeTree = rootRoute
         "/dashboard/agents/$agentId/settings/security",
         "/dashboard/agents/$agentId/settings/"
       ]
+    },
+    "/dashboard/agents/$agentId/widget": {
+      "filePath": "dashboard.agents.$agentId.widget.tsx",
+      "parent": "/dashboard/agents/$agentId"
     },
     "/dashboard/agents/$agentId/": {
       "filePath": "dashboard.agents.$agentId.index.tsx",

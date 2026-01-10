@@ -346,4 +346,79 @@ export default defineSchema({
     .index("userId", ["userId"])
     .index("action", ["action"])
     .index("resourceType", ["resourceType"]),
+
+  // Widget configurations
+  widgetConfigurations: defineTable({
+    agentId: v.id("agents"),
+    name: v.string(),                    // "Main Widget", "Support Widget"
+    isDefault: v.boolean(),              // Default widget for this agent
+    
+    // Branding settings
+    branding: v.object({
+      logoStorageId: v.optional(v.id("_storage")),
+      primaryColor: v.string(),          // Hex color, default "#2563eb"
+      foregroundColor: v.string(),       // Text/icon color, default "#ffffff"
+      showHeaderIcon: v.boolean(),
+      headerIconCircular: v.boolean(),
+      botAvatarCircular: v.boolean(),
+      botAvatarType: v.union(v.literal("logo"), v.literal("custom")),
+      botAvatarStorageId: v.optional(v.id("_storage")),
+    }),
+    
+    // Interface/position settings
+    interface: v.object({
+      position: v.union(v.literal("bottom-right"), v.literal("bottom-left")),
+      offsetX: v.number(),               // Pixels from edge
+      offsetY: v.number(),
+      width: v.number(),                 // Widget width in pixels
+      height: v.number(),                // Widget height in pixels
+    }),
+    
+    // AI settings for this widget specifically
+    aiSettings: v.object({
+      model: v.string(),                 // "gpt-4o-mini", "gpt-4o", etc.
+      temperature: v.number(),           // 0.0 to 1.0
+      maxTokens: v.number(),             // Max response tokens
+    }),
+    
+    // Behavior configuration
+    config: v.object({
+      hidePoweredBy: v.boolean(),
+      showRating: v.boolean(),
+      allowTranscriptDownload: v.boolean(),
+      voiceInputEnabled: v.boolean(),
+      voiceMaxDuration: v.number(),      // Seconds, default 60
+      showAiSources: v.boolean(),
+      hoveringMessageDesktop: v.boolean(),
+      hoveringMessageMobile: v.boolean(),
+      autoOpenChat: v.boolean(),
+      autoOpenDelay: v.number(),         // Seconds
+    }),
+    
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
+  }).index("agentId", ["agentId"]),
+
+  // Widget texts (localization)
+  widgetTexts: defineTable({
+    widgetConfigId: v.id("widgetConfigurations"),
+    locale: v.string(),                  // "en", "es", "fr", "cs", etc.
+    isDefault: v.boolean(),              // Fallback locale for this widget
+    
+    texts: v.object({
+      headerTitle: v.string(),           // "Support Agent"
+      inputPlaceholder: v.string(),      // "Type here..."
+      greetingMessages: v.array(v.object({
+        type: v.union(v.literal("text"), v.literal("image"), v.literal("video")),
+        content: v.string(),             // Text content or URL for media
+      })),
+      quickReplies: v.array(v.string()), // ["Pricing", "Support", "Demo"]
+      footerText: v.optional(v.string()),
+      offlineMessage: v.optional(v.string()),
+    }),
+    
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
+  }).index("widgetConfigId", ["widgetConfigId"])
+    .index("widgetConfigId_locale", ["widgetConfigId", "locale"]),
 })
