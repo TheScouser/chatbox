@@ -7,6 +7,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import {
+	SkeletonChart,
+	SkeletonPageHeader,
+	SkeletonStatCards,
+} from "@/components/ui/skeleton";
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle, ArrowUpRight } from "lucide-react";
@@ -72,14 +77,11 @@ function UsagePage() {
 	if (dashboardLoading) {
 		return (
 			<div className="container mx-auto px-4 py-8">
-				<div className="mb-8">
-					<div className="h-8 bg-gray-200 rounded animate-pulse mb-2" />
-					<div className="h-6 bg-gray-200 rounded animate-pulse w-2/3" />
-				</div>
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-					{[1, 2, 3, 4].map((i) => (
-						<div key={i} className="h-48 bg-gray-200 rounded animate-pulse" />
-					))}
+				<SkeletonPageHeader />
+				<SkeletonStatCards count={4} className="mb-8" />
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+					<SkeletonChart />
+					<SkeletonChart />
 				</div>
 			</div>
 		);
