@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "convex/react";
 import { MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { useFormValidation, validators } from "../hooks/useFormValidation";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
 import {
@@ -21,6 +22,11 @@ import {
 import { Input } from "../components/ui/input";
 import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
 import { PageHeader } from "../components/ui/page-header";
+import {
+	SkeletonForm,
+	SkeletonList,
+	SkeletonPageHeader,
+} from "../components/ui/skeleton";
 import { Textarea } from "../components/ui/textarea";
 
 export const Route = createFileRoute(
@@ -28,6 +34,38 @@ export const Route = createFileRoute(
 )({
 	component: AgentKnowledgeQnA,
 });
+
+// Validation schema for Q&A form
+const qnaValidationSchema = {
+	question: {
+		required: true,
+		requiredMessage: "Question is required",
+		rules: [
+			validators.minLength(5, "Question must be at least 5 characters"),
+			validators.maxLength(500, "Question must be less than 500 characters"),
+		],
+	},
+	answer: {
+		required: true,
+		requiredMessage: "Answer is required",
+		rules: [
+			validators.minLength(10, "Answer must be at least 10 characters"),
+			validators.maxLength(10000, "Answer must be less than 10,000 characters"),
+		],
+	},
+	title: {
+		required: false,
+		rules: [
+			validators.maxLength(100, "Title must be less than 100 characters"),
+		],
+	},
+};
+
+type QnAFormData = {
+	question: string;
+	answer: string;
+	title: string;
+};
 
 function AgentKnowledgeQnA() {
 	const { agentId } = Route.useParams();
@@ -39,6 +77,10 @@ function AgentKnowledgeQnA() {
 	const [success, setSuccess] = useState(false);
 	const [editingEntry, setEditingEntry] = useState<string | null>(null);
 
+	// Form validation
+	const validation = useFormValidation<QnAFormData>(qnaValidationSchema);
+	const formData = { question, answer, title };
+
 	// Queries and mutations
 	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
 		agentId: agentId as any,
@@ -47,13 +89,29 @@ function AgentKnowledgeQnA() {
 	const updateKnowledgeEntry = useMutation(api.knowledge.updateKnowledgeEntry);
 	const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry);
 
+	// Loading state
+	if (knowledgeEntries === undefined) {
+		return (
+			<PageLayout>
+				<SkeletonPageHeader />
+				<TwoColumnLayout>
+					<SkeletonForm fields={3} />
+					<SkeletonList count={4} />
+				</TwoColumnLayout>
+			</PageLayout>
+		);
+	}
+
 	// Filter for Q&A entries only
 	const qnaEntries =
 		knowledgeEntries?.filter((entry) => entry.source === "qna") || [];
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!question.trim() || !answer.trim()) return;
+
+		// Validate form
+		const { isValid } = validation.validateForm(formData);
+		if (!isValid) return;
 
 		setIsSubmitting(true);
 		setError(null);
@@ -80,11 +138,12 @@ function AgentKnowledgeQnA() {
 			setQuestion("");
 			setAnswer("");
 			setTitle("");
+			validation.clearErrors();
 			setSuccess(true);
 			setTimeout(() => setSuccess(false), 3000);
-		} catch (error) {
-			console.error("Error saving Q&A:", error);
-			setError(error instanceof Error ? error.message : "Failed to save Q&A");
+		} catch (err) {
+			console.error("Error saving Q&A:", err);
+			setError(err instanceof Error ? err.message : "Failed to save Q&A");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -102,6 +161,7 @@ function AgentKnowledgeQnA() {
 		setQuestion("");
 		setAnswer("");
 		setTitle("");
+		validation.clearErrors();
 	};
 
 	const handleDelete = async (entryId: string) => {
@@ -143,28 +203,55 @@ function AgentKnowledgeQnA() {
 					<FormSection>
 						<form onSubmit={handleSubmit}>
 							<div className="space-y-6">
-								<FormField label="Title (Optional)">
+								<FormField
+									label="Title (Optional)"
+									error={validation.getFieldError("title")}
+									hint={`${title.length}/100`}
+								>
 									<Input
 										value={title}
-										onChange={(e) => setTitle(e.target.value)}
+										onChange={(e) => {
+											setTitle(e.target.value);
+											validation.handleChange("title");
+										}}
+										onBlur={() => validation.handleBlur("title", title, formData)}
 										placeholder="Ex: Refund requests"
+										aria-invalid={Boolean(validation.getFieldError("title"))}
 									/>
 								</FormField>
-								<FormField label="Question" required>
+								<FormField
+									label="Question"
+									required
+									error={validation.getFieldError("question")}
+									hint={`${question.length}/500`}
+								>
 									<Input
 										value={question}
-										onChange={(e) => setQuestion(e.target.value)}
+										onChange={(e) => {
+											setQuestion(e.target.value);
+											validation.handleChange("question");
+										}}
+										onBlur={() => validation.handleBlur("question", question, formData)}
 										placeholder="Ex: How do I request a refund?"
-										required
+										aria-invalid={Boolean(validation.getFieldError("question"))}
 									/>
 								</FormField>
-								<FormField label="Answer" required>
+								<FormField
+									label="Answer"
+									required
+									error={validation.getFieldError("answer")}
+									hint={`${answer.length}/10,000`}
+								>
 									<Textarea
 										value={answer}
-										onChange={(e) => setAnswer(e.target.value)}
+										onChange={(e) => {
+											setAnswer(e.target.value);
+											validation.handleChange("answer");
+										}}
+										onBlur={() => validation.handleBlur("answer", answer, formData)}
 										placeholder="Enter your answer..."
 										className="min-h-[300px]"
-										required
+										aria-invalid={Boolean(validation.getFieldError("answer"))}
 									/>
 								</FormField>
 							</div>
@@ -180,7 +267,7 @@ function AgentKnowledgeQnA() {
 								)}
 								<Button
 									type="submit"
-									disabled={isSubmitting || !question.trim() || !answer.trim()}
+									disabled={isSubmitting}
 								>
 									{isSubmitting
 										? editingEntry

@@ -3,6 +3,7 @@ import { useMutation } from "convex/react";
 import { ArrowLeft, Bot } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import { useFormValidation, validators } from "../hooks/useFormValidation";
 import { Button } from "../components/ui/button";
 import {
 	FormActions,
@@ -20,6 +21,29 @@ export const Route = createFileRoute("/dashboard/agents/new")({
 	component: CreateAgent,
 });
 
+// Validation schema for create agent form
+const createAgentSchema = {
+	name: {
+		required: true,
+		requiredMessage: "Agent name is required",
+		rules: [
+			validators.minLength(2, "Agent name must be at least 2 characters"),
+			validators.maxLength(50, "Agent name must be less than 50 characters"),
+		],
+	},
+	description: {
+		required: false,
+		rules: [
+			validators.maxLength(500, "Description must be less than 500 characters"),
+		],
+	},
+};
+
+type CreateAgentFormData = {
+	name: string;
+	description: string;
+};
+
 function CreateAgent() {
 	const navigate = useNavigate();
 	const { currentOrganization } = useOrganization();
@@ -30,44 +54,28 @@ function CreateAgent() {
 		description: "",
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [errors, setErrors] = useState<{ name?: string; description?: string }>(
-		{},
-	);
+	const [submitError, setSubmitError] = useState<string | null>(null);
 
-	const validateForm = () => {
-		const newErrors: { name?: string; description?: string } = {};
-
-		if (!formData.name.trim()) {
-			newErrors.name = "Agent name is required";
-		} else if (formData.name.trim().length < 2) {
-			newErrors.name = "Agent name must be at least 2 characters";
-		} else if (formData.name.trim().length > 50) {
-			newErrors.name = "Agent name must be less than 50 characters";
-		}
-
-		if (formData.description && formData.description.length > 500) {
-			newErrors.description = "Description must be less than 500 characters";
-		}
-
-		setErrors(newErrors);
-		return Object.keys(newErrors).length === 0;
-	};
+	// Form validation
+	const validation = useFormValidation<CreateAgentFormData>(createAgentSchema);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		setSubmitError(null);
 
-		if (!validateForm()) {
+		// Validate form
+		const { isValid } = validation.validateForm(formData);
+		if (!isValid) return;
+
+		// Check organization
+		if (!currentOrganization?._id) {
+			setSubmitError("No organization selected. Please select an organization first.");
 			return;
 		}
 
 		setIsSubmitting(true);
 
 		try {
-			if (!currentOrganization?._id) {
-				setErrors({ name: "No organization selected" });
-				return;
-			}
-
 			await createAgent({
 				organizationId: currentOrganization._id,
 				name: formData.name.trim(),
@@ -78,7 +86,11 @@ function CreateAgent() {
 			navigate({ to: "/dashboard/agents" });
 		} catch (error) {
 			console.error("Failed to create agent:", error);
-			setErrors({ name: "Failed to create agent. Please try again." });
+			setSubmitError(
+				error instanceof Error
+					? error.message
+					: "Failed to create agent. Please try again."
+			);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -86,10 +98,8 @@ function CreateAgent() {
 
 	const handleInputChange = (field: "name" | "description", value: string) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
-		// Clear error when user starts typing
-		if (errors[field]) {
-			setErrors((prev) => ({ ...prev, [field]: undefined }));
-		}
+		validation.handleChange(field);
+		if (submitError) setSubmitError(null);
 	};
 
 	return (
@@ -107,6 +117,12 @@ function CreateAgent() {
 					</Button>
 				</div>
 
+				{submitError && (
+					<div className="mb-6 p-4 rounded-lg border border-destructive/20 bg-destructive/5">
+						<p className="text-sm text-destructive">{submitError}</p>
+					</div>
+				)}
+
 				<FormCard
 					title="Create New Agent"
 					description="Set up your AI agent with a name and description"
@@ -117,20 +133,22 @@ function CreateAgent() {
 							<FormField
 								label="Agent Name"
 								required
-								error={errors.name}
+								error={validation.getFieldError("name")}
 								hint={`${formData.name.length}/50 characters`}
 							>
 								<Input
 									value={formData.name}
 									onChange={(e) => handleInputChange("name", e.target.value)}
+									onBlur={() => validation.handleBlur("name", formData.name, formData)}
 									placeholder="e.g., Customer Support Bot, Sales Assistant"
 									maxLength={50}
+									aria-invalid={Boolean(validation.getFieldError("name"))}
 								/>
 							</FormField>
 
 							<FormField
 								label="Description (Optional)"
-								error={errors.description}
+								error={validation.getFieldError("description")}
 								hint={`${formData.description.length}/500 characters`}
 							>
 								<Textarea
@@ -139,8 +157,10 @@ function CreateAgent() {
 									onChange={(e) =>
 										handleInputChange("description", e.target.value)
 									}
+									onBlur={() => validation.handleBlur("description", formData.description, formData)}
 									placeholder="Describe what this agent will help with..."
 									maxLength={500}
+									aria-invalid={Boolean(validation.getFieldError("description"))}
 								/>
 							</FormField>
 						</FormSection>
@@ -155,7 +175,7 @@ function CreateAgent() {
 							</Button>
 							<Button
 								type="submit"
-								disabled={isSubmitting || !formData.name.trim()}
+								disabled={isSubmitting}
 							>
 								{isSubmitting ? "Creating..." : "Create Agent"}
 							</Button>
