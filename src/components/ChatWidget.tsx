@@ -15,6 +15,7 @@ interface ChatWidgetProps {
 	onConversationCreate?: (conversationId: Id<"conversations">) => void;
 	className?: string;
 	height?: string;
+	locale?: string;
 }
 
 interface Message {
@@ -37,6 +38,7 @@ export default function ChatWidget({
 	onConversationCreate,
 	className = "",
 	height = "600px",
+	locale,
 }: ChatWidgetProps) {
 	const [message, setMessage] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
@@ -84,6 +86,7 @@ export default function ChatWidget({
 					await generateAIResponse({
 						conversationId: currentConversationId,
 						userMessage,
+						locale,
 					});
 				}
 			} else {
@@ -91,6 +94,7 @@ export default function ChatWidget({
 				await generateAIResponse({
 					conversationId: currentConversationId,
 					userMessage,
+					locale,
 				});
 			}
 		} catch (error) {

@@ -4,6 +4,7 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { detectUserLocale } from "../lib/locale";
 
 interface ChatBubbleWidgetProps {
 	agentId: string;
@@ -34,6 +35,7 @@ export default function ChatBubbleWidget({
 	const [isLoading, setIsLoading] = useState(false);
 	const [conversationId, setConversationId] =
 		useState<Id<"conversations"> | null>(null);
+	const [detectedLocale] = useState(() => detectUserLocale());
 	const messagesEndRef = useRef<HTMLDivElement>(null);
 
 	// Convex hooks
@@ -77,6 +79,7 @@ export default function ChatBubbleWidget({
 			const response = await generateAIResponse({
 				conversationId: currentConversationId,
 				userMessage: content,
+				locale: detectedLocale,
 			});
 
 			const assistantMessage: Message = {

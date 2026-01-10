@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import ChatWidget from "../components/ChatWidget";
+import { detectUserLocale } from "../lib/locale";
 
 export const Route = createFileRoute("/embed/$agentId")({
 	component: EmbedChat,
@@ -16,19 +17,8 @@ function EmbedChat() {
 		Id<"conversations"> | undefined
 	>(undefined);
 
-	// Extract widgetId and locale from URL parameters
+	// Extract widgetId from URL parameters
 	const [widgetId, setWidgetId] = useState<Id<"widgetConfigurations"> | undefined>(undefined);
-	const [detectedLocale, setDetectedLocale] = useState<string>(() => {
-		// Check URL param first
-		const urlParams = new URLSearchParams(window.location.search);
-		const requestedLocale = urlParams.get("lang");
-		if (requestedLocale) return requestedLocale;
-		// Then localStorage
-		const stored = localStorage.getItem("preferred_locale");
-		if (stored) return stored;
-		// Then browser
-		return navigator.language.split("-")[0] || "en";
-	});
 
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
@@ -43,17 +33,25 @@ function EmbedChat() {
 		agentId: agentId as Id<"agents">,
 	});
 
+	// Detect initial locale
+	const initialLocale = detectUserLocale();
+
 	// Fetch widget config (uses default if no widgetId)
 	const widgetData = useQuery(
 		api.widgetConfig.getWidgetConfigForEmbed,
 		agent
 			? {
-					agentId: agentId as Id<"agents">,
-					widgetId: widgetId,
-					locale: detectedLocale,
-				}
+				agentId: agentId as Id<"agents">,
+				widgetId: widgetId,
+				locale: initialLocale,
+			}
 			: "skip"
 	);
+
+	// Determine locale to use: widget language setting or detected locale
+	const effectiveLocale = widgetData?.interface?.language && widgetData.interface.language !== "auto"
+		? widgetData.interface.language
+		: initialLocale;
 
 	// Apply widget configuration styles
 	useEffect(() => {
@@ -91,10 +89,10 @@ function EmbedChat() {
 		const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 		return result
 			? {
-					r: Number.parseInt(result[1], 16),
-					g: Number.parseInt(result[2], 16),
-					b: Number.parseInt(result[3], 16),
-				}
+				r: Number.parseInt(result[1], 16),
+				g: Number.parseInt(result[2], 16),
+				b: Number.parseInt(result[3], 16),
+			}
 			: null;
 	};
 
@@ -153,6 +151,7 @@ function EmbedChat() {
 				onConversationCreate={handleConversationCreate}
 				height="100vh"
 				className="border-0 shadow-none rounded-none"
+				locale={effectiveLocale}
 			/>
 		</div>
 	);
