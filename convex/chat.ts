@@ -14,6 +14,7 @@ export const generateAIResponse = action({
   args: {
     conversationId: v.id("conversations"),
     userMessage: v.string(),
+    locale: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<{ messageId: Id<"messages">; content: string }> => {
     const identity = await ctx.auth.getUserIdentity();
@@ -88,6 +89,7 @@ export const generateAIResponse = action({
           role: msg.role,
           content: msg.content,
         })), // Only pass role and content, not full message objects
+        locale: args.locale,
       });
 
       // Add the AI response message
@@ -197,6 +199,7 @@ export const generateResponseWithContext = internalAction({
       role: v.union(v.literal("user"), v.literal("assistant")),
       content: v.string(),
     })),
+    locale: v.optional(v.string()),
   },
   handler: async (ctx, args): Promise<string> => {
     // Get agent details for system prompt
@@ -210,6 +213,9 @@ export const generateResponseWithContext = internalAction({
       .map((entry, index) => `[${index + 1}] ${entry.title || 'Knowledge Entry'}: ${entry.content}`)
       .join('\n\n');
 
+    // Get language name for prompt
+    const languageName = args.locale ? getLanguageNameForPrompt(args.locale) : "English";
+
     // Build system prompt
     const systemPrompt = `You are ${agent.name}, an AI assistant. ${agent.description || ''}
 
@@ -222,7 +228,11 @@ Instructions:
 - If the knowledge base doesn't contain relevant information, say so politely
 - Be conversational and helpful
 - Keep responses concise but informative
-- Reference specific knowledge when relevant`;
+- Reference specific knowledge when relevant
+
+LANGUAGE INSTRUCTION: You MUST respond in ${languageName}. 
+Regardless of what language the user writes in, always respond in ${languageName}.
+This is critical - never respond in a different language.`;
 
     // Build conversation messages
     const messages = [
@@ -247,6 +257,37 @@ Instructions:
     }
   },
 });
+
+// Helper function to get language name for prompt
+function getLanguageNameForPrompt(locale: string): string {
+  const map: Record<string, string> = {
+    en: "English",
+    es: "Spanish",
+    fr: "French",
+    de: "German",
+    it: "Italian",
+    pt: "Portuguese",
+    nl: "Dutch",
+    pl: "Polish",
+    cs: "Czech",
+    sk: "Slovak",
+    ru: "Russian",
+    uk: "Ukrainian",
+    ja: "Japanese",
+    ko: "Korean",
+    zh: "Chinese (Simplified)",
+    ar: "Arabic",
+    hi: "Hindi",
+    tr: "Turkish",
+    vi: "Vietnamese",
+    th: "Thai",
+    bg: "Bulgarian",
+    ro: "Romanian",
+    el: "Greek",
+    sr: "Serbian",
+  };
+  return map[locale] || "English";
+}
 
 // Internal query to get conversation details
 export const getConversationInternal = internalQuery({
