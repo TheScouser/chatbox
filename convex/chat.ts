@@ -39,6 +39,19 @@ export const generateAIResponse = action({
     // Validate user has viewer access to use the agent
     await validateOrganizationAccess(ctx, agent.organizationId, "viewer");
 
+    // Check AI credit availability
+    const creditCheck = await ctx.runQuery(internal.usageService.checkAiCreditAvailable, {
+      organizationId: agent.organizationId,
+    });
+
+    if (!creditCheck.allowed) {
+      throw new Error(
+        `AI credit limit reached for this month. ` +
+        `Used: ${creditCheck.current}/${creditCheck.limit}. ` +
+        `Please upgrade your plan or wait until next month.`
+      );
+    }
+
     // First, add the user message
     await ctx.runMutation(internal.conversations.addMessageInternal, {
       conversationId: args.conversationId,
@@ -86,6 +99,12 @@ export const generateAIResponse = action({
           model: "gpt-4o-mini",
           knowledgeUsed: relevantKnowledge.length,
         },
+      });
+
+      // Track credit usage
+      await ctx.runMutation(internal.usageService.trackAiCredit, {
+        organizationId: agent.organizationId,
+        creditsUsed: 1, // or calculate based on tokens if desired
       });
 
       return {
