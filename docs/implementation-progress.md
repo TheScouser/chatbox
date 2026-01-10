@@ -1,6 +1,6 @@
 # Implementation Progress Report
 
-> **Last Updated**: [Update this date when making changes]
+> **Last Updated**: 2025-01-27
 > 
 > **Purpose**: Track implementation progress for the Chatbox Feature Expansion. Update this file after completing each task.
 
@@ -10,11 +10,11 @@
 
 | Phase | Status | Progress |
 |-------|--------|----------|
-| Phase 1: Credits System | Not Started | 0/6 tasks |
+| Phase 1: Credits System | In Progress | 1/6 tasks |
 | Phase 2: Widget Designer | Not Started | 0/10 tasks |
 | Phase 3: Multi-Language | Not Started | 0/4 tasks |
 
-**Overall Progress**: 0/20 tasks complete (0%)
+**Overall Progress**: 1/20 tasks complete (5%)
 
 ---
 
@@ -22,7 +22,7 @@
 
 | Task | Status | Assignee | Notes |
 |------|--------|----------|-------|
-| 1.1 Schema Updates | ⬜ Not Started | | Update subscriptionPlans and billingUsage |
+| 1.1 Schema Updates | ✅ Complete | | Update subscriptionPlans and billingUsage |
 | 1.2 Usage Service | ⬜ Not Started | | Create convex/usageService.ts |
 | 1.3 Chat Integration | ⬜ Not Started | | Integrate credits into chat.ts |
 | 1.4 Knowledge Integration | ⬜ Not Started | | Track KB characters |
@@ -33,11 +33,11 @@
 
 #### 1.1 Schema Updates for Credits
 - **File**: `convex/schema.ts`
-- **Status**: ⬜ Not Started
-- **Started**: 
-- **Completed**: 
+- **Status**: ✅ Complete
+- **Started**: 2025-01-27
+- **Completed**: 2025-01-27
 - **Blockers**: None
-- **Notes**: 
+- **Notes**: Updated subscriptionPlans.features to use credits-based structure (aiCredits, knowledgeCharacters, emailCredits, etc.) and updated billingUsage.metrics to track new credit types. 
 
 #### 1.2 Create Usage Tracking Service
 - **File**: `convex/usageService.ts` (new)
@@ -258,7 +258,7 @@
 
 | Date | Task | Change | By |
 |------|------|--------|-----|
-| | | | |
+| 2025-01-27 | 1.1 | Completed schema updates for credits system | AI Assistant |
 
 ---
 

@@ -256,22 +256,31 @@ export default defineSchema({
     price: v.number(), // price in cents
     interval: v.union(v.literal("month"), v.literal("year")),
     features: v.object({
-      // Core limits
-      maxAgents: v.number(),
-      maxKnowledgeEntries: v.number(),
-      maxMessagesPerMonth: v.number(),
-      maxFileUploads: v.number(),
-      maxFileSizeMB: v.number(),
+      // Monthly usage limits
+      aiCredits: v.number(),              // AI message credits per month
+      knowledgeCharacters: v.number(),    // Total KB characters allowed
+      emailCredits: v.number(),           // Email notifications per month
       
-      // Feature access
+      // Entity limits (not monthly, total allowed)
+      maxChatbots: v.number(),            // Number of agents/chatbots
+      maxSeats: v.number(),               // Team members
+      maxAiActionsPerAgent: v.number(),   // AI actions per agent
+      
+      // Optional limits (0 = not available on plan)
+      voiceMinutes: v.number(),           // Voice input minutes per month
+      resyncCredits: v.number(),          // Knowledge base resync credits
+      maxFileSizeMB: v.number(),          // Max single file size
+      
+      // Feature flags
       prioritySupport: v.boolean(),
       customDomains: v.boolean(),
       advancedAnalytics: v.boolean(),
       apiAccess: v.boolean(),
       webhookIntegrations: v.boolean(),
-      customBranding: v.boolean(),
-      ssoIntegration: v.boolean(),
-      auditLogs: v.boolean(),
+      customBranding: v.boolean(),        // Hide "Powered by" badge
+      exportChats: v.boolean(),
+      exportLeads: v.boolean(),
+      downloadTranscripts: v.boolean(),
     }),
     isActive: v.boolean(),
     sortOrder: v.number(),
@@ -306,12 +315,11 @@ export default defineSchema({
     organizationId: v.id("organizations"), // Changed from userId to organizationId
     period: v.string(), // YYYY-MM format
     metrics: v.object({
-      messagesUsed: v.number(),
-      agentsCreated: v.number(),
-      knowledgeEntriesAdded: v.number(),
-      filesUploaded: v.number(),
-      storageUsedMB: v.number(),
-      apiCallsMade: v.number(),
+      aiCreditsUsed: v.number(),
+      knowledgeCharactersUsed: v.number(),
+      emailCreditsUsed: v.number(),
+      voiceMinutesUsed: v.number(),
+      resyncCreditsUsed: v.number(),
     }),
     lastUpdated: v.number(),
     createdAt: v.optional(v.number()),
