@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton, SkeletonForm, SkeletonPageHeader } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
@@ -24,8 +25,9 @@ function GeneralSettings() {
 	if (!user) {
 		return (
 			<div className="space-y-6">
-				<div className="h-8 bg-gray-200 rounded animate-pulse" />
-				<div className="h-64 bg-gray-200 rounded animate-pulse" />
+				<SkeletonPageHeader />
+				<SkeletonForm fields={3} />
+				<SkeletonForm fields={2} />
 			</div>
 		);
 	}

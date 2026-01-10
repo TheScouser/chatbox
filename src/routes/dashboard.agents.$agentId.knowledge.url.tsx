@@ -20,6 +20,11 @@ import {
 import { Input } from "../components/ui/input";
 import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
 import { PageHeader } from "../components/ui/page-header";
+import {
+	SkeletonForm,
+	SkeletonList,
+	SkeletonPageHeader,
+} from "../components/ui/skeleton";
 
 export const Route = createFileRoute(
 	"/dashboard/agents/$agentId/knowledge/url",
@@ -41,6 +46,19 @@ function AgentKnowledgeUrl() {
 	});
 	const processUrl = useAction(api.webCrawling.processUrlContent);
 	const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry);
+
+	// Loading state
+	if (knowledgeEntries === undefined) {
+		return (
+			<PageLayout>
+				<SkeletonPageHeader />
+				<TwoColumnLayout>
+					<SkeletonForm fields={2} />
+					<SkeletonList count={4} />
+				</TwoColumnLayout>
+			</PageLayout>
+		);
+	}
 
 	// Filter for URL entries only
 	const urlEntries =

@@ -17,6 +17,12 @@ import { Button } from "../components/ui/button";
 import { ContentCard } from "../components/ui/content-card";
 import { PageLayout } from "../components/ui/layout";
 import { PageHeader } from "../components/ui/page-header";
+import {
+	SkeletonCardGrid,
+	SkeletonList,
+	SkeletonPageHeader,
+	SkeletonStatCards,
+} from "../components/ui/skeleton";
 
 export const Route = createFileRoute("/dashboard/agents/$agentId/knowledge/")({
 	component: AgentKnowledgeOverview,
@@ -34,6 +40,18 @@ function AgentKnowledgeOverview() {
 	const generateEmbeddings = useAction(
 		api.embeddings.generateEmbeddingsForAgent,
 	);
+
+	// Loading state
+	if (knowledgeEntries === undefined) {
+		return (
+			<PageLayout>
+				<SkeletonPageHeader />
+				<SkeletonStatCards count={4} className="mb-8" />
+				<SkeletonCardGrid count={4} columns={2} className="mb-8" />
+				<SkeletonList count={5} />
+			</PageLayout>
+		);
+	}
 
 	// Calculate statistics
 	const stats = {

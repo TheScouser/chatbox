@@ -15,6 +15,11 @@ import { EntryItem } from "../components/ui/entry-item";
 import { FormCard } from "../components/ui/form-card";
 import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
 import { PageHeader } from "../components/ui/page-header";
+import {
+	Skeleton,
+	SkeletonList,
+	SkeletonPageHeader,
+} from "../components/ui/skeleton";
 
 export const Route = createFileRoute(
 	"/dashboard/agents/$agentId/knowledge/upload",
@@ -32,6 +37,23 @@ function AgentKnowledgeUpload() {
 	});
 	const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry);
 	// const extractText = useAction(api.knowledge.extractTextFromFile);
+
+	// Loading state
+	if (knowledgeEntries === undefined) {
+		return (
+			<PageLayout>
+				<SkeletonPageHeader />
+				<TwoColumnLayout>
+					<div className="rounded-xl border bg-card p-6 space-y-4">
+						<Skeleton className="h-6 w-40" />
+						<Skeleton className="h-4 w-64" />
+						<Skeleton className="h-48 w-full rounded-lg border-2 border-dashed" />
+					</div>
+					<SkeletonList count={4} />
+				</TwoColumnLayout>
+			</PageLayout>
+		);
+	}
 
 	// Get uploaded files with their chunks
 	const documentEntries =

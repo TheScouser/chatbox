@@ -22,6 +22,11 @@ import {
 import { Input } from "../components/ui/input";
 import { PageLayout, TwoColumnLayout } from "../components/ui/layout";
 import { PageHeader } from "../components/ui/page-header";
+import {
+	SkeletonForm,
+	SkeletonList,
+	SkeletonPageHeader,
+} from "../components/ui/skeleton";
 
 export const Route = createFileRoute(
 	"/dashboard/agents/$agentId/knowledge/text",
@@ -45,6 +50,19 @@ function AgentKnowledgeText() {
 	const createKnowledgeEntry = useMutation(api.knowledge.createKnowledgeEntry);
 	const updateKnowledgeEntry = useMutation(api.knowledge.updateKnowledgeEntry);
 	const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry);
+
+	// Loading state
+	if (knowledgeEntries === undefined) {
+		return (
+			<PageLayout>
+				<SkeletonPageHeader />
+				<TwoColumnLayout>
+					<SkeletonForm fields={2} />
+					<SkeletonList count={4} />
+				</TwoColumnLayout>
+			</PageLayout>
+		);
+	}
 
 	// Filter for text entries only
 	const textEntries =
