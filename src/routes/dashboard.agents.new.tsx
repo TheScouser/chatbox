@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation } from "convex/react";
 import { ArrowLeft, Bot } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
 import { useFormValidation, validators } from "../hooks/useFormValidation";
 import { Button } from "../components/ui/button";
@@ -21,23 +22,7 @@ export const Route = createFileRoute("/dashboard/agents/new")({
 	component: CreateAgent,
 });
 
-// Validation schema for create agent form
-const createAgentSchema = {
-	name: {
-		required: true,
-		requiredMessage: "Agent name is required",
-		rules: [
-			validators.minLength(2, "Agent name must be at least 2 characters"),
-			validators.maxLength(50, "Agent name must be less than 50 characters"),
-		],
-	},
-	description: {
-		required: false,
-		rules: [
-			validators.maxLength(500, "Description must be less than 500 characters"),
-		],
-	},
-};
+// Validation schema will be created inside component to access translations
 
 type CreateAgentFormData = {
 	name: string;
@@ -45,6 +30,7 @@ type CreateAgentFormData = {
 };
 
 function CreateAgent() {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { currentOrganization } = useOrganization();
 	const createAgent = useMutation(api.agents.createAgent);
@@ -55,6 +41,24 @@ function CreateAgent() {
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [submitError, setSubmitError] = useState<string | null>(null);
+
+	// Validation schema for create agent form
+	const createAgentSchema = {
+		name: {
+			required: true,
+			requiredMessage: t("agents.new.agentNameRequired"),
+			rules: [
+				validators.minLength(2, t("agents.new.agentNameMinLength")),
+				validators.maxLength(50, t("agents.new.agentNameMaxLength")),
+			],
+		},
+		description: {
+			required: false,
+			rules: [
+				validators.maxLength(500, t("agents.new.descriptionMaxLength")),
+			],
+		},
+	};
 
 	// Form validation
 	const validation = useFormValidation<CreateAgentFormData>(createAgentSchema);
@@ -69,7 +73,7 @@ function CreateAgent() {
 
 		// Check organization
 		if (!currentOrganization?._id) {
-			setSubmitError("No organization selected. Please select an organization first.");
+			setSubmitError(t("agents.new.noOrgError"));
 			return;
 		}
 
@@ -89,7 +93,7 @@ function CreateAgent() {
 			setSubmitError(
 				error instanceof Error
 					? error.message
-					: "Failed to create agent. Please try again."
+					: t("agents.new.createError")
 			);
 		} finally {
 			setIsSubmitting(false);
@@ -113,7 +117,7 @@ function CreateAgent() {
 						className="text-muted-foreground hover:text-foreground"
 					>
 						<ArrowLeft className="h-4 w-4 mr-1" />
-						Back to Agents
+						{t("agents.new.backToAgents")}
 					</Button>
 				</div>
 
@@ -124,32 +128,32 @@ function CreateAgent() {
 				)}
 
 				<FormCard
-					title="Create New Agent"
-					description="Set up your AI agent with a name and description"
+					title={t("agents.new.title")}
+					description={t("agents.new.description")}
 					icon={Bot}
 				>
 					<form onSubmit={handleSubmit}>
 						<FormSection>
 							<FormField
-								label="Agent Name"
+								label={t("agents.new.agentName")}
 								required
 								error={validation.getFieldError("name")}
-								hint={`${formData.name.length}/50 characters`}
+								hint={`${formData.name.length}/50 ${t("common.characters")}`}
 							>
 								<Input
 									value={formData.name}
 									onChange={(e) => handleInputChange("name", e.target.value)}
 									onBlur={() => validation.handleBlur("name", formData.name, formData)}
-									placeholder="e.g., Customer Support Bot, Sales Assistant"
+									placeholder={t("agents.new.agentNamePlaceholder")}
 									maxLength={50}
 									aria-invalid={Boolean(validation.getFieldError("name"))}
 								/>
 							</FormField>
 
 							<FormField
-								label="Description (Optional)"
+								label={t("agents.new.description")}
 								error={validation.getFieldError("description")}
-								hint={`${formData.description.length}/500 characters`}
+								hint={`${formData.description.length}/500 ${t("common.characters")}`}
 							>
 								<Textarea
 									rows={4}
@@ -158,7 +162,7 @@ function CreateAgent() {
 										handleInputChange("description", e.target.value)
 									}
 									onBlur={() => validation.handleBlur("description", formData.description, formData)}
-									placeholder="Describe what this agent will help with..."
+									placeholder={t("agents.new.descriptionPlaceholder")}
 									maxLength={500}
 									aria-invalid={Boolean(validation.getFieldError("description"))}
 								/>
@@ -171,13 +175,13 @@ function CreateAgent() {
 								variant="outline"
 								onClick={() => navigate({ to: "/dashboard/agents" })}
 							>
-								Cancel
+								{t("agents.new.cancel")}
 							</Button>
 							<Button
 								type="submit"
 								disabled={isSubmitting}
 							>
-								{isSubmitting ? "Creating..." : "Create Agent"}
+								{isSubmitting ? t("agents.new.creating") : t("agents.new.create")}
 							</Button>
 						</FormActions>
 					</form>

@@ -12,12 +12,14 @@ import { useUserPlan, useUserSubscription } from "@/hooks/useFeatureAccess";
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { CreditCard, Settings, TrendingUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/dashboard/billing/")({
 	component: BillingDashboard,
 });
 
 function BillingDashboard() {
+	const { t } = useTranslation();
 	const { plan, isLoading: planLoading, isFree, planName } = useUserPlan();
 	const { subscription, isLoading: subLoading } = useUserSubscription();
 
@@ -41,20 +43,20 @@ function BillingDashboard() {
 	}
 
 	const formatPrice = (priceInCents: number) => {
-		if (priceInCents === 0) return "Free";
+		if (priceInCents === 0) return t("billing.active");
 		return `$${(priceInCents / 100).toFixed(0)}/month`;
 	};
 
 	const getStatusBadge = (status?: string) => {
 		switch (status) {
 			case "active":
-				return <Badge className="bg-green-500">Active</Badge>;
+				return <Badge className="bg-green-500">{t("billing.active")}</Badge>;
 			case "canceled":
-				return <Badge variant="destructive">Canceled</Badge>;
+				return <Badge variant="destructive">{t("billing.canceled")}</Badge>;
 			case "past_due":
-				return <Badge variant="destructive">Past Due</Badge>;
+				return <Badge variant="destructive">{t("billing.pastDue")}</Badge>;
 			default:
-				return <Badge variant="secondary">Free</Badge>;
+				return <Badge variant="secondary">{t("usage.free")}</Badge>;
 		}
 	};
 
@@ -67,7 +69,7 @@ function BillingDashboard() {
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
 							<CreditCard className="h-5 w-5" />
-							Current Plan
+							{t("billing.currentPlan")}
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
@@ -77,12 +79,11 @@ function BillingDashboard() {
 								{getStatusBadge(subscription?.status)}
 							</div>
 							<p className="text-lg text-gray-600">
-								{plan ? formatPrice(plan.price) : "Free"}
+								{plan ? formatPrice(plan.price) : t("usage.free")}
 							</p>
 							{subscription && (
 								<p className="text-sm text-gray-500">
-									Next billing:{" "}
-									{new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+									{t("billing.nextBilling", { date: new Date(subscription.currentPeriodEnd).toLocaleDateString() })}
 								</p>
 							)}
 						</div>
@@ -94,23 +95,23 @@ function BillingDashboard() {
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
 							<Settings className="h-5 w-5" />
-							Quick Actions
+							{t("billing.quickActions")}
 						</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-3">
 						{isFree ? (
 							<Link to="/dashboard/billing/plans">
-								<Button className="w-full">Upgrade Plan</Button>
+								<Button className="w-full">{t("usage.upgradePlan")}</Button>
 							</Link>
 						) : (
 							<div className="space-y-2">
 								<Link to="/dashboard/billing/plans">
 									<Button variant="outline" className="w-full">
-										Change Plan
+										{t("usage.changePlan")}
 									</Button>
 								</Link>
 								<Button variant="outline" className="w-full">
-									Manage Billing
+									{t("billing.quickActions")}
 								</Button>
 							</div>
 						)}
@@ -122,25 +123,25 @@ function BillingDashboard() {
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
 							<TrendingUp className="h-5 w-5" />
-							Usage This Month
+							{t("billing.usageThisMonth")}
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-2">
 							<div className="flex justify-between text-sm">
-								<span>Messages</span>
+								<span>{t("billing.messages")}</span>
 								<span className="font-medium">
 									--- / {plan?.features.maxMessagesPerMonth || 500}
 								</span>
 							</div>
 							<div className="flex justify-between text-sm">
-								<span>File Uploads</span>
+								<span>{t("billing.fileUploads")}</span>
 								<span className="font-medium">
 									--- / {plan?.features.maxFileUploads || 5}
 								</span>
 							</div>
 							<div className="flex justify-between text-sm">
-								<span>Agents</span>
+								<span>{t("billing.agents")}</span>
 								<span className="font-medium">
 									--- / {plan?.features.maxAgents || 1}
 								</span>
@@ -152,7 +153,7 @@ function BillingDashboard() {
 
 			{/* Usage Dashboard */}
 			<div>
-				<h2 className="text-2xl font-bold mb-4">Usage Details</h2>
+				<h2 className="text-2xl font-bold mb-4">{t("billing.usageDetails")}</h2>
 				<UsageDashboard />
 			</div>
 
@@ -161,17 +162,16 @@ function BillingDashboard() {
 				<Card className="border-blue-200 bg-blue-50">
 					<CardHeader>
 						<CardTitle className="text-blue-900">
-							Ready to scale your chatbots?
+							{t("billing.readyToScale")}
 						</CardTitle>
 						<CardDescription className="text-blue-700">
-							Upgrade to unlock more agents, higher limits, and premium
-							features.
+							{t("billing.readyToScaleDesc")}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<Link to="/dashboard/billing/plans">
 							<Button className="bg-blue-600 hover:bg-blue-700">
-								View Plans & Pricing
+								{t("billing.viewPlansPricing")}
 							</Button>
 						</Link>
 					</CardContent>

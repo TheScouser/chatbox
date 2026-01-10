@@ -11,6 +11,7 @@ import {
 	Upload,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/dashboard/agents/$agentId/knowledge/")({
 });
 
 function AgentKnowledgeOverview() {
+	const { t } = useTranslation();
 	const { agentId } = Route.useParams();
 	const [isTraining, setIsTraining] = useState(false);
 	const [trainingResult, setTrainingResult] = useState<any>(null);
@@ -72,32 +74,32 @@ function AgentKnowledgeOverview() {
 
 	const knowledgeSources = [
 		{
-			name: "Q&A",
-			description: "Create question and answer pairs for common inquiries",
+			name: t("knowledge.qna.name"),
+			description: t("knowledge.qna.description"),
 			icon: MessageSquare,
 			href: `/dashboard/agents/${agentId}/knowledge/qna`,
 			count: stats.qna,
 			color: "bg-yellow-100 text-yellow-800",
 		},
 		{
-			name: "Text",
-			description: "Add custom formatted text content",
+			name: t("knowledge.text.name"),
+			description: t("knowledge.text.description"),
 			icon: FileText,
 			href: `/dashboard/agents/${agentId}/knowledge/text`,
 			count: stats.text,
 			color: "bg-blue-100 text-blue-800",
 		},
 		{
-			name: "Files",
-			description: "Upload documents (PDF, DOC, TXT) for automatic processing",
+			name: t("knowledge.upload.name"),
+			description: t("knowledge.upload.description"),
 			icon: Upload,
 			href: `/dashboard/agents/${agentId}/knowledge/upload`,
 			count: stats.documents,
 			color: "bg-purple-100 text-purple-800",
 		},
 		{
-			name: "Website",
-			description: "Extract content from web pages automatically",
+			name: t("knowledge.url.name"),
+			description: t("knowledge.url.description"),
 			icon: Globe,
 			href: `/dashboard/agents/${agentId}/knowledge/url`,
 			count: stats.urls,
@@ -118,7 +120,7 @@ function AgentKnowledgeOverview() {
 			console.error("Failed to train agent:", error);
 			setTrainingResult({
 				message:
-					error instanceof Error ? error.message : "Failed to train agent",
+					error instanceof Error ? error.message : t("knowledge.trainingFailed"),
 				processed: 0,
 				errors: 1,
 			});
@@ -130,8 +132,8 @@ function AgentKnowledgeOverview() {
 	return (
 		<PageLayout>
 			<PageHeader
-				title="Sources"
-				description="Manage your AI agent's knowledge by adding different types of content sources."
+				title={t("knowledge.title")}
+				description={t("knowledge.description")}
 			/>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -140,7 +142,7 @@ function AgentKnowledgeOverview() {
 						<BookOpen className="h-8 w-8 text-primary" />
 						<div className="ml-4">
 							<p className="text-sm font-medium text-muted-foreground">
-								Total Entries
+								{t("knowledge.totalEntries")}
 							</p>
 							<p className="text-2xl font-semibold text-card-foreground">
 								{stats.total}
@@ -153,7 +155,7 @@ function AgentKnowledgeOverview() {
 						<Brain className="h-8 w-8 text-green-600" />
 						<div className="ml-4">
 							<p className="text-sm font-medium text-muted-foreground">
-								Trained
+								{t("knowledge.trained")}
 							</p>
 							<p className="text-2xl font-semibold text-card-foreground">
 								{stats.trained}
@@ -166,7 +168,7 @@ function AgentKnowledgeOverview() {
 						<TrendingUp className="h-8 w-8 text-orange-600" />
 						<div className="ml-4">
 							<p className="text-sm font-medium text-muted-foreground">
-								Needs Training
+								{t("knowledge.needsTraining")}
 							</p>
 							<p className="text-2xl font-semibold text-card-foreground">
 								{stats.untrained}
@@ -178,14 +180,14 @@ function AgentKnowledgeOverview() {
 					<div className="flex items-center justify-between">
 						<div>
 							<p className="text-sm font-medium text-muted-foreground">
-								Training Status
+								{t("knowledge.trainingStatus")}
 							</p>
 							<p className="text-lg font-semibold text-card-foreground">
 								{stats.total === 0
-									? "No data"
+									? t("knowledge.noData")
 									: stats.untrained === 0
-										? "Up to date"
-										: "Needs update"}
+										? t("knowledge.upToDate")
+										: t("knowledge.needsUpdate")}
 							</p>
 						</div>
 						{stats.untrained > 0 && (
@@ -195,7 +197,7 @@ function AgentKnowledgeOverview() {
 								size="sm"
 							>
 								<Brain className="h-4 w-4 mr-1" />
-								{isTraining ? "Training..." : "Train"}
+								{isTraining ? t("knowledge.training") : t("knowledge.train")}
 							</Button>
 						)}
 					</div>
@@ -208,11 +210,11 @@ function AgentKnowledgeOverview() {
 					<AlertDescription>
 						<div className="space-y-2">
 							<p className="font-medium">
-								Training {trainingResult.errors > 0 ? "Failed" : "Complete"}
+								{trainingResult.errors > 0 ? t("knowledge.trainingFailed") : t("knowledge.trainingComplete")}
 							</p>
 							<p>{trainingResult.message}</p>
 							{trainingResult.processed > 0 && (
-								<p>Processed {trainingResult.processed} entries</p>
+								<p>{t("knowledge.processedEntries", { count: trainingResult.processed })}</p>
 							)}
 						</div>
 					</AlertDescription>
@@ -221,7 +223,7 @@ function AgentKnowledgeOverview() {
 
 			<div>
 				<h2 className="text-lg font-medium text-card-foreground mb-4">
-					Sources
+					{t("knowledge.sources")}
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					{knowledgeSources.map((source) => {
@@ -241,7 +243,7 @@ function AgentKnowledgeOverview() {
 												<span
 													className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${source.color}`}
 												>
-													{source.count} entries
+													{source.count} {t("common.entries")}
 												</span>
 											</div>
 										</div>
@@ -263,10 +265,9 @@ function AgentKnowledgeOverview() {
 					<AlertDescription>
 						<div className="space-y-4">
 							<div>
-								<p className="font-medium mb-2">Add Sources</p>
+								<p className="font-medium mb-2">{t("knowledge.addSources")}</p>
 								<p>
-									Your agent needs knowledge to provide helpful responses. Start
-									by adding content from any of these sources:
+									{t("knowledge.addSourcesDesc")}
 								</p>
 							</div>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -296,8 +297,8 @@ function AgentKnowledgeOverview() {
 
 			{stats.total > 0 && (
 				<ContentCard
-					title="Recent Source Entries"
-					description="Your latest knowledge additions"
+					title={t("knowledge.recentEntries")}
+					description={t("knowledge.recentEntriesDesc")}
 				>
 					<div className="border-t border-border/30">
 						<div className="divide-y divide-border/30">
@@ -343,7 +344,7 @@ function AgentKnowledgeOverview() {
 											</div>
 											<div className="ml-3">
 												<p className="text-sm font-medium text-card-foreground">
-													{entry.title || "Untitled Entry"}
+													{entry.title || t("knowledge.untitledEntry")}
 												</p>
 												<div className="flex items-center space-x-2 text-xs text-muted-foreground">
 													<span className="capitalize">{entry.source}</span>
@@ -354,7 +355,7 @@ function AgentKnowledgeOverview() {
 													{entry.embedding && (
 														<>
 															<span>•</span>
-															<span className="text-green-600">Trained</span>
+															<span className="text-green-600">{t("knowledge.trained")}</span>
 														</>
 													)}
 												</div>
@@ -367,7 +368,7 @@ function AgentKnowledgeOverview() {
 						{knowledgeEntries && knowledgeEntries.length > 5 && (
 							<div className="p-4 text-center border-t border-border/30">
 								<p className="text-sm text-muted-foreground">
-									Showing 5 of {knowledgeEntries.length} entries
+									{t("knowledge.showingEntries", { total: knowledgeEntries.length })}
 								</p>
 							</div>
 						)}

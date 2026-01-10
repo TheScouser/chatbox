@@ -1,1 +1,78 @@
-{"settings":{"title":"Settings","description":"Manage your account settings and preferences"}}
+{
+  "settings": {
+    "title": "Γενικές Ρυθμίσεις",
+    "description": "Διαχειριστείτε τις ρυθμίσεις και τις προτιμήσεις του λογαριασμού σας",
+    "profile": {
+      "title": "Πληροφορίες Προφίλ",
+      "description": "Ενημερώστε τις πληροφορίες του λογαριασμού σας και τον τρόπο που σας βλέπουν οι άλλοι",
+      "fullName": "Πλήρες Όνομα",
+      "fullNamePlaceholder": "Εισάγετε το πλήρες όνομά σας",
+      "email": "Διεύθυνση Email",
+      "emailPlaceholder": "Εισάγετε το email σας",
+      "emailNote": "Οι αλλαγές email διαχειρίζονται μέσω του πάροχου λογαριασμού σας",
+      "bio": "Βιογραφία",
+      "bioPlaceholder": "Πείτε μας λίγα για τον εαυτό σας...",
+      "saveChanges": "Αποθήκευση Αλλαγών"
+    },
+    "interfaceLanguage": {
+      "title": "Γλώσσα Διεπαφής",
+      "description": "Επιλέξτε την προτιμώμενη γλώσσα για τη διεπαφή του πίνακα ελέγχου",
+      "dashboardLanguage": "Γλώσσα Πίνακα Ελέγχου",
+      "selectLanguage": "Επιλέξτε γλώσσα",
+      "note": "Αυτή η ρύθμιση επηρεάζει τη γλώσσα της διεπαφής του πίνακα ελέγχου. Η σελίδα θα φορτώσει ξανά μετά την αποθήκευση.",
+      "saved": "✓ Η προτίμηση γλώσσας αποθηκεύτηκε! Επαναφόρτωση...",
+      "save": "Αποθήκευση Προτίμησης Γλώσσας",
+      "saving": "Αποθηκεύτηκε..."
+    },
+    "notifications": {
+      "title": "Προτιμήσεις Ειδοποιήσεων",
+      "description": "Επιλέξτε πώς θέλετε να ειδοποιείστε για σημαντικές ενημερώσεις",
+      "emailNotifications": "Ειδοποιήσεις Email",
+      "emailNotificationsDesc": "Λάβετε ενημερώσεις email για τους πράκτορές σας και τη χρήση",
+      "usageAlerts": "Ειδοποιήσεις Χρήσης",
+      "usageAlertsDesc": "Λάβετε ειδοποιήσεις όταν πλησιάζετε τα όρια του σχεδίου",
+      "productUpdates": "Ενημερώσεις Προϊόντος",
+      "productUpdatesDesc": "Μείνετε ενημερωμένοι για νέες λειτουργίες και βελτιώσεις",
+      "updatePreferences": "Ενημέρωση Προτιμήσεων"
+    },
+    "accountActions": {
+      "title": "Ενέργειες Λογαριασμού",
+      "description": "Διαχειριστείτε τον λογαριασμό και τα δεδομένα σας",
+      "exportData": "Εξαγωγή Δεδομένων",
+      "downloadInvoices": "Λήψη Ιστορικού Τιμολογίων",
+      "dangerZone": "Ζώνη Κινδύνου",
+      "dangerZoneDesc": "Αυτές οι ενέργειες δεν μπορούν να αναιρεθούν. Παρακαλώ να είστε προσεκτικοί.",
+      "deleteAccount": "Διαγραφή Λογαριασμού"
+    },
+    "emailTesting": {
+      "title": "Δοκιμή Email",
+      "description": "Δοκιμάστε διαφορετικούς τύπους email για να βεβαιωθείτε ότι το σύστημα email λειτουργεί σωστά",
+      "recipientEmail": "Email Παραλήπτη",
+      "recipientEmailPlaceholder": "test@example.com",
+      "recipientName": "Όνομα Παραλήπτη",
+      "recipientNamePlaceholder": "Γιάννης Παπαδόπουλος",
+      "emailType": "Τύπος Email",
+      "selectEmailType": "Επιλέξτε τύπο email για δοκιμή",
+      "generalNotification": "Γενική Ειδοποίηση",
+      "subject": "Θέμα",
+      "subjectPlaceholder": "Θέμα δοκιμαστικού email",
+      "content": "Περιεχόμενο (HTML)",
+      "contentPlaceholder": "<p>Το περιεχόμενο του email εδώ...</p>",
+      "sendTestEmail": "Αποστολή Δοκιμαστικού Email",
+      "sending": "Αποστολή...",
+      "fillAllFields": "Παρακαλώ συμπληρώστε όλα τα υποχρεωτικά πεδία",
+      "success": "Το δοκιμαστικό email στάλθηκε με επιτυχία!",
+      "error": "Αποτυχία αποστολής δοκιμαστικού email. Ελέγξτε την κονσόλα για λεπτομέρειες.",
+      "defaultSubject": "Δοκιμαστικό email από την πλατφόρμα AI πρακτόρων",
+      "defaultContent": "<p>Αυτό είναι ένα δοκιμαστικό email για να επαληθευτεί ότι το σύστημα email λειτουργεί σωστά.</p>",
+      "note": "Σημείωση:",
+      "noteText": "Άλλοι τύποι email ενεργοποιούνται αυτόματα:",
+      "welcomeEmail": "Email Καλωσορίσματος",
+      "welcomeEmailDesc": "Αποστέλλεται όταν εγγράφονται νέοι χρήστες",
+      "billingNotifications": "Ειδοποιήσεις Χρέωσης",
+      "billingNotificationsDesc": "Αποστέλλονται κατά τη διάρκεια συμβάντων Stripe webhook",
+      "usageAlerts": "Ειδοποιήσεις Χρήσης",
+      "usageAlertsDesc": "Αποστέλλονται όταν οι χρήστες πλησιάζουν τα όρια του σχεδίου"
+    }
+  }
+}

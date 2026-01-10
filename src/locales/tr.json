@@ -1,1 +1,78 @@
-{"settings":{"title":"Settings","description":"Manage your account settings and preferences"}}
+{
+  "settings": {
+    "title": "Genel Ayarlar",
+    "description": "Hesap ayarlarınızı ve tercihlerinizi yönetin",
+    "profile": {
+      "title": "Profil Bilgileri",
+      "description": "Hesap bilgilerinizi ve başkalarının sizi nasıl gördüğünü güncelleyin",
+      "fullName": "Tam Ad",
+      "fullNamePlaceholder": "Tam adınızı girin",
+      "email": "E-posta Adresi",
+      "emailPlaceholder": "E-postanızı girin",
+      "emailNote": "E-posta değişiklikleri hesap sağlayıcınız aracılığıyla yönetilir",
+      "bio": "Biyografi",
+      "bioPlaceholder": "Bize kendiniz hakkında biraz bilgi verin...",
+      "saveChanges": "Değişiklikleri Kaydet"
+    },
+    "interfaceLanguage": {
+      "title": "Arayüz Dili",
+      "description": "Kontrol paneli arayüzü için tercih ettiğiniz dili seçin",
+      "dashboardLanguage": "Kontrol Paneli Dili",
+      "selectLanguage": "Bir dil seçin",
+      "note": "Bu ayar kontrol paneli arayüzünün dilini etkiler. Sayfa kaydetme sonrası yeniden yüklenecektir.",
+      "saved": "✓ Dil tercihi kaydedildi! Yeniden yükleniyor...",
+      "save": "Dil Tercihini Kaydet",
+      "saving": "Kaydedildi..."
+    },
+    "notifications": {
+      "title": "Bildirim Tercihleri",
+      "description": "Önemli güncellemeler hakkında nasıl bildirilmek istediğinizi seçin",
+      "emailNotifications": "E-posta Bildirimleri",
+      "emailNotificationsDesc": "Ajanlarınız ve kullanım hakkında e-posta güncellemeleri alın",
+      "usageAlerts": "Kullanım Uyarıları",
+      "usageAlertsDesc": "Plan limitlerine yaklaştığınızda bildirim alın",
+      "productUpdates": "Ürün Güncellemeleri",
+      "productUpdatesDesc": "Yeni özellikler ve iyileştirmeler hakkında bilgi alın",
+      "updatePreferences": "Tercihleri Güncelle"
+    },
+    "accountActions": {
+      "title": "Hesap İşlemleri",
+      "description": "Hesabınızı ve verilerinizi yönetin",
+      "exportData": "Verileri Dışa Aktar",
+      "downloadInvoices": "Fatura Geçmişini İndir",
+      "dangerZone": "Tehlikeli Bölge",
+      "dangerZoneDesc": "Bu işlemler geri alınamaz. Lütfen dikkatli olun.",
+      "deleteAccount": "Hesabı Sil"
+    },
+    "emailTesting": {
+      "title": "E-posta Testi",
+      "description": "E-posta sisteminin doğru çalıştığından emin olmak için farklı e-posta türlerini test edin",
+      "recipientEmail": "Alıcı E-postası",
+      "recipientEmailPlaceholder": "test@example.com",
+      "recipientName": "Alıcı Adı",
+      "recipientNamePlaceholder": "Ahmet Yılmaz",
+      "emailType": "E-posta Türü",
+      "selectEmailType": "Test edilecek e-posta türünü seçin",
+      "generalNotification": "Genel Bildirim",
+      "subject": "Konu",
+      "subjectPlaceholder": "Test e-postası konusu",
+      "content": "İçerik (HTML)",
+      "contentPlaceholder": "<p>E-posta içeriği buraya...</p>",
+      "sendTestEmail": "Test E-postası Gönder",
+      "sending": "Gönderiliyor...",
+      "fillAllFields": "Lütfen tüm zorunlu alanları doldurun",
+      "success": "Test e-postası başarıyla gönderildi!",
+      "error": "Test e-postası gönderilemedi. Detaylar için konsolu kontrol edin.",
+      "defaultSubject": "AI Ajan Platformu'ndan Test E-postası",
+      "defaultContent": "<p>Bu, e-posta sisteminin doğru çalıştığını doğrulamak için bir test e-postasıdır.</p>",
+      "note": "Not:",
+      "noteText": "Diğer e-posta türleri otomatik olarak tetiklenir:",
+      "welcomeEmail": "Hoş Geldiniz E-postası",
+      "welcomeEmailDesc": "Yeni kullanıcılar kaydolduğunda gönderilir",
+      "billingNotifications": "Faturalama Bildirimleri",
+      "billingNotificationsDesc": "Stripe webhook olayları sırasında gönderilir",
+      "usageAlerts": "Kullanım Uyarıları",
+      "usageAlertsDesc": "Kullanıcılar plan limitlerine yaklaştığında gönderilir"
+    }
+  }
+}

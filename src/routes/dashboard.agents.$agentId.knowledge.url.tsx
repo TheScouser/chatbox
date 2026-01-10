@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { ExternalLink, Globe } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
@@ -33,6 +34,7 @@ export const Route = createFileRoute(
 });
 
 function AgentKnowledgeUrl() {
+	const { t } = useTranslation();
 	const { agentId } = Route.useParams();
 	const [url, setUrl] = useState("");
 	const [urlTitle, setUrlTitle] = useState("");
@@ -89,7 +91,7 @@ function AgentKnowledgeUrl() {
 		} catch (error) {
 			console.error("Error processing URL:", error);
 			setError(
-				error instanceof Error ? error.message : "Failed to process URL",
+				error instanceof Error ? error.message : t("knowledge.url.processError"),
 			);
 		} finally {
 			setIsProcessingUrl(false);
@@ -97,14 +99,14 @@ function AgentKnowledgeUrl() {
 	};
 
 	const handleDelete = async (entryId: string) => {
-		if (!confirm("Are you sure you want to delete this URL entry?")) return;
+		if (!confirm(t("knowledge.url.deleteError"))) return;
 
 		try {
 			await deleteKnowledgeEntry({ entryId: entryId as any });
 		} catch (error) {
 			console.error("Error deleting URL entry:", error);
 			setError(
-				error instanceof Error ? error.message : "Failed to delete URL entry",
+				error instanceof Error ? error.message : t("knowledge.url.deleteError"),
 			);
 		}
 	};
@@ -112,8 +114,8 @@ function AgentKnowledgeUrl() {
 	return (
 		<PageLayout>
 			<PageHeader
-				title="Website Source"
-				description="Add content from websites by providing URLs. The content will be automatically extracted and added to your agent."
+				title={t("knowledge.url.title")}
+				description={t("knowledge.url.description")}
 			/>
 
 			{error && (
@@ -125,15 +127,15 @@ function AgentKnowledgeUrl() {
 			{success && (
 				<Alert>
 					<AlertDescription>
-						URL content processed successfully!
+						{t("knowledge.url.addFromUrl")}
 					</AlertDescription>
 				</Alert>
 			)}
 
 			<TwoColumnLayout>
 				<FormCard
-					title="Add Content from URL"
-					description="Enter a webpage URL to automatically extract and add its content to your agent."
+					title={t("knowledge.url.addFromUrl")}
+					description={t("knowledge.url.description")}
 					icon={Globe}
 				>
 					<FormSection>
@@ -148,28 +150,28 @@ function AgentKnowledgeUrl() {
 								</AlertDescription>
 							</Alert>
 
-							<FormField label="Website URL" required>
+							<FormField label={t("knowledge.url.websiteUrl")} required>
 								<Input
 									type="url"
 									value={url}
 									onChange={(e) => setUrl(e.target.value)}
-									placeholder="https://example.com/page"
+									placeholder={t("knowledge.url.websiteUrlPlaceholder")}
 									required
 								/>
 								<p className="mt-1 text-sm text-muted-foreground">
-									Enter the full URL including https:// or http://
+									{t("knowledge.url.websiteUrl")}
 								</p>
 							</FormField>
 
-							<FormField label="Custom Title (Optional)">
+							<FormField label={t("knowledge.url.customTitle")}>
 								<Input
 									type="text"
 									value={urlTitle}
 									onChange={(e) => setUrlTitle(e.target.value)}
-									placeholder="Leave blank to use the page title"
+									placeholder={t("knowledge.url.customTitlePlaceholder")}
 								/>
 								<p className="mt-1 text-sm text-muted-foreground">
-									If left blank, the page title will be used automatically
+									{t("knowledge.url.customTitlePlaceholder")}
 								</p>
 							</FormField>
 
@@ -182,10 +184,10 @@ function AgentKnowledgeUrl() {
 										setUrlTitle("");
 									}}
 								>
-									Clear
+									{t("common.cancel")}
 								</Button>
 								<Button type="submit" disabled={isProcessingUrl || !url.trim()}>
-									{isProcessingUrl ? "Processing..." : "Add from URL"}
+									{isProcessingUrl ? t("knowledge.url.processing") : t("knowledge.url.addFromUrlButton")}
 								</Button>
 							</FormActions>
 						</form>
@@ -193,14 +195,14 @@ function AgentKnowledgeUrl() {
 				</FormCard>
 
 				<ContentCard
-					title="Added Website Content"
-					description={`${urlEntries.length} website entries in your knowledge base`}
+					title={t("knowledge.url.addedContent")}
+					description={`${urlEntries.length} ${t("knowledge.url.name")} ${t("common.entries")}`}
 				>
 					{urlEntries.length === 0 ? (
 						<ContentCardEmpty
 							icon={Globe}
-							title="No website content yet"
-							description="Add your first website content using the form."
+							title={t("knowledge.url.noContent")}
+							description={t("knowledge.url.noContentDesc")}
 						/>
 					) : (
 						<ContentCardList>
@@ -213,7 +215,7 @@ function AgentKnowledgeUrl() {
 											<div className="flex-1">
 												<h4 className="text-sm font-medium text-card-foreground flex items-center">
 													<ExternalLink className="h-4 w-4 mr-2" />
-													{entry.title || "Untitled URL"}
+													{entry.title || t("knowledge.untitledEntry")}
 												</h4>
 												{entry.sourceMetadata?.url && (
 													<p className="mt-1 text-sm">

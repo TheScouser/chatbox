@@ -12,6 +12,7 @@ import {
 	Trash,
 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import ChatWidget from "../components/ChatWidget";
@@ -28,6 +29,7 @@ export const Route = createFileRoute(
 });
 
 function AgentConversations() {
+	const { t } = useTranslation();
 	const { agentId } = Route.useParams();
 	const [currentConversationId, setCurrentConversationId] = useState<
 		Id<"conversations"> | undefined
@@ -53,13 +55,13 @@ function AgentConversations() {
 		);
 	}
 
-	if (!agent) {
+		if (!agent) {
 		return (
 			<PageLayout>
 				<ContentCardEmpty
 					icon={MessageSquare}
-					title="Agent not found"
-					description="The agent you're looking for doesn't exist."
+					title={t("agents.notFound.title")}
+					description={t("agents.notFound.description")}
 				/>
 			</PageLayout>
 		);
@@ -68,21 +70,21 @@ function AgentConversations() {
 	return (
 		<PageLayout>
 			<PageHeader
-				title="Conversations"
-				description="View and manage all conversations with your agent."
+				title={t("conversations.title")}
+				description={t("conversations.description")}
 			>
 				<div className="flex items-center gap-2">
 					<Button variant="outline" size="sm" className="hidden sm:flex">
 						<RefreshCw className="h-3.5 w-3.5 mr-2" />
-						Refresh
+						{t("conversations.refresh")}
 					</Button>
 					<Button variant="outline" size="sm" className="hidden sm:flex">
 						<Filter className="h-3.5 w-3.5 mr-2" />
-						Filter
+						{t("conversations.filter")}
 					</Button>
 					<Button size="sm">
 						<Download className="h-3.5 w-3.5 mr-2" />
-						Export Data
+						{t("conversations.exportData")}
 					</Button>
 				</div>
 			</PageHeader>
@@ -97,8 +99,8 @@ function AgentConversations() {
 			) : conversations.length === 0 ? (
 				<ContentCardEmpty
 					icon={MessageSquare}
-					title="No conversations yet"
-					description="Conversations will appear here once users start chatting with your agent."
+					title={t("conversations.noConversations")}
+					description={t("conversations.noConversationsDesc")}
 				>
 					<Button
 						onClick={() =>
@@ -106,7 +108,7 @@ function AgentConversations() {
 						}
 					>
 						<MessageSquare className="mr-2 h-4 w-4" />
-						Test Your Agent
+						{t("conversations.testAgent")}
 					</Button>
 				</ContentCardEmpty>
 			) : (
@@ -116,7 +118,7 @@ function AgentConversations() {
 						<div className="p-4 border-b border-border/40 bg-muted/20">
 							<h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/80 flex items-center gap-2">
 								<Clock className="h-3.5 w-3.5" />
-								History
+								{t("conversations.history")}
 							</h3>
 						</div>
 						<div className="overflow-y-auto flex-1 custom-scrollbar">
@@ -161,7 +163,7 @@ function AgentConversations() {
 														: "text-foreground group-hover:text-primary",
 												)}
 											>
-												{conversation.title || "New Session"}
+												{conversation.title || t("conversations.newSession")}
 											</p>
 											<span className="text-[10px] font-semibold text-muted-foreground/60 whitespace-nowrap pt-0.5">
 												{timeDisplay}
@@ -172,11 +174,11 @@ function AgentConversations() {
 												variant="outline"
 												className="text-[9px] bg-background/50 border-border/40"
 											>
-												{isSelected ? "Open" : "Archived"}
+												{isSelected ? t("conversations.open") : t("conversations.archived")}
 											</Badge>
 											<div className="flex items-center text-[10px] text-muted-foreground/50 font-bold uppercase tracking-tight">
 												<Terminal className="h-2.5 w-2.5 mr-1" />
-												Playground
+												{t("conversations.playground")}
 											</div>
 										</div>
 
@@ -209,14 +211,14 @@ function AgentConversations() {
 												<h4 className="text-base font-bold text-foreground flex items-center gap-2">
 													{conversations.find(
 														(c) => c._id === currentConversationId,
-													)?.title || "Untitled Session"}
+													)?.title || t("conversations.newSession")}
 													<Badge variant="success" className="h-4">
-														Live
+														{t("conversations.live")}
 													</Badge>
 												</h4>
 												<div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground font-medium">
 													<Clock className="h-3 w-3" />
-													Started{" "}
+													{t("conversations.started")}{" "}
 													{new Date(
 														conversations.find(
 															(c) => c._id === currentConversationId,
@@ -237,7 +239,7 @@ function AgentConversations() {
 												className="h-8 text-xs"
 											>
 												<Download className="h-3 w-3 mr-2" />
-												Transcript
+												{t("conversations.transcript")}
 											</Button>
 											<Button
 												variant="destructive"
@@ -245,7 +247,7 @@ function AgentConversations() {
 												className="h-8 text-xs bg-destructive/10 hover:bg-destructive/20 text-destructive border-transparent"
 											>
 												<Trash className="h-3 w-3 mr-2" />
-												Delete
+												{t("conversations.delete")}
 											</Button>
 										</div>
 									</div>
@@ -268,15 +270,14 @@ function AgentConversations() {
 										<MessageSquare className="h-8 w-8 text-muted-foreground/30" />
 									</div>
 									<h3 className="text-lg font-bold text-foreground mb-2">
-										Select a Session
+										{t("conversations.selectSession")}
 									</h3>
 									<p className="text-sm text-muted-foreground leading-relaxed font-medium">
-										Choose a conversation from the sidebar to view the
-										transcript and interactive replay.
+										{t("conversations.selectSessionDesc")}
 									</p>
 									<div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
 										<ChevronRight className="h-3 w-3" />
-										Choose from 24 active logs
+										{t("conversations.chooseFromLogs", { count: conversations.length })}
 									</div>
 								</div>
 							</div>

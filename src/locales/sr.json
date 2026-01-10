@@ -1,1 +1,78 @@
-{"settings":{"title":"Settings","description":"Manage your account settings and preferences"}}
+{
+  "settings": {
+    "title": "Општа подешавања",
+    "description": "Управљајте подешавањима и преференцама вашег налога",
+    "profile": {
+      "title": "Информације о профилу",
+      "description": "Ажурирајте информације о вашем налогу и како вас виде други",
+      "fullName": "Пуно име",
+      "fullNamePlaceholder": "Унесите ваше пуно име",
+      "email": "Е-маил адреса",
+      "emailPlaceholder": "Унесите вашу е-маил адресу",
+      "emailNote": "Промене е-маила се управљају кроз вашег провајдера налога",
+      "bio": "Биографија",
+      "bioPlaceholder": "Реците нам нешто о себи...",
+      "saveChanges": "Сачувај измене"
+    },
+    "interfaceLanguage": {
+      "title": "Језик интерфејса",
+      "description": "Изаберите жељени језик за интерфејс контролне табле",
+      "dashboardLanguage": "Језик контролне табле",
+      "selectLanguage": "Изаберите језик",
+      "note": "Ово подешавање утиче на језик интерфејса контролне табле. Страница ће се поново учитати након чувања.",
+      "saved": "✓ Преференца језика сачувана! Поновно учитавање...",
+      "save": "Сачувај преференцу језика",
+      "saving": "Сачувано..."
+    },
+    "notifications": {
+      "title": "Подешавања обавештења",
+      "description": "Изаберите како желите да будете обавештени о важним ажурирањима",
+      "emailNotifications": "Е-маил обавештења",
+      "emailNotificationsDesc": "Примајте ажурирања е-поштом о вашим агентима и употреби",
+      "usageAlerts": "Упозорења о употреби",
+      "usageAlertsDesc": "Примајте обавештења када се приближавате лимитима плана",
+      "productUpdates": "Ажурирања производа",
+      "productUpdatesDesc": "Будите информисани о новим функцијама и побољшањима",
+      "updatePreferences": "Ажурирај преференце"
+    },
+    "accountActions": {
+      "title": "Акције налога",
+      "description": "Управљајте вашим налогом и подацима",
+      "exportData": "Извези податке",
+      "downloadInvoices": "Преузми историју рачуна",
+      "dangerZone": "Опасна зона",
+      "dangerZoneDesc": "Ове акције се не могу поништити. Молимо будите опрезни.",
+      "deleteAccount": "Обриши налог"
+    },
+    "emailTesting": {
+      "title": "Тестирање е-маила",
+      "description": "Тестирајте различите типове е-маилова како бисте осигурали да систем е-поште ради исправно",
+      "recipientEmail": "Е-маил примаоца",
+      "recipientEmailPlaceholder": "test@example.com",
+      "recipientName": "Име примаоца",
+      "recipientNamePlaceholder": "Марко Марковић",
+      "emailType": "Тип е-маила",
+      "selectEmailType": "Изаберите тип е-маила за тестирање",
+      "generalNotification": "Опште обавештење",
+      "subject": "Предмет",
+      "subjectPlaceholder": "Предмет тест е-маила",
+      "content": "Садржај (HTML)",
+      "contentPlaceholder": "<p>Садржај е-маила овде...</p>",
+      "sendTestEmail": "Пошаљи тест е-маил",
+      "sending": "Слање...",
+      "fillAllFields": "Молимо попуните сва обавезна поља",
+      "success": "Тест е-маил је успешно послат!",
+      "error": "Неуспешно слање тест е-маила. Проверите конзолу за детаље.",
+      "defaultSubject": "Тест е-маил са платформе AI агената",
+      "defaultContent": "<p>Ово је тест е-маил за проверу да ли систем е-поште ради исправно.</p>",
+      "note": "Напомена:",
+      "noteText": "Други типови е-маилова се аутоматски покрећу:",
+      "welcomeEmail": "Е-маил добродошлице",
+      "welcomeEmailDesc": "Шаље се када се нови корисници региструју",
+      "billingNotifications": "Обавештења о наплати",
+      "billingNotificationsDesc": "Шаљу се током Stripe webhook догађаја",
+      "usageAlerts": "Упозорења о употреби",
+      "usageAlertsDesc": "Шаљу се када се корисници приближавају лимитима плана"
+    }
+  }
+}

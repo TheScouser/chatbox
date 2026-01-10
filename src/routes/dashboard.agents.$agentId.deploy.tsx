@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -1037,8 +1038,8 @@ function AgentDeploy() {
 	return (
 		<PageLayout>
 			<PageHeader
-				title="Deployment"
-				description="Integrate your AI agent into any website or application in seconds."
+				title={t("deploy.title")}
+				description={t("deploy.description")}
 			/>
 
 			<div className="space-y-8 animate-fade-in">
@@ -1053,9 +1054,9 @@ function AgentDeploy() {
 									<div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-110 transition-transform">
 										<MessageSquare className="h-6 w-6 text-primary" />
 									</div>
-									<h3 className="text-xl font-bold">Chat widget</h3>
+									<h3 className="text-xl font-bold">{t("deploy.chatWidget")}</h3>
 									<p className="text-sm text-muted-foreground max-w-xs">
-										Add a floating chat window to your site.
+										{t("deploy.chatWidgetDesc")}
 									</p>
 								</div>
 								<Switch
@@ -1077,7 +1078,7 @@ function AgentDeploy() {
 									className="flex-1 rounded-xl shadow-lg shadow-primary/20"
 									onClick={() => setShowWidgetSettings(true)}
 								>
-									Manage
+									{t("deploy.manage")}
 									<ArrowRight className="h-4 w-4 ml-2" />
 								</Button>
 							</div>
@@ -1093,9 +1094,9 @@ function AgentDeploy() {
 									<div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition-transform">
 										<Globe className="h-6 w-6 text-emerald-500" />
 									</div>
-									<h3 className="text-xl font-bold">Help page</h3>
+									<h3 className="text-xl font-bold">{t("deploy.helpPage")}</h3>
 									<p className="text-sm text-muted-foreground max-w-xs">
-										ChatGPT-style help page, deployed standalone or under a path on your site.
+										{t("deploy.helpPageDesc")}
 									</p>
 								</div>
 							</div>
@@ -1114,7 +1115,7 @@ function AgentDeploy() {
 									className="flex-1 rounded-xl hover:bg-muted"
 									onClick={() => copyToClipboard(embedUrl, "public-link")}
 								>
-									{copiedCode === "public-link" ? "Copied!" : "Setup"}
+									{copiedCode === "public-link" ? t("deploy.copied") : t("deploy.setup")}
 								</Button>
 							</div>
 						</div>

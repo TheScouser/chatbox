@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { MessageSquare } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
 import { useFormValidation, validators } from "../hooks/useFormValidation";
 import { Alert, AlertDescription } from "../components/ui/alert";
@@ -35,32 +36,6 @@ export const Route = createFileRoute(
 	component: AgentKnowledgeQnA,
 });
 
-// Validation schema for Q&A form
-const qnaValidationSchema = {
-	question: {
-		required: true,
-		requiredMessage: "Question is required",
-		rules: [
-			validators.minLength(5, "Question must be at least 5 characters"),
-			validators.maxLength(500, "Question must be less than 500 characters"),
-		],
-	},
-	answer: {
-		required: true,
-		requiredMessage: "Answer is required",
-		rules: [
-			validators.minLength(10, "Answer must be at least 10 characters"),
-			validators.maxLength(10000, "Answer must be less than 10,000 characters"),
-		],
-	},
-	title: {
-		required: false,
-		rules: [
-			validators.maxLength(100, "Title must be less than 100 characters"),
-		],
-	},
-};
-
 type QnAFormData = {
 	question: string;
 	answer: string;
@@ -68,6 +43,7 @@ type QnAFormData = {
 };
 
 function AgentKnowledgeQnA() {
+	const { t } = useTranslation();
 	const { agentId } = Route.useParams();
 	const [question, setQuestion] = useState("");
 	const [answer, setAnswer] = useState("");
@@ -76,6 +52,32 @@ function AgentKnowledgeQnA() {
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
 	const [editingEntry, setEditingEntry] = useState<string | null>(null);
+
+	// Validation schema for Q&A form
+	const qnaValidationSchema = {
+		question: {
+			required: true,
+			requiredMessage: t("knowledge.qna.questionRequired"),
+			rules: [
+				validators.minLength(5, t("knowledge.qna.questionMinLength")),
+				validators.maxLength(500, t("knowledge.qna.questionMaxLength")),
+			],
+		},
+		answer: {
+			required: true,
+			requiredMessage: t("knowledge.qna.answerRequired"),
+			rules: [
+				validators.minLength(10, t("knowledge.qna.answerMinLength")),
+				validators.maxLength(2000, t("knowledge.qna.answerMaxLength")),
+			],
+		},
+		title: {
+			required: false,
+			rules: [
+				validators.maxLength(100, "Title must be less than 100 characters"),
+			],
+		},
+	};
 
 	// Form validation
 	const validation = useFormValidation<QnAFormData>(qnaValidationSchema);
@@ -143,7 +145,7 @@ function AgentKnowledgeQnA() {
 			setTimeout(() => setSuccess(false), 3000);
 		} catch (err) {
 			console.error("Error saving Q&A:", err);
-			setError(err instanceof Error ? err.message : "Failed to save Q&A");
+			setError(err instanceof Error ? err.message : t("knowledge.qna.saveError"));
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -165,21 +167,21 @@ function AgentKnowledgeQnA() {
 	};
 
 	const handleDelete = async (entryId: string) => {
-		if (!confirm("Are you sure you want to delete this Q&A?")) return;
+		if (!confirm(t("knowledge.qna.deleteError"))) return;
 
 		try {
 			await deleteKnowledgeEntry({ entryId: entryId as any });
 		} catch (error) {
 			console.error("Error deleting Q&A:", error);
-			setError(error instanceof Error ? error.message : "Failed to delete Q&A");
+			setError(error instanceof Error ? error.message : t("knowledge.qna.deleteError"));
 		}
 	};
 
 	return (
 		<PageLayout>
 			<PageHeader
-				title="Q&A Source"
-				description="Craft responses for important questions, ensuring your AI Agent shares the most relevant info."
+				title={t("knowledge.qna.title")}
+				description={t("knowledge.qna.description")}
 			/>
 
 			{error && (
@@ -190,14 +192,14 @@ function AgentKnowledgeQnA() {
 
 			{success && (
 				<Alert>
-					<AlertDescription>Q&A source saved successfully!</AlertDescription>
+					<AlertDescription>{t("knowledge.qna.save")}</AlertDescription>
 				</Alert>
 			)}
 
 			<TwoColumnLayout>
 				<FormCard
-					title={editingEntry ? "Edit Q&A" : "Add New Q&A"}
-					description="Create question and answer pairs to help your AI agent respond accurately to common inquiries."
+					title={editingEntry ? t("knowledge.qna.edit") : t("knowledge.qna.addNew")}
+					description={t("knowledge.qna.description")}
 					icon={MessageSquare}
 				>
 					<FormSection>
@@ -220,7 +222,7 @@ function AgentKnowledgeQnA() {
 									/>
 								</FormField>
 								<FormField
-									label="Question"
+									label={t("knowledge.qna.question")}
 									required
 									error={validation.getFieldError("question")}
 									hint={`${question.length}/500`}
@@ -232,15 +234,15 @@ function AgentKnowledgeQnA() {
 											validation.handleChange("question");
 										}}
 										onBlur={() => validation.handleBlur("question", question, formData)}
-										placeholder="Ex: How do I request a refund?"
+										placeholder={t("knowledge.qna.questionPlaceholder")}
 										aria-invalid={Boolean(validation.getFieldError("question"))}
 									/>
 								</FormField>
 								<FormField
-									label="Answer"
+									label={t("knowledge.qna.answer")}
 									required
 									error={validation.getFieldError("answer")}
-									hint={`${answer.length}/10,000`}
+									hint={`${answer.length}/2000`}
 								>
 									<Textarea
 										value={answer}
@@ -249,7 +251,7 @@ function AgentKnowledgeQnA() {
 											validation.handleChange("answer");
 										}}
 										onBlur={() => validation.handleBlur("answer", answer, formData)}
-										placeholder="Enter your answer..."
+										placeholder={t("knowledge.qna.answerPlaceholder")}
 										className="min-h-[300px]"
 										aria-invalid={Boolean(validation.getFieldError("answer"))}
 									/>
@@ -262,7 +264,7 @@ function AgentKnowledgeQnA() {
 										variant="outline"
 										onClick={handleCancelEdit}
 									>
-										Cancel
+										{t("common.cancel")}
 									</Button>
 								)}
 								<Button
@@ -270,12 +272,10 @@ function AgentKnowledgeQnA() {
 									disabled={isSubmitting}
 								>
 									{isSubmitting
-										? editingEntry
-											? "Updating Q&A..."
-											: "Adding Q&A..."
+										? t("knowledge.qna.saving")
 										: editingEntry
-											? "Update Q&A"
-											: "Add Q&A"}
+											? t("knowledge.qna.update")
+											: t("knowledge.qna.save")}
 								</Button>
 							</FormActions>
 						</form>
@@ -283,14 +283,14 @@ function AgentKnowledgeQnA() {
 				</FormCard>
 
 				<ContentCard
-					title="Existing Q&A Entries"
-					description={`${qnaEntries.length} Q&A entries in your knowledge base`}
+					title={t("knowledge.qna.existing")}
+					description={`${qnaEntries.length} ${t("knowledge.qna.name")} ${t("common.entries")}`}
 				>
 					{qnaEntries.length === 0 ? (
 						<ContentCardEmpty
 							icon={MessageSquare}
-							title="No Q&A entries yet"
-							description="Get started by creating your first question and answer pair."
+							title={t("knowledge.qna.noEntries")}
+							description={t("knowledge.qna.noEntriesDesc")}
 						/>
 					) : (
 						<ContentCardList className="max-h-[70vh] overflow-y-auto scrollbar-thin">
@@ -303,7 +303,7 @@ function AgentKnowledgeQnA() {
 									<ContentCardListItem key={entry._id}>
 										<EntryItem
 											key={entry._id}
-											title={entry.title || "Untitled Q&A"}
+											title={entry.title || t("knowledge.untitledEntry")}
 											content={questionContent}
 											metadata={`Added ${new Date(entry._creationTime).toLocaleDateString()}`}
 											onEdit={() => handleEdit(entry)}

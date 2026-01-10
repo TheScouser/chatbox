@@ -1,1 +1,78 @@
-{"settings":{"title":"Configuración General","description":"Administre la configuración y preferencias de su cuenta","profile":{"title":"Información del Perfil","description":"Actualice la información de su cuenta y cómo lo ven los demás","fullName":"Nombre Completo","fullNamePlaceholder":"Ingrese su nombre completo","email":"Dirección de Correo","emailPlaceholder":"Ingrese su correo","emailNote":"Los cambios de correo se administran a través de su proveedor de cuenta","bio":"Biografía","bioPlaceholder":"Cuéntenos un poco sobre usted...","saveChanges":"Guardar Cambios"},"interfaceLanguage":{"title":"Idioma de la Interfaz","description":"Elija su idioma preferido para la interfaz del panel","dashboardLanguage":"Idioma del Panel","selectLanguage":"Seleccione un idioma","note":"Esta configuración afecta el idioma de la interfaz del panel. La página se recargará después de guardar.","saved":"✓ ¡Preferencia de idioma guardada! Recargando...","save":"Guardar Preferencia de Idioma","saving":"Guardado..."},"notifications":{"title":"Preferencias de Notificaciones","description":"Elija cómo desea ser notificado sobre actualizaciones importantes","emailNotifications":"Notificaciones por Correo","emailNotificationsDesc":"Reciba actualizaciones por correo sobre sus agentes y uso","usageAlerts":"Alertas de Uso","usageAlertsDesc":"Reciba notificaciones cuando se acerque a los límites del plan","productUpdates":"Actualizaciones del Producto","productUpdatesDesc":"Manténgase informado sobre nuevas funciones y mejoras","updatePreferences":"Actualizar Preferencias"},"accountActions":{"title":"Acciones de Cuenta","description":"Administre su cuenta y datos","exportData":"Exportar Datos","downloadInvoices":"Descargar Historial de Facturas","dangerZone":"Zona de Peligro","dangerZoneDesc":"Estas acciones no se pueden deshacer. Por favor tenga cuidado.","deleteAccount":"Eliminar Cuenta"}}}
+{
+  "settings": {
+    "title": "Configuración General",
+    "description": "Administre la configuración y preferencias de su cuenta",
+    "profile": {
+      "title": "Información del Perfil",
+      "description": "Actualice la información de su cuenta y cómo lo ven los demás",
+      "fullName": "Nombre Completo",
+      "fullNamePlaceholder": "Ingrese su nombre completo",
+      "email": "Dirección de Correo",
+      "emailPlaceholder": "Ingrese su correo",
+      "emailNote": "Los cambios de correo se administran a través de su proveedor de cuenta",
+      "bio": "Biografía",
+      "bioPlaceholder": "Cuéntenos un poco sobre usted...",
+      "saveChanges": "Guardar Cambios"
+    },
+    "interfaceLanguage": {
+      "title": "Idioma de la Interfaz",
+      "description": "Elija su idioma preferido para la interfaz del panel",
+      "dashboardLanguage": "Idioma del Panel",
+      "selectLanguage": "Seleccione un idioma",
+      "note": "Esta configuración afecta el idioma de la interfaz del panel. La página se recargará después de guardar.",
+      "saved": "✓ ¡Preferencia de idioma guardada! Recargando...",
+      "save": "Guardar Preferencia de Idioma",
+      "saving": "Guardado..."
+    },
+    "notifications": {
+      "title": "Preferencias de Notificaciones",
+      "description": "Elija cómo desea ser notificado sobre actualizaciones importantes",
+      "emailNotifications": "Notificaciones por Correo",
+      "emailNotificationsDesc": "Reciba actualizaciones por correo sobre sus agentes y uso",
+      "usageAlerts": "Alertas de Uso",
+      "usageAlertsDesc": "Reciba notificaciones cuando se acerque a los límites del plan",
+      "productUpdates": "Actualizaciones del Producto",
+      "productUpdatesDesc": "Manténgase informado sobre nuevas funciones y mejoras",
+      "updatePreferences": "Actualizar Preferencias"
+    },
+    "accountActions": {
+      "title": "Acciones de Cuenta",
+      "description": "Administre su cuenta y datos",
+      "exportData": "Exportar Datos",
+      "downloadInvoices": "Descargar Historial de Facturas",
+      "dangerZone": "Zona de Peligro",
+      "dangerZoneDesc": "Estas acciones no se pueden deshacer. Por favor tenga cuidado.",
+      "deleteAccount": "Eliminar Cuenta"
+    },
+    "emailTesting": {
+      "title": "Prueba de Correo Electrónico",
+      "description": "Pruebe diferentes tipos de correos electrónicos para asegurarse de que el sistema de correo funciona correctamente",
+      "recipientEmail": "Correo del Destinatario",
+      "recipientEmailPlaceholder": "test@example.com",
+      "recipientName": "Nombre del Destinatario",
+      "recipientNamePlaceholder": "Juan Pérez",
+      "emailType": "Tipo de Correo",
+      "selectEmailType": "Seleccione el tipo de correo para probar",
+      "generalNotification": "Notificación General",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Asunto del correo de prueba",
+      "content": "Contenido (HTML)",
+      "contentPlaceholder": "<p>El contenido del correo aquí...</p>",
+      "sendTestEmail": "Enviar Correo de Prueba",
+      "sending": "Enviando...",
+      "fillAllFields": "Por favor complete todos los campos requeridos",
+      "success": "¡Correo de prueba enviado con éxito!",
+      "error": "Error al enviar correo de prueba. Verifique la consola para detalles.",
+      "defaultSubject": "Correo de prueba de la plataforma de agentes AI",
+      "defaultContent": "<p>Este es un correo de prueba para verificar que el sistema de correo funciona correctamente.</p>",
+      "note": "Nota:",
+      "noteText": "Otros tipos de correos se activan automáticamente:",
+      "welcomeEmail": "Correo de Bienvenida",
+      "welcomeEmailDesc": "Se envía cuando nuevos usuarios se registran",
+      "billingNotifications": "Notificaciones de Facturación",
+      "billingNotificationsDesc": "Se envían durante eventos Stripe webhook",
+      "usageAlerts": "Alertas de Uso",
+      "usageAlertsDesc": "Se envían cuando los usuarios se acercan a los límites del plan"
+    }
+  }
+}

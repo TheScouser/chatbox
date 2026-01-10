@@ -1,1 +1,78 @@
-{"settings":{"title":"Settings","description":"Manage your account settings and preferences"}}
+{
+  "settings": {
+    "title": "Ustawienia Ogólne",
+    "description": "Zarządzaj ustawieniami i preferencjami swojego konta",
+    "profile": {
+      "title": "Informacje o Profilu",
+      "description": "Zaktualizuj informacje o swoim koncie i sposób, w jaki widzą Cię inni",
+      "fullName": "Pełne Imię",
+      "fullNamePlaceholder": "Wprowadź swoje pełne imię",
+      "email": "Adres Email",
+      "emailPlaceholder": "Wprowadź swój email",
+      "emailNote": "Zmiany email są zarządzane przez dostawcę konta",
+      "bio": "Biografia",
+      "bioPlaceholder": "Opowiedz nam trochę o sobie...",
+      "saveChanges": "Zapisz Zmiany"
+    },
+    "interfaceLanguage": {
+      "title": "Język Interfejsu",
+      "description": "Wybierz preferowany język interfejsu panelu",
+      "dashboardLanguage": "Język Panelu",
+      "selectLanguage": "Wybierz język",
+      "note": "To ustawienie wpływa na język interfejsu panelu. Strona przeładuje się po zapisaniu.",
+      "saved": "✓ Preferencja języka zapisana! Przeładowywanie...",
+      "save": "Zapisz Preferencję Języka",
+      "saving": "Zapisano..."
+    },
+    "notifications": {
+      "title": "Preferencje Powiadomień",
+      "description": "Wybierz, jak chcesz być powiadamiany o ważnych aktualizacjach",
+      "emailNotifications": "Powiadomienia Email",
+      "emailNotificationsDesc": "Otrzymuj aktualizacje email o swoich agentach i użyciu",
+      "usageAlerts": "Alerty Użycia",
+      "usageAlertsDesc": "Otrzymuj powiadomienia, gdy zbliżasz się do limitów planu",
+      "productUpdates": "Aktualizacje Produktu",
+      "productUpdatesDesc": "Bądź informowany o nowych funkcjach i ulepszeniach",
+      "updatePreferences": "Aktualizuj Preferencje"
+    },
+    "accountActions": {
+      "title": "Akcje Konta",
+      "description": "Zarządzaj swoim kontem i danymi",
+      "exportData": "Eksportuj Dane",
+      "downloadInvoices": "Pobierz Historię Faktur",
+      "dangerZone": "Strefa Niebezpieczeństwa",
+      "dangerZoneDesc": "Te akcje nie mogą być cofnięte. Proszę być ostrożnym.",
+      "deleteAccount": "Usuń Konto"
+    },
+    "emailTesting": {
+      "title": "Testowanie Emaili",
+      "description": "Testuj różne typy emaili, aby upewnić się, że system email działa poprawnie",
+      "recipientEmail": "Email Odbiorcy",
+      "recipientEmailPlaceholder": "test@example.com",
+      "recipientName": "Nazwa Odbiorcy",
+      "recipientNamePlaceholder": "Jan Kowalski",
+      "emailType": "Typ Emaila",
+      "selectEmailType": "Wybierz typ emaila do przetestowania",
+      "generalNotification": "Ogólne Powiadomienie",
+      "subject": "Temat",
+      "subjectPlaceholder": "Temat testowego emaila",
+      "content": "Treść (HTML)",
+      "contentPlaceholder": "<p>Treść emaila tutaj...</p>",
+      "sendTestEmail": "Wyślij Testowy Email",
+      "sending": "Wysyłanie...",
+      "fillAllFields": "Proszę wypełnić wszystkie wymagane pola",
+      "success": "Testowy email został wysłany pomyślnie!",
+      "error": "Nie udało się wysłać testowego emaila. Sprawdź konsolę, aby uzyskać szczegóły.",
+      "defaultSubject": "Testowy email z platformy agentów AI",
+      "defaultContent": "<p>To jest testowy email w celu weryfikacji, czy system email działa poprawnie.</p>",
+      "note": "Uwaga:",
+      "noteText": "Inne typy emaili są automatycznie wyzwalane:",
+      "welcomeEmail": "Email Powitalny",
+      "welcomeEmailDesc": "Wysyłany, gdy nowi użytkownicy się rejestrują",
+      "billingNotifications": "Powiadomienia o Rozliczeniach",
+      "billingNotificationsDesc": "Wysyłane podczas zdarzeń Stripe webhook",
+      "usageAlerts": "Alerty Użycia",
+      "usageAlertsDesc": "Wysyłane, gdy użytkownicy zbliżają się do limitów planu"
+    }
+  }
+}

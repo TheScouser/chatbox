@@ -16,6 +16,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { AlertTriangle, ArrowUpRight } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { AgentUsageChart } from "@/components/usage/AgentUsageChart";
 import { UsageFilters } from "@/components/usage/UsageFilters";
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/dashboard/usage")({
 });
 
 function UsagePage() {
+	const { t } = useTranslation();
 	// State for filters
 	const [selectedDateRange, setSelectedDateRange] = useState<
 		"7d" | "30d" | "90d"
@@ -69,7 +71,7 @@ function UsagePage() {
 	const planName = plan?.name || "Free";
 
 	const formatPrice = (priceInCents: number) => {
-		if (priceInCents === 0) return "Free";
+		if (priceInCents === 0) return t("usage.free");
 		return `$${(priceInCents / 100).toFixed(0)}/month`;
 	};
 
@@ -124,37 +126,34 @@ function UsagePage() {
 				<Card>
 					<CardHeader>
 						<CardTitle className="flex items-center justify-between">
-							<span>Current Plan: {planName}</span>
+							<span>{t("usage.currentPlan", { planName })}</span>
 							<Badge variant={isFree ? "secondary" : "default"}>
-								{plan ? formatPrice(plan.price) : "Free"}
+								{plan ? formatPrice(plan.price) : t("usage.free")}
 							</Badge>
 						</CardTitle>
 						<CardDescription>
-							{organizationName && `Organization: ${organizationName} • `}
+							{organizationName && t("usage.organization", { orgName: organizationName })}
 							{subscription && (
 								<>
-									Billing period:{" "}
-									{new Date(
-										subscription.currentPeriodStart,
-									).toLocaleDateString()}{" "}
-									-{" "}
-									{new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+									{t("usage.billingPeriod", {
+										start: new Date(subscription.currentPeriodStart).toLocaleDateString(),
+										end: new Date(subscription.currentPeriodEnd).toLocaleDateString()
+									})}
 								</>
 							)}
-							{isFree &&
-								"Start with our free plan and upgrade when you're ready to scale"}
+							{isFree && t("usage.startWithFree")}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="flex items-center justify-between">
 							<div className="space-y-2">
-								<div className="text-sm text-gray-600">Plan Limits</div>
+								<div className="text-sm text-gray-600">{t("usage.planLimits")}</div>
 								<div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 									<div>
 										<span className="font-medium">
 											{(plan?.features.aiCredits || 100).toLocaleString()}
 										</span>
-										<span className="text-gray-500"> AI credits/month</span>
+										<span className="text-gray-500"> {t("usage.aiCreditsMonth")}</span>
 									</div>
 									<div>
 										<span className="font-medium">
@@ -162,26 +161,26 @@ function UsagePage() {
 												plan?.features.knowledgeCharacters || 500000
 											).toLocaleString()}
 										</span>
-										<span className="text-gray-500"> KB characters</span>
+										<span className="text-gray-500"> {t("usage.kbCharacters")}</span>
 									</div>
 									<div>
 										<span className="font-medium">
 											{plan?.features.maxChatbots || 2}
 										</span>
-										<span className="text-gray-500"> chatbots</span>
+										<span className="text-gray-500"> {t("usage.chatbots")}</span>
 									</div>
 									<div>
 										<span className="font-medium">
 											{plan?.features.maxSeats || 1}
 										</span>
-										<span className="text-gray-500"> seats</span>
+										<span className="text-gray-500"> {t("usage.seats")}</span>
 									</div>
 								</div>
 							</div>
 							<Link to="/dashboard/settings/plans">
 								<Button variant="outline" size="sm">
 									<ArrowUpRight className="h-4 w-4 mr-1" />
-									{isFree ? "Upgrade Plan" : "Change Plan"}
+									{isFree ? t("usage.upgradePlan") : t("usage.changePlan")}
 								</Button>
 							</Link>
 						</div>
@@ -193,8 +192,8 @@ function UsagePage() {
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 				<Card>
 					<CardHeader>
-						<CardTitle>Usage Insights</CardTitle>
-						<CardDescription>Key metrics and trends</CardDescription>
+						<CardTitle>{t("usage.usageInsights")}</CardTitle>
+						<CardDescription>{t("usage.keyMetrics")}</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{usageHistory?.data && (
@@ -202,7 +201,7 @@ function UsagePage() {
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">Daily Average</p>
+										<p className="font-medium">{t("usage.dailyAverage")}</p>
 										<p className="text-sm text-gray-600">
 											{Math.round(
 												usageHistory.data.reduce(
@@ -210,20 +209,20 @@ function UsagePage() {
 													0,
 												) / usageHistory.data.length || 0,
 											)}{" "}
-											credits per day
+											{t("usage.creditsPerDay")}
 										</p>
 									</div>
 								</div>
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">Peak Usage</p>
+										<p className="font-medium">{t("usage.peakUsage")}</p>
 										<p className="text-sm text-gray-600">
 											{Math.max(
 												...usageHistory.data.map((d) => d.creditsUsed),
 												0,
 											)}{" "}
-											credits in a single day
+											{t("usage.creditsInSingleDay")}
 										</p>
 									</div>
 								</div>
@@ -231,7 +230,7 @@ function UsagePage() {
 									<div className="flex items-start gap-3">
 										<div className="w-2 h-2 bg-purple-500 rounded-full mt-2" />
 										<div>
-											<p className="font-medium">Most Active Agent</p>
+											<p className="font-medium">{t("usage.mostActiveAgent")}</p>
 											<p className="text-sm text-gray-600">
 												{agentBreakdown.agents[0]?.agentName || "N/A"}
 											</p>
@@ -245,9 +244,9 @@ function UsagePage() {
 
 				<Card>
 					<CardHeader>
-						<CardTitle>Optimization Tips</CardTitle>
+						<CardTitle>{t("usage.optimizationTips")}</CardTitle>
 						<CardDescription>
-							Get the most out of your current plan
+							{t("usage.getMostOut")}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -256,29 +255,27 @@ function UsagePage() {
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">Maximize your free agent</p>
+										<p className="font-medium">{t("usage.maximizeFreeAgent")}</p>
 										<p className="text-sm text-gray-600">
-											Upload diverse knowledge sources to make your agent more
-											capable
+											{t("usage.maximizeFreeAgentDesc")}
 										</p>
 									</div>
 								</div>
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">Optimize your knowledge base</p>
+										<p className="font-medium">{t("usage.optimizeKnowledgeBase")}</p>
 										<p className="text-sm text-gray-600">
-											Keep your content focused and relevant for better
-											responses
+											{t("usage.optimizeKnowledgeBaseDesc")}
 										</p>
 									</div>
 								</div>
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-purple-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">Ready to scale?</p>
+										<p className="font-medium">{t("usage.readyToScale")}</p>
 										<p className="text-sm text-gray-600">
-											Upgrade to create multiple specialized agents
+											{t("usage.readyToScaleDesc")}
 										</p>
 									</div>
 								</div>
@@ -288,19 +285,18 @@ function UsagePage() {
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">Distribute your load</p>
+										<p className="font-medium">{t("usage.distributeLoad")}</p>
 										<p className="text-sm text-gray-600">
-											Create specialized agents for different use cases
+											{t("usage.distributeLoadDesc")}
 										</p>
 									</div>
 								</div>
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">Monitor performance</p>
+										<p className="font-medium">{t("usage.monitorPerformance")}</p>
 										<p className="text-sm text-gray-600">
-											Use this dashboard to understand which agents are most
-											effective
+											{t("usage.monitorPerformanceDesc")}
 										</p>
 									</div>
 								</div>
@@ -316,17 +312,16 @@ function UsagePage() {
 					<CardHeader>
 						<CardTitle className="text-blue-900 flex items-center gap-2">
 							<AlertTriangle className="h-5 w-5" />
-							Approaching your limits?
+							{t("usage.approachingLimits")}
 						</CardTitle>
 						<CardDescription className="text-blue-700">
-							Upgrade to unlock more capacity and premium features for your
-							growing needs.
+							{t("usage.approachingLimitsDesc")}
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<Link to="/dashboard/settings/plans">
 							<Button className="bg-blue-600 hover:bg-blue-700">
-								View Plans & Pricing
+								{t("usage.viewPlansPricing")}
 							</Button>
 						</Link>
 					</CardContent>

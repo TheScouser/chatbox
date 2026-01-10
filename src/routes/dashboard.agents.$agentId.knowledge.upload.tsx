@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { FileText, Upload } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
 import FileUpload from "../components/FileUpload";
 import { Alert, AlertDescription } from "../components/ui/alert";
@@ -28,6 +29,7 @@ export const Route = createFileRoute(
 });
 
 function AgentKnowledgeUpload() {
+	const { t } = useTranslation();
 	const { agentId } = Route.useParams();
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
@@ -104,7 +106,7 @@ function AgentKnowledgeUpload() {
 
 	const handleDeleteFile = async (file: any) => {
 		if (
-			!confirm("Are you sure you want to delete this file and all its content?")
+			!confirm(t("knowledge.upload.deleteError"))
 		)
 			return;
 
@@ -116,7 +118,7 @@ function AgentKnowledgeUpload() {
 		} catch (error) {
 			console.error("Error deleting file:", error);
 			setError(
-				error instanceof Error ? error.message : "Failed to delete file",
+				error instanceof Error ? error.message : t("knowledge.upload.deleteError"),
 			);
 		}
 	};
@@ -124,8 +126,8 @@ function AgentKnowledgeUpload() {
 	return (
 		<PageLayout>
 			<PageHeader
-				title="File Sources"
-				description="Upload documents to automatically extract and add their content to your agent."
+				title={t("knowledge.upload.title")}
+				description={t("knowledge.upload.description")}
 			/>
 
 			{/* Error/Success Messages */}
@@ -138,15 +140,15 @@ function AgentKnowledgeUpload() {
 			{success && (
 				<Alert>
 					<AlertDescription>
-						File uploaded and processed successfully!
+						{t("knowledge.upload.uploadTitle")}
 					</AlertDescription>
 				</Alert>
 			)}
 
 			<TwoColumnLayout>
 				<FormCard
-					title="Upload Documents"
-					description="Upload PDF, DOC, DOCX, or TXT files. Text will be automatically extracted and added to your agent."
+					title={t("knowledge.upload.uploadTitle")}
+					description={t("knowledge.upload.description")}
 					icon={Upload}
 				>
 					<FileUpload
@@ -159,14 +161,14 @@ function AgentKnowledgeUpload() {
 				</FormCard>
 
 				<ContentCard
-					title="Uploaded Files"
-					description={`${groupedDocumentEntries.length} files in your sources`}
+					title={t("knowledge.upload.uploadedFiles")}
+					description={`${groupedDocumentEntries.length} ${t("knowledge.upload.name")}`}
 				>
 					{groupedDocumentEntries.length === 0 ? (
 						<ContentCardEmpty
 							icon={FileText}
-							title="No files uploaded yet"
-							description="Upload your first document using the form."
+							title={t("knowledge.upload.noFiles")}
+							description={t("knowledge.upload.noFilesDesc")}
 						/>
 					) : (
 						<ContentCardList>
@@ -177,10 +179,10 @@ function AgentKnowledgeUpload() {
 										content={
 											file.chunks.length === 0
 												? file.status === "processing"
-													? "Processing file content..."
+													? t("knowledge.upload.processingFailed")
 													: file.status === "error"
-														? "Failed to process file"
-														: "No content extracted"
+														? t("knowledge.upload.processingFailed")
+														: t("knowledge.upload.noContentExtracted")
 												: file.chunks
 													.sort((a: any, b: any) => {
 														const extractPartNumber = (title: string) => {

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { FileText } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
 import RichTextEditor from "../components/RichTextEditor";
 import { Alert, AlertDescription } from "../components/ui/alert";
@@ -35,6 +36,7 @@ export const Route = createFileRoute(
 });
 
 function AgentKnowledgeText() {
+	const { t } = useTranslation();
 	const { agentId } = Route.useParams();
 	const [content, setContent] = useState("");
 	const [title, setTitle] = useState("");
@@ -103,7 +105,7 @@ function AgentKnowledgeText() {
 			setError(
 				error instanceof Error
 					? error.message
-					: "Failed to save text knowledge",
+					: t("knowledge.text.saveError"),
 			);
 		} finally {
 			setIsSubmitting(false);
@@ -123,14 +125,14 @@ function AgentKnowledgeText() {
 	};
 
 	const handleDelete = async (entryId: string) => {
-		if (!confirm("Are you sure you want to delete this text entry?")) return;
+		if (!confirm(t("knowledge.text.deleteError"))) return;
 
 		try {
 			await deleteKnowledgeEntry({ entryId: entryId as any });
 		} catch (error) {
 			console.error("Error deleting text entry:", error);
 			setError(
-				error instanceof Error ? error.message : "Failed to delete text entry",
+				error instanceof Error ? error.message : t("knowledge.text.deleteError"),
 			);
 		}
 	};
@@ -138,8 +140,8 @@ function AgentKnowledgeText() {
 	return (
 		<PageLayout>
 			<PageHeader
-				title="Text Source"
-				description="Add custom text content to your agent using rich text formatting."
+				title={t("knowledge.text.title")}
+				description={t("knowledge.text.description")}
 			/>
 
 			{/* Error/Success Messages */}
@@ -151,33 +153,33 @@ function AgentKnowledgeText() {
 
 			{success && (
 				<Alert>
-					<AlertDescription>Text source saved successfully!</AlertDescription>
+					<AlertDescription>{t("knowledge.text.save")}</AlertDescription>
 				</Alert>
 			)}
 
 			<TwoColumnLayout>
 				<FormCard
-					title={editingEntry ? "Edit Text Source" : "Add New Text Source"}
-					description="Create formatted text content that your AI agent can reference in conversations."
+					title={editingEntry ? t("knowledge.text.edit") : t("knowledge.text.addNew")}
+					description={t("knowledge.text.description")}
 					icon={FileText}
 				>
 					<form onSubmit={handleSubmit}>
 						<FormSection>
-							<FormField label="Title" required>
+							<FormField label={t("knowledge.text.entryTitle")} required>
 								<Input
 									id="title"
 									value={title}
 									onChange={(e) => setTitle(e.target.value)}
-									placeholder="Enter a title for this knowledge entry..."
+									placeholder={t("knowledge.text.entryTitlePlaceholder")}
 									required
 								/>
 							</FormField>
 
-							<FormField label="Content" required>
+							<FormField label={t("knowledge.text.content")} required>
 								<RichTextEditor
 									content={content}
 									onChange={setContent}
-									placeholder="Start writing your source content..."
+									placeholder={t("knowledge.text.contentPlaceholder")}
 									className="min-h-[400px]"
 								/>
 							</FormField>
@@ -196,40 +198,38 @@ function AgentKnowledgeText() {
 										}
 								}
 							>
-								{editingEntry ? "Cancel" : "Clear"}
+								{editingEntry ? t("common.cancel") : t("common.cancel")}
 							</Button>
 							<Button
 								type="submit"
 								disabled={isSubmitting || !content.trim() || !title.trim()}
 							>
 								{isSubmitting
-									? editingEntry
-										? "Updating..."
-										: "Saving..."
+									? t("knowledge.text.saving")
 									: editingEntry
-										? "Update Entry"
-										: "Save Source Entry"}
+										? t("knowledge.text.update")
+										: t("knowledge.text.save")}
 							</Button>
 						</FormActions>
 					</form>
 				</FormCard>
 
 				<ContentCard
-					title="Existing Text Entries"
-					description={`${textEntries.length} text entries in your sources`}
+					title={t("knowledge.text.existing")}
+					description={`${textEntries.length} ${t("knowledge.text.name")} ${t("common.entries")}`}
 				>
 					{textEntries.length === 0 ? (
 						<ContentCardEmpty
 							icon={FileText}
-							title="No text entries yet"
-							description="Get started by creating your first text knowledge entry."
+							title={t("knowledge.text.noEntries")}
+							description={t("knowledge.text.noEntriesDesc")}
 						/>
 					) : (
 						<ContentCardList className="max-h-[70vh] overflow-y-auto scrollbar-thin">
 							{textEntries.map((entry) => (
 								<ContentCardListItem key={entry._id}>
 									<EntryItem
-										title={entry.title || "Untitled Entry"}
+										title={entry.title || t("knowledge.untitledEntry")}
 										content={entry.content}
 										metadata={`Added ${new Date(entry._creationTime).toLocaleDateString()}`}
 										onEdit={() => handleEdit(entry)}

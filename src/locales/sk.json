@@ -1,1 +1,78 @@
-{"settings":{"title":"Settings","description":"Manage your account settings and preferences"}}
+{
+  "settings": {
+    "title": "Všeobecné nastavenia",
+    "description": "Spravujte nastavenia a preferencie svojho účtu",
+    "profile": {
+      "title": "Informácie o profile",
+      "description": "Aktualizujte informácie o svojom účte a ako vás vidia ostatní",
+      "fullName": "Celé meno",
+      "fullNamePlaceholder": "Zadajte svoje celé meno",
+      "email": "E-mailová adresa",
+      "emailPlaceholder": "Zadajte svoj e-mail",
+      "emailNote": "Zmeny e-mailu sú spravované prostredníctvom poskytovateľa účtu",
+      "bio": "Biografia",
+      "bioPlaceholder": "Povedzte nám niečo o sebe...",
+      "saveChanges": "Uložiť zmeny"
+    },
+    "interfaceLanguage": {
+      "title": "Jazyk rozhrania",
+      "description": "Vyberte preferovaný jazyk pre rozhranie nástenky",
+      "dashboardLanguage": "Jazyk nástenky",
+      "selectLanguage": "Vyberte jazyk",
+      "note": "Toto nastavenie ovplyvňuje jazyk rozhrania nástenky. Stránka sa po uložení znovu načíta.",
+      "saved": "✓ Predvoľba jazyka uložená! Obnovovanie...",
+      "save": "Uložiť predvoľbu jazyka",
+      "saving": "Uložené..."
+    },
+    "notifications": {
+      "title": "Predvoľby upozornení",
+      "description": "Vyberte, ako chcete byť informovaní o dôležitých aktualizáciách",
+      "emailNotifications": "E-mailové upozornenia",
+      "emailNotificationsDesc": "Dostávajte e-mailové aktualizácie o svojich agentoch a použití",
+      "usageAlerts": "Upozornenia na použitie",
+      "usageAlertsDesc": "Dostávajte upozornenia pri priblížení sa k limitom plánu",
+      "productUpdates": "Aktualizácie produktu",
+      "productUpdatesDesc": "Buďte informovaní o nových funkciách a vylepšeniach",
+      "updatePreferences": "Aktualizovať predvoľby"
+    },
+    "accountActions": {
+      "title": "Akcie účtu",
+      "description": "Spravujte svoj účet a dáta",
+      "exportData": "Exportovať dáta",
+      "downloadInvoices": "Stiahnuť históriu faktúr",
+      "dangerZone": "Nebezpečná zóna",
+      "dangerZoneDesc": "Tieto akcie nemožno vrátiť späť. Buďte prosím opatrní.",
+      "deleteAccount": "Zmazať účet"
+    },
+    "emailTesting": {
+      "title": "Testovanie e-mailov",
+      "description": "Testujte rôzne typy e-mailov, aby ste zabezpečili správne fungovanie e-mailového systému",
+      "recipientEmail": "E-mail príjemcu",
+      "recipientEmailPlaceholder": "test@example.com",
+      "recipientName": "Meno príjemcu",
+      "recipientNamePlaceholder": "Ján Novák",
+      "emailType": "Typ e-mailu",
+      "selectEmailType": "Vyberte typ e-mailu na testovanie",
+      "generalNotification": "Všeobecné upozornenie",
+      "subject": "Predmet",
+      "subjectPlaceholder": "Predmet testovacieho e-mailu",
+      "content": "Obsah (HTML)",
+      "contentPlaceholder": "<p>Obsah e-mailu tu...</p>",
+      "sendTestEmail": "Odoslať testovací e-mail",
+      "sending": "Odosielanie...",
+      "fillAllFields": "Vyplňte prosím všetky povinné polia",
+      "success": "Testovací e-mail bol úspešne odoslaný!",
+      "error": "Nepodarilo sa odoslať testovací e-mail. Skontrolujte konzolu pre podrobnosti.",
+      "defaultSubject": "Testovací e-mail z platformy AI agentov",
+      "defaultContent": "<p>Toto je testovací e-mail na overenie správneho fungovania e-mailového systému.</p>",
+      "note": "Poznámka:",
+      "noteText": "Iné typy e-mailov sa spúšťajú automaticky:",
+      "welcomeEmail": "Uvítací e-mail",
+      "welcomeEmailDesc": "Odosiela sa pri registrácii nových používateľov",
+      "billingNotifications": "Fakturačné upozornenia",
+      "billingNotificationsDesc": "Odosielajú sa počas Stripe webhook udalostí",
+      "usageAlerts": "Upozornenia na použitie",
+      "usageAlertsDesc": "Odosielajú sa, keď sa používatelia priblížia k limitom plánu"
+    }
+  }
+}
