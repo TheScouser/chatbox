@@ -2,6 +2,7 @@ import { query, mutation, internalQuery, internalMutation } from "./_generated/s
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 import { validateOrganizationAccessQuery } from "./helpers";
+import { internal } from "./_generated/api";
 
 // Use the shared helper function
 const validateOrganizationAccess = validateOrganizationAccessQuery;
@@ -60,6 +61,22 @@ export const createKnowledgeEntry = mutation({
     // Validate user has editor access to add knowledge
     await validateOrganizationAccess(ctx, agent.organizationId, "editor");
     
+    // Check knowledge character limit before inserting
+    const charCount = args.content.length;
+    const charCheck = await ctx.runQuery(internal.usageService.checkKnowledgeCharactersAvailable, {
+      organizationId: agent.organizationId,
+      additionalChars: charCount,
+    });
+
+    if (!charCheck.allowed) {
+      throw new Error(
+        `Knowledge base character limit reached. ` +
+        `Current: ${charCheck.current.toLocaleString()}/${charCheck.limit.toLocaleString()}. ` +
+        `This entry has ${charCount.toLocaleString()} characters. ` +
+        `Please upgrade your plan or remove existing entries.`
+      );
+    }
+    
     // Create new knowledge entry
     const knowledgeEntryId = await ctx.db.insert("knowledgeEntries", {
       agentId: args.agentId,
@@ -68,6 +85,13 @@ export const createKnowledgeEntry = mutation({
       source: args.source,
       sourceMetadata: args.sourceMetadata,
       embedding: undefined, // Will be populated later when we add embedding generation
+    });
+    
+    // Track character usage (note: tracking is informational, actual limit check happens above)
+    await ctx.runMutation(internal.usageService.trackKnowledgeCharacters, {
+      organizationId: agent.organizationId,
+      characters: charCount,
+      operation: "add",
     });
     
     return knowledgeEntryId;
@@ -96,11 +120,42 @@ export const updateKnowledgeEntry = mutation({
     // Validate user has editor access to update knowledge
     await validateOrganizationAccess(ctx, agent.organizationId, "editor");
     
+    // Check if new content would exceed limit (account for old content being removed)
+    const oldCharCount = entry.content.length;
+    const newCharCount = args.content.length;
+    const charDifference = newCharCount - oldCharCount;
+    
+    if (charDifference > 0) {
+      // Only check if we're adding characters
+      const charCheck = await ctx.runQuery(internal.usageService.checkKnowledgeCharactersAvailable, {
+        organizationId: agent.organizationId,
+        additionalChars: charDifference,
+      });
+
+      if (!charCheck.allowed) {
+        throw new Error(
+          `Knowledge base character limit would be exceeded. ` +
+          `Current: ${charCheck.current.toLocaleString()}/${charCheck.limit.toLocaleString()}. ` +
+          `This update would add ${charDifference.toLocaleString()} characters. ` +
+          `Please upgrade your plan or reduce content size.`
+        );
+      }
+    }
+    
     // Update the knowledge entry
     await ctx.db.patch(args.entryId, {
       title: args.title,
       content: args.content,
     });
+    
+    // Track character change if different
+    if (charDifference !== 0) {
+      await ctx.runMutation(internal.usageService.trackKnowledgeCharacters, {
+        organizationId: agent.organizationId,
+        characters: Math.abs(charDifference),
+        operation: charDifference > 0 ? "add" : "remove",
+      });
+    }
     
     return args.entryId;
   },
@@ -126,8 +181,18 @@ export const deleteKnowledgeEntry = mutation({
     // Validate user has editor access to delete knowledge
     await validateOrganizationAccess(ctx, agent.organizationId, "editor");
     
+    // Get entry before deletion to know character count
+    const charCount = entry.content.length;
+    
     // Delete the knowledge entry
     await ctx.db.delete(args.entryId);
+    
+    // Track removal
+    await ctx.runMutation(internal.usageService.trackKnowledgeCharacters, {
+      organizationId: agent.organizationId,
+      characters: charCount,
+      operation: "remove",
+    });
     
     return args.entryId;
   },
@@ -325,6 +390,22 @@ export const addKnowledgeEntry = mutation({
     // Validate user has editor access to add knowledge
     await validateOrganizationAccess(ctx, agent.organizationId, "editor");
     
+    // Check knowledge character limit before inserting
+    const charCount = args.content.length;
+    const charCheck = await ctx.runQuery(internal.usageService.checkKnowledgeCharactersAvailable, {
+      organizationId: agent.organizationId,
+      additionalChars: charCount,
+    });
+
+    if (!charCheck.allowed) {
+      throw new Error(
+        `Knowledge base character limit reached. ` +
+        `Current: ${charCheck.current.toLocaleString()}/${charCheck.limit.toLocaleString()}. ` +
+        `This entry has ${charCount.toLocaleString()} characters. ` +
+        `Please upgrade your plan or remove existing entries.`
+      );
+    }
+    
     // Create the knowledge entry
     const entryId = await ctx.db.insert("knowledgeEntries", {
       agentId: args.agentId,
@@ -332,6 +413,13 @@ export const addKnowledgeEntry = mutation({
       content: args.content,
       source: args.source,
       sourceMetadata: args.sourceMetadata,
+    });
+    
+    // Track character usage
+    await ctx.runMutation(internal.usageService.trackKnowledgeCharacters, {
+      organizationId: agent.organizationId,
+      characters: charCount,
+      operation: "add",
     });
     
     return entryId;
