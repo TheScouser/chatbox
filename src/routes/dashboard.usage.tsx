@@ -99,10 +99,7 @@ function UsagePage() {
 
 			{/* Usage Overview Cards */}
 			<UsageOverviewCards
-				creditsUsed={usageOverview?.creditsUsed || 0}
-				creditsLimit={usageOverview?.creditsLimit || 500}
-				agentsUsed={usageOverview?.agentsUsed || 0}
-				agentsLimit={usageOverview?.agentsLimit || 1}
+				usageSummary={usageOverview}
 				loading={dashboardLoading}
 			/>
 
@@ -155,31 +152,29 @@ function UsagePage() {
 								<div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 									<div>
 										<span className="font-medium">
-											{plan?.features.maxAgents || 1}
+											{(plan?.features.aiCredits || 100).toLocaleString()}
 										</span>
-										<span className="text-gray-500"> agents</span>
+										<span className="text-gray-500"> AI credits/month</span>
 									</div>
 									<div>
 										<span className="font-medium">
 											{(
-												plan?.features.maxMessagesPerMonth || 500
+												plan?.features.knowledgeCharacters || 500000
 											).toLocaleString()}
 										</span>
-										<span className="text-gray-500"> messages/month</span>
+										<span className="text-gray-500"> KB characters</span>
 									</div>
 									<div>
 										<span className="font-medium">
-											{(
-												plan?.features.maxKnowledgeEntries || 50
-											).toLocaleString()}
+											{plan?.features.maxChatbots || 2}
 										</span>
-										<span className="text-gray-500"> knowledge entries</span>
+										<span className="text-gray-500"> chatbots</span>
 									</div>
 									<div>
 										<span className="font-medium">
-											{plan?.features.maxFileSizeMB || 2}
+											{plan?.features.maxSeats || 1}
 										</span>
-										<span className="text-gray-500">MB max file size</span>
+										<span className="text-gray-500"> seats</span>
 									</div>
 								</div>
 							</div>

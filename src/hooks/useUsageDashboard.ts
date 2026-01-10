@@ -8,7 +8,7 @@ export function useUsageOverview() {
 	const { currentOrganization } = useOrganization();
 
 	const data = useQuery(
-		api.usage.getUsageOverview,
+		api.usageService.getUsageSummary,
 		currentOrganization ? { organizationId: currentOrganization._id } : "skip",
 	);
 
