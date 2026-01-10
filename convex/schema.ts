@@ -135,12 +135,12 @@ export default defineSchema({
     agentId: v.id("agents"),
     title: v.optional(v.string()),
     isActive: v.boolean(),
-    channelType: v.union(
+    channelType: v.optional(v.union(
       v.literal("widget"),
       v.literal("whatsapp"),
       v.literal("web"),
       v.literal("fb"),
-    ),
+    )),
     status: v.union(
       v.literal("open"),
       v.literal("waiting"),
