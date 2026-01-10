@@ -14,7 +14,7 @@ interface ChatInterfaceSettingsProps {
 	agent: any;
 }
 
-export default function ChatInterfaceSettings({ }: ChatInterfaceSettingsProps) {
+export default function ChatInterfaceSettings({}: ChatInterfaceSettingsProps) {
 	// Chat interface state
 	const [embedWidth, setEmbedWidth] = useState("400");
 	const [embedHeight, setEmbedHeight] = useState("600");
@@ -99,7 +99,9 @@ export default function ChatInterfaceSettings({ }: ChatInterfaceSettingsProps) {
 
 					{/* Preview */}
 					<div className="mt-6 p-4 bg-muted/30 rounded-lg">
-						<h5 className="text-sm font-medium text-foreground mb-2">Preview</h5>
+						<h5 className="text-sm font-medium text-foreground mb-2">
+							Preview
+						</h5>
 						<div className="text-xs text-muted-foreground mb-3">
 							Widget size: {embedWidth} × {embedHeight}
 						</div>

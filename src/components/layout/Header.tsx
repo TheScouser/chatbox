@@ -132,7 +132,9 @@ export function Header({
 								placeholder="Search..."
 								className="bg-transparent border-none outline-none text-xs w-full placeholder:text-muted-foreground"
 							/>
-							<div className="flex text-[10px] font-mono text-muted-foreground/70 border border-border/50 rounded px-1">⌘K</div>
+							<div className="flex text-[10px] font-mono text-muted-foreground/70 border border-border/50 rounded px-1">
+								⌘K
+							</div>
 						</div>
 
 						<div className="flex items-center gap-1 sm:gap-2">
@@ -160,7 +162,8 @@ export function Header({
 							<UserButton
 								appearance={{
 									elements: {
-										avatarBox: "w-8 h-8 ring-2 ring-border/50 hover:ring-primary/20 transition-all",
+										avatarBox:
+											"w-8 h-8 ring-2 ring-border/50 hover:ring-primary/20 transition-all",
 									},
 								}}
 							/>
@@ -245,10 +248,11 @@ function OrgSelector({
 											<button
 												key={org._id}
 												onClick={() => onSelect(org)}
-												className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${currentOrganization?._id === org._id
-													? "bg-accent text-accent-foreground"
-													: "hover:bg-accent/50 text-foreground"
-													}`}
+												className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
+													currentOrganization?._id === org._id
+														? "bg-accent text-accent-foreground"
+														: "hover:bg-accent/50 text-foreground"
+												}`}
 												type="button"
 											>
 												<Building2 className="w-4 h-4 mr-3 text-muted-foreground" />
@@ -370,10 +374,11 @@ function AgentSelector({
 											<button
 												key={agent._id}
 												onClick={() => onSelect(agent)}
-												className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${currentAgent?._id === agent._id
-													? "bg-accent text-accent-foreground"
-													: "hover:bg-accent/50 text-foreground"
-													}`}
+												className={`w-full flex items-center px-3 py-2 text-sm text-left rounded-lg transition-colors ${
+													currentAgent?._id === agent._id
+														? "bg-accent text-accent-foreground"
+														: "hover:bg-accent/50 text-foreground"
+												}`}
 												type="button"
 											>
 												<Bot className="w-4 h-4 mr-3 text-muted-foreground" />

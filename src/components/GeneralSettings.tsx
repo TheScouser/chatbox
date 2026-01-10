@@ -84,7 +84,9 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 			<div className="p-6 space-y-8">
 				{/* Agent ID */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-muted-foreground">Agent ID</Label>
+					<Label className="text-sm font-medium text-muted-foreground">
+						Agent ID
+					</Label>
 					<div className="flex items-center gap-2">
 						<div className="flex-1 px-3 py-2 bg-muted/30 border border-border rounded-md font-mono text-sm text-foreground">
 							{agent._id}
@@ -106,7 +108,9 @@ export default function GeneralSettings({ agent }: GeneralSettingsProps) {
 
 				{/* Size */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-muted-foreground">Size</Label>
+					<Label className="text-sm font-medium text-muted-foreground">
+						Size
+					</Label>
 					<div className="px-3 py-2 bg-muted/30 border border-border rounded-md text-sm text-foreground">
 						4 KB
 					</div>

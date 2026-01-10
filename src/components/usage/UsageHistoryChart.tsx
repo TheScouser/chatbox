@@ -96,7 +96,10 @@ export function UsageHistoryChart({
 								bottom: 5,
 							}}
 						>
-							<CartesianGrid strokeDasharray="3 3" className="opacity-30 stroke-border" />
+							<CartesianGrid
+								strokeDasharray="3 3"
+								className="opacity-30 stroke-border"
+							/>
 							<XAxis
 								dataKey="formattedDate"
 								tick={{ fontSize: 12, fill: "var(--color-muted-foreground)" }}

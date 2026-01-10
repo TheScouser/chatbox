@@ -66,8 +66,9 @@ export default function RichTextEditor({
 	}) => (
 		<button
 			onClick={onClick}
-			className={`p-2 rounded hover:bg-muted transition-colors ${isActive ? "bg-accent text-primary" : "text-muted-foreground"
-				}`}
+			className={`p-2 rounded hover:bg-muted transition-colors ${
+				isActive ? "bg-accent text-primary" : "text-muted-foreground"
+			}`}
 			title={title}
 			type="button"
 		>

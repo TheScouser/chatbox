@@ -1,25 +1,25 @@
+import { cn } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import {
+	ChevronRight,
+	Clock,
 	Download,
 	Filter,
 	MessageSquare,
 	RefreshCw,
+	Terminal,
 	Trash,
-	ChevronRight,
-	Clock,
-	Terminal
 } from "lucide-react";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import ChatWidget from "../components/ChatWidget";
+import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { ContentCardEmpty } from "../components/ui/content-card";
 import { PageLayout } from "../components/ui/layout";
 import { PageHeader } from "../components/ui/page-header";
-import { Badge } from "../components/ui/badge";
 
 export const Route = createFileRoute(
 	"/dashboard/agents/$agentId/conversations",
@@ -145,20 +145,22 @@ function AgentConversations() {
 										onClick={() => setCurrentConversationId(conversation._id)}
 										className={cn(
 											"p-4 border-b border-border/30 cursor-pointer transition-all duration-200 group relative animate-fade-in-right",
-											isSelected
-												? "bg-primary/[0.03]"
-												: "hover:bg-muted/30",
-											index < 10 ? `stagger-${(index % 5) + 1}` : ""
+											isSelected ? "bg-primary/[0.03]" : "hover:bg-muted/30",
+											index < 10 ? `stagger-${(index % 5) + 1}` : "",
 										)}
 									>
 										{isSelected && (
 											<div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-primary rounded-r-full shadow-lg shadow-primary/40" />
 										)}
 										<div className="flex justify-between items-start mb-1.5">
-											<p className={cn(
-												"text-sm font-bold truncate pr-6 transition-colors",
-												isSelected ? "text-primary" : "text-foreground group-hover:text-primary"
-											)}>
+											<p
+												className={cn(
+													"text-sm font-bold truncate pr-6 transition-colors",
+													isSelected
+														? "text-primary"
+														: "text-foreground group-hover:text-primary",
+												)}
+											>
 												{conversation.title || "New Session"}
 											</p>
 											<span className="text-[10px] font-semibold text-muted-foreground/60 whitespace-nowrap pt-0.5">
@@ -166,7 +168,10 @@ function AgentConversations() {
 											</span>
 										</div>
 										<div className="flex items-center gap-2">
-											<Badge variant="outline" className="text-[9px] bg-background/50 border-border/40">
+											<Badge
+												variant="outline"
+												className="text-[9px] bg-background/50 border-border/40"
+											>
 												{isSelected ? "Open" : "Archived"}
 											</Badge>
 											<div className="flex items-center text-[10px] text-muted-foreground/50 font-bold uppercase tracking-tight">
@@ -205,29 +210,40 @@ function AgentConversations() {
 													{conversations.find(
 														(c) => c._id === currentConversationId,
 													)?.title || "Untitled Session"}
-													<Badge variant="success" className="h-4">Live</Badge>
+													<Badge variant="success" className="h-4">
+														Live
+													</Badge>
 												</h4>
 												<div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground font-medium">
 													<Clock className="h-3 w-3" />
-													Started {new Date(
+													Started{" "}
+													{new Date(
 														conversations.find(
 															(c) => c._id === currentConversationId,
 														)?._creationTime || 0,
 													).toLocaleString(undefined, {
-														month: 'short',
-														day: 'numeric',
-														hour: '2-digit',
-														minute: '2-digit'
+														month: "short",
+														day: "numeric",
+														hour: "2-digit",
+														minute: "2-digit",
 													})}
 												</div>
 											</div>
 										</div>
 										<div className="flex items-center gap-2">
-											<Button variant="outline" size="sm" className="h-8 text-xs">
+											<Button
+												variant="outline"
+												size="sm"
+												className="h-8 text-xs"
+											>
 												<Download className="h-3 w-3 mr-2" />
 												Transcript
 											</Button>
-											<Button variant="destructive" size="sm" className="h-8 text-xs bg-destructive/10 hover:bg-destructive/20 text-destructive border-transparent">
+											<Button
+												variant="destructive"
+												size="sm"
+												className="h-8 text-xs bg-destructive/10 hover:bg-destructive/20 text-destructive border-transparent"
+											>
 												<Trash className="h-3 w-3 mr-2" />
 												Delete
 											</Button>
@@ -251,9 +267,12 @@ function AgentConversations() {
 									<div className="w-16 h-16 bg-muted/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-border/40">
 										<MessageSquare className="h-8 w-8 text-muted-foreground/30" />
 									</div>
-									<h3 className="text-lg font-bold text-foreground mb-2">Select a Session</h3>
+									<h3 className="text-lg font-bold text-foreground mb-2">
+										Select a Session
+									</h3>
 									<p className="text-sm text-muted-foreground leading-relaxed font-medium">
-										Choose a conversation from the sidebar to view the transcript and interactive replay.
+										Choose a conversation from the sidebar to view the
+										transcript and interactive replay.
 									</p>
 									<div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
 										<ChevronRight className="h-3 w-3" />

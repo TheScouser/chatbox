@@ -17,10 +17,10 @@ const buttonVariants = cva(
 					"border border-border/60 bg-background/50 backdrop-blur-sm shadow-sm hover:bg-accent hover:text-accent-foreground hover:border-accent hover:-translate-y-0.5",
 				secondary:
 					"bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 hover:-translate-y-0.5",
-				ghost:
-					"hover:bg-accent/50 hover:text-accent-foreground",
+				ghost: "hover:bg-accent/50 hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
-				glass: "bg-white/10 dark:bg-black/20 border border-white/20 dark:border-white/10 backdrop-blur-md text-foreground hover:bg-white/20 dark:hover:bg-black/30 hover:-translate-y-0.5 font-medium",
+				glass:
+					"bg-white/10 dark:bg-black/20 border border-white/20 dark:border-white/10 backdrop-blur-md text-foreground hover:bg-white/20 dark:hover:bg-black/30 hover:-translate-y-0.5 font-medium",
 			},
 			size: {
 				default: "h-10 px-5 py-2",

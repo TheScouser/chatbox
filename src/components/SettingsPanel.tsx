@@ -214,10 +214,11 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 							<button
 								key={tab.id}
 								onClick={() => setActiveSettingsTab(tab.id)}
-								className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md mb-1 ${activeSettingsTab === tab.id
-									? "bg-primary/10 text-primary border-r-2 border-primary"
-									: "text-muted-foreground hover:text-foreground hover:bg-muted"
-									}`}
+								className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md mb-1 ${
+									activeSettingsTab === tab.id
+										? "bg-primary/10 text-primary border-r-2 border-primary"
+										: "text-muted-foreground hover:text-foreground hover:bg-muted"
+								}`}
 							>
 								<Icon className="mr-3 h-4 w-4" />
 								{tab.name}

@@ -58,7 +58,9 @@ export default function AISettings({ agent }: AISettingsProps) {
 			<div className="p-6 space-y-8">
 				{/* Model Selection */}
 				<div className="space-y-2">
-					<Label className="text-sm font-medium text-muted-foreground">Model</Label>
+					<Label className="text-sm font-medium text-muted-foreground">
+						Model
+					</Label>
 					<div className="mb-2">
 						<span className="inline-block px-2 py-1 text-xs font-medium text-primary bg-primary/10 rounded">
 							Claude 4 models are now available
