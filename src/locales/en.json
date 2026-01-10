@@ -1,0 +1,78 @@
+{
+  "settings": {
+    "title": "General Settings",
+    "description": "Manage your account settings and preferences",
+    "profile": {
+      "title": "Profile Information",
+      "description": "Update your account information and how others see you",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email",
+      "emailNote": "Email changes are managed through your account provider",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us a bit about yourself...",
+      "saveChanges": "Save Changes"
+    },
+    "interfaceLanguage": {
+      "title": "Interface Language",
+      "description": "Choose your preferred language for the dashboard interface",
+      "dashboardLanguage": "Dashboard Language",
+      "selectLanguage": "Select a language",
+      "note": "This setting affects the language of the dashboard interface. The page will reload after saving.",
+      "saved": "✓ Language preference saved! Reloading...",
+      "save": "Save Language Preference",
+      "saving": "Saved..."
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Choose how you want to be notified about important updates",
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsDesc": "Receive email updates about your agents and usage",
+      "usageAlerts": "Usage Alerts",
+      "usageAlertsDesc": "Get notified when approaching plan limits",
+      "productUpdates": "Product Updates",
+      "productUpdatesDesc": "Stay informed about new features and improvements",
+      "updatePreferences": "Update Preferences"
+    },
+    "accountActions": {
+      "title": "Account Actions",
+      "description": "Manage your account and data",
+      "exportData": "Export Data",
+      "downloadInvoices": "Download Invoice History",
+      "dangerZone": "Danger Zone",
+      "dangerZoneDesc": "These actions cannot be undone. Please be careful.",
+      "deleteAccount": "Delete Account"
+    },
+    "emailTesting": {
+      "title": "Email Testing",
+      "description": "Test different types of emails to ensure the email system is working correctly",
+      "recipientEmail": "Recipient Email",
+      "recipientEmailPlaceholder": "test@example.com",
+      "recipientName": "Recipient Name",
+      "recipientNamePlaceholder": "John Doe",
+      "emailType": "Email Type",
+      "selectEmailType": "Select email type to test",
+      "generalNotification": "General Notification",
+      "subject": "Subject",
+      "subjectPlaceholder": "Test Email Subject",
+      "content": "Content (HTML)",
+      "contentPlaceholder": "<p>Email content goes here...</p>",
+      "sendTestEmail": "Send Test Email",
+      "sending": "Sending...",
+      "fillAllFields": "Please fill in all required fields",
+      "success": "Test email sent successfully!",
+      "error": "Failed to send test email. Check the console for details.",
+      "defaultSubject": "Test Email from AI Agent Platform",
+      "defaultContent": "<p>This is a test email to verify the email system is working correctly.</p>",
+      "note": "Note:",
+      "noteText": "Other email types are automatically triggered:",
+      "welcomeEmail": "Welcome Email",
+      "welcomeEmailDesc": "Sent when new users register",
+      "billingNotifications": "Billing Notifications",
+      "billingNotificationsDesc": "Sent during Stripe webhook events",
+      "usageAlerts": "Usage Alerts",
+      "usageAlertsDesc": "Sent when users approach plan limits"
+    }
+  }
+}
