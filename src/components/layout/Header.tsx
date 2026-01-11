@@ -86,12 +86,16 @@ export function Header({
 							<ChevronDown className="h-5 w-5 rotate-90" />
 						</button>
 
-						<div className="hidden sm:flex items-center space-x-2.5">
+						<button
+							onClick={() => navigate({ to: "/dashboard/agents" })}
+							className="hidden sm:flex items-center space-x-2.5 hover:opacity-80 transition-opacity cursor-pointer"
+							type="button"
+						>
 							<div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center">
 								<Bot className="w-4 h-4 text-primary-foreground" />
 							</div>
 							<span className="text-sm font-bold tracking-tight">Chatbox</span>
-						</div>
+						</button>
 
 						<div className="h-6 w-px bg-border/50 hidden md:block" />
 
