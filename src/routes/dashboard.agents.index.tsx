@@ -5,6 +5,7 @@ import { Bot, Calendar, MessageSquare, Plus } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { ContentCardEmpty } from "../components/ui/content-card";
@@ -31,7 +32,7 @@ function AgentsList() {
 			return allAgents || [];
 		}
 		return allAgents.filter(
-			(agent: any) => agent.organizationId === currentOrganization._id,
+			(agent) => agent.organizationId === currentOrganization._id,
 		);
 	}, [currentOrganization, allAgents]);
 
@@ -99,7 +100,7 @@ function AgentsList() {
 			) : (
 				/* Agents Grid */
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-					{agents.map((agent: any, index: number) => (
+					{agents.map((agent: Doc<"agents"> & { organization?: { id: string; userRole: string } }, index: number) => (
 						<Card
 							key={agent._id}
 							onClick={() =>

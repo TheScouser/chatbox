@@ -51,6 +51,7 @@ function WidgetDemoContent({ agentId }: { agentId: string }) {
 						to it.
 					</p>
 					<button
+						type="button"
 						onClick={() => window.history.back()}
 						className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
 					>
@@ -167,12 +168,14 @@ function WidgetDemoContent({ agentId }: { agentId: string }) {
 						</div>
 						<div className="flex justify-center gap-4">
 							<button
+								type="button"
 								onClick={() => window.history.back()}
 								className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
 							>
 								← Back to Dashboard
 							</button>
 							<button
+								type="button"
 								onClick={() => {
 									// Trigger widget open if available
 									if (window.ChatboxWidget) {

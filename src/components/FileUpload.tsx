@@ -1,6 +1,7 @@
 import { useMutation } from "convex/react";
 import { useCallback, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 interface FileUploadProps {
 	agentId: string;
@@ -33,24 +34,28 @@ export default function FileUpload({
 	const generateUploadUrl = useMutation(api.files.generateUploadUrl);
 	const saveFileMetadata = useMutation(api.files.saveFileMetadata);
 
-	const validateFile = (file: File): string | null => {
-		// Check file size
-		if (file.size > maxSize * 1024 * 1024) {
-			return `File size must be less than ${maxSize}MB`;
-		}
+	const validateFile = useCallback(
+		(file: File): string | null => {
+			// Check file size
+			if (file.size > maxSize * 1024 * 1024) {
+				return `File size must be less than ${maxSize}MB`;
+			}
 
-		// Check file type
-		const allowedTypes = accept.split(",").map((type) => type.trim());
-		const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
+			// Check file type
+			const allowedTypes = accept.split(",").map((type) => type.trim());
+			const fileExtension = `.${file.name.split(".").pop()?.toLowerCase()}`;
 
-		if (!allowedTypes.includes(fileExtension)) {
-			return `File type not supported. Allowed types: ${accept}`;
-		}
+			if (!allowedTypes.includes(fileExtension)) {
+				return `File type not supported. Allowed types: ${accept}`;
+			}
 
-		return null;
-	};
+			return null;
+		},
+		[maxSize, accept],
+	);
 
-	const uploadFile = async (file: File) => {
+	const uploadFile = useCallback(
+		async (file: File) => {
 		const uploadingFile: UploadingFile = {
 			file,
 			progress: 0,
@@ -95,7 +100,7 @@ export default function FileUpload({
 
 			const fileId = await saveFileMetadata({
 				storageId,
-				agentId: agentId as any,
+				agentId: agentId as Id<"agents">,
 				filename: file.name,
 				contentType: file.type,
 				size: file.size,
@@ -124,20 +129,22 @@ export default function FileUpload({
 			);
 			onUploadError?.(errorMessage);
 		}
-	};
+		},
+		[agentId, generateUploadUrl, saveFileMetadata, onUploadComplete, onUploadError],
+	);
 
 	const handleFiles = useCallback(
 		(files: FileList) => {
-			Array.from(files).forEach((file) => {
+			for (const file of Array.from(files)) {
 				const error = validateFile(file);
 				if (error) {
 					onUploadError?.(error);
 					return;
 				}
 				uploadFile(file);
-			});
+			}
 		},
-		[agentId, maxSize, accept],
+		[validateFile, uploadFile, onUploadError],
 	);
 
 	const handleDrop = useCallback(
@@ -234,8 +241,8 @@ export default function FileUpload({
 			{/* Upload Progress */}
 			{uploadingFiles.length > 0 && (
 				<div className="space-y-3">
-					{uploadingFiles.map((uploadingFile, index) => (
-						<div key={index} className="bg-muted/30 rounded-lg p-4">
+					{uploadingFiles.map((uploadingFile) => (
+						<div key={uploadingFile.file.name} className="bg-muted/30 rounded-lg p-4">
 							<div className="flex items-center justify-between mb-2">
 								<span className="text-sm font-medium text-foreground truncate">
 									{uploadingFile.file.name}

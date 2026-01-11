@@ -39,7 +39,7 @@ function AgentConversations() {
 	const agents = useQuery(api.agents.getAgentsForUser);
 	const agent = agents?.find((a) => a._id === agentId);
 	const conversations = useQuery(api.conversations.getConversationsForAgent, {
-		agentId: agentId as any,
+		agentId: agentId as Id<"agents">,
 	});
 
 	const handleConversationCreate = (conversationId: Id<"conversations">) => {
@@ -103,9 +103,9 @@ function AgentConversations() {
 					description={t("conversations.noConversationsDesc")}
 				>
 					<Button
-						onClick={() =>
-							(window.location.href = `/dashboard/agents/${agentId}/chat`)
-						}
+						onClick={() => {
+							window.location.href = `/dashboard/agents/${agentId}/chat`;
+						}}
 					>
 						<MessageSquare className="mr-2 h-4 w-4" />
 						{t("conversations.testAgent")}
@@ -141,14 +141,15 @@ function AgentConversations() {
 									timeDisplay = `${diffInDays}d ago`;
 								}
 
-								return (
-									<div
-										key={conversation._id}
-										onClick={() => setCurrentConversationId(conversation._id)}
-										className={cn(
-											"p-4 border-b border-border/30 cursor-pointer transition-all duration-200 group relative animate-fade-in-right",
-											isSelected ? "bg-primary/[0.03]" : "hover:bg-muted/30",
-											index < 10 ? `stagger-${(index % 5) + 1}` : "",
+							return (
+								<button
+									type="button"
+									key={conversation._id}
+									onClick={() => setCurrentConversationId(conversation._id)}
+									className={cn(
+										"w-full text-left p-4 border-b border-border/30 transition-all duration-200 group relative animate-fade-in-right",
+										isSelected ? "bg-primary/[0.03]" : "hover:bg-muted/30",
+										index < 10 ? `stagger-${(index % 5) + 1}` : "",
 										)}
 									>
 										{isSelected && (
@@ -184,18 +185,19 @@ function AgentConversations() {
 											</div>
 										</div>
 
-										<button
-											onClick={(e) => {
-												e.stopPropagation();
-												// TODO: Implement delete
-											}}
-											className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1.5 hover:bg-destructive/10 hover:text-destructive rounded-lg transition-all"
-										>
-											<Trash className="h-3.5 w-3.5" />
-										</button>
-									</div>
-								);
-							})}
+									<button
+										type="button"
+										onClick={(e) => {
+											e.stopPropagation();
+											// TODO: Implement delete
+										}}
+										className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1.5 hover:bg-destructive/10 hover:text-destructive rounded-lg transition-all"
+									>
+										<Trash className="h-3.5 w-3.5" />
+									</button>
+								</button>
+							);
+						})}
 						</div>
 					</div>
 
@@ -256,7 +258,7 @@ function AgentConversations() {
 								</div>
 								<div className="flex-1 overflow-hidden relative">
 									<ChatWidget
-										agentId={agent._id as any}
+										agentId={agent._id}
 										conversationId={currentConversationId}
 										onConversationCreate={handleConversationCreate}
 										height="100%"

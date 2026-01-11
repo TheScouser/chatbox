@@ -64,7 +64,18 @@ export function AgentUsageChart({
 	};
 
 	// Custom tooltip
-	const CustomTooltip = ({ active, payload }: any) => {
+	interface TooltipProps {
+		active?: boolean;
+		payload?: Array<{
+			payload: {
+				agentName: string;
+				creditsUsed: number;
+				percentage: number;
+				lastUsed: string;
+			};
+		}>;
+	}
+	const CustomTooltip = ({ active, payload }: TooltipProps) => {
 		if (active && payload && payload.length) {
 			const data = payload[0].payload;
 			return (
@@ -84,12 +95,22 @@ export function AgentUsageChart({
 	};
 
 	// Custom legend component
-	const CustomLegend = ({ payload }: any) => {
+	interface LegendProps {
+		payload?: Array<{
+			agentId?: string;
+			value?: string;
+			color: string;
+			agentName?: string;
+			creditsUsed?: number;
+		}>;
+	}
+	const CustomLegend = ({ payload }: LegendProps) => {
+		if (!payload) return null;
 		return (
 			<div className="mt-4 space-y-2 max-h-32 overflow-y-auto">
-				{payload.map((entry: any, index: number) => (
+				{payload.map((entry) => (
 					<div
-						key={index}
+						key={entry.agentId || entry.value}
 						className="flex items-center justify-between text-sm"
 					>
 						<div className="flex items-center gap-2">
@@ -142,8 +163,8 @@ export function AgentUsageChart({
 										paddingAngle={2}
 										dataKey="creditsUsed"
 									>
-										{chartData.map((entry, index) => (
-											<Cell key={`cell-${index}`} fill={entry.color} />
+										{chartData.map((entry) => (
+											<Cell key={entry.agentId} fill={entry.color} />
 										))}
 									</Pie>
 									<Tooltip content={<CustomTooltip />} />

@@ -2,6 +2,7 @@ import { useOrganization } from "@/contexts/OrganizationContext";
 import { useQuery } from "convex/react";
 import { useMemo } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 
 // Hook for usage overview data
 export function useUsageOverview() {
@@ -34,7 +35,7 @@ export function useUsageHistory(
 					organizationId: currentOrganization._id,
 					startDate,
 					endDate,
-					agentId: agentId as any,
+					agentId: agentId as Id<"agents"> | undefined,
 				}
 			: "skip",
 	);

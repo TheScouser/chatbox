@@ -46,6 +46,7 @@ export default function ChatBubbleWidget({
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	}, []);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: intentional trigger on messages change
 	useEffect(() => {
 		scrollToBottom();
 	}, [messages, scrollToBottom]);

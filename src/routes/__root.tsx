@@ -31,7 +31,6 @@ function RootErrorComponent({ error }: { error: Error }) {
 
 function ErrorThrower({ error }: { error: Error }) {
 	throw error;
-	return null;
 }
 
 function RootComponent() {

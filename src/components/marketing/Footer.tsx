@@ -38,12 +38,12 @@ export function Footer() {
 								</a>
 							</li>
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									Integrations
 								</a>
 							</li>
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									API
 								</a>
 							</li>
@@ -54,22 +54,22 @@ export function Footer() {
 						<h4 className="font-semibold mb-4 text-foreground">Company</h4>
 						<ul className="space-y-2 text-muted-foreground">
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									About
 								</a>
 							</li>
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									Blog
 								</a>
 							</li>
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									Careers
 								</a>
 							</li>
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									Contact
 								</a>
 							</li>
@@ -80,22 +80,22 @@ export function Footer() {
 						<h4 className="font-semibold mb-4 text-foreground">Support</h4>
 						<ul className="space-y-2 text-muted-foreground">
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									Help Center
 								</a>
 							</li>
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									Documentation
 								</a>
 							</li>
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									Status
 								</a>
 							</li>
 							<li>
-								<a href="#" className="hover:text-primary transition-colors">
+								<a href="/coming-soon" className="hover:text-primary transition-colors">
 									Privacy Policy
 								</a>
 							</li>

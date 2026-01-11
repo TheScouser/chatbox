@@ -63,9 +63,17 @@ export function ThemeProvider({
 			return () => mediaQuery.removeEventListener("change", handleChange);
 		}
 		// Fallback for older environments
-		if (typeof (mediaQuery as any).addListener === "function") {
-			(mediaQuery as any).addListener(handleChange);
-			return () => (mediaQuery as any).removeListener(handleChange);
+		const legacyMediaQuery = mediaQuery as MediaQueryList & {
+			addListener?: (handler: () => void) => void;
+			removeListener?: (handler: () => void) => void;
+		};
+		if (typeof legacyMediaQuery.addListener === "function") {
+			legacyMediaQuery.addListener(handleChange);
+			return () => {
+				if (typeof legacyMediaQuery.removeListener === "function") {
+					legacyMediaQuery.removeListener(handleChange);
+				}
+			};
 		}
 		return;
 	}, [theme]);

@@ -60,7 +60,7 @@ function AgentChat() {
 			<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 				<div className="lg:col-span-3">
 					<ChatWidget
-						agentId={agent._id as any}
+						agentId={agent._id}
 						conversationId={currentConversationId}
 						onConversationCreate={handleConversationCreate}
 						height="700px"

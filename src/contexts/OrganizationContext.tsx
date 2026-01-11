@@ -2,12 +2,13 @@ import { useAuth } from "@clerk/clerk-react";
 import { useQuery } from "convex/react";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 interface OrganizationContextType {
 	selectedOrganizationId: string | null;
 	setSelectedOrganizationId: (orgId: string | null) => void;
-	currentOrganization: any | null;
-	organizations: any[] | undefined;
+	currentOrganization: Doc<"organizations"> | null;
+	organizations: Doc<"organizations">[] | undefined;
 	isLoading: boolean;
 }
 
@@ -33,7 +34,7 @@ export function OrganizationProvider({
 
 		if (selectedOrganizationId) {
 			const selected = organizations.find(
-				(org: any) => org._id === selectedOrganizationId,
+				(org) => org._id === selectedOrganizationId,
 			);
 			if (selected) return selected;
 		}

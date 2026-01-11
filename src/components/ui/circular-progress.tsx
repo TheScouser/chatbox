@@ -25,7 +25,8 @@ export function CircularProgress({
 			className={cn("relative", className)}
 			style={{ width: size, height: size }}
 		>
-			<svg width={size} height={size} className="transform -rotate-90">
+			<svg width={size} height={size} className="transform -rotate-90" aria-label={`Circular progress: ${value}%`}>
+				<title>Circular progress: {value}%</title>
 				{/* Background circle */}
 				<circle
 					cx={size / 2}

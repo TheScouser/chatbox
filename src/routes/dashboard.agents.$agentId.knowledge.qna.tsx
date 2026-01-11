@@ -4,6 +4,7 @@ import { MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import {
 	useFormValidation,
 	validators,
@@ -90,7 +91,7 @@ function AgentKnowledgeQnA() {
 
 	// Queries and mutations
 	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
-		agentId: agentId as any,
+		agentId: agentId as Id<"agents">,
 	});
 	const createKnowledgeEntry = useMutation(api.knowledge.createKnowledgeEntry);
 	const updateKnowledgeEntry = useMutation(api.knowledge.updateKnowledgeEntry);
@@ -126,14 +127,14 @@ function AgentKnowledgeQnA() {
 		try {
 			if (editingEntry) {
 				await updateKnowledgeEntry({
-					entryId: editingEntry as any,
+					entryId: editingEntry as Id<"knowledgeEntries">,
 					title: title.trim() || question.trim(),
 					content: answer,
 				});
 				setEditingEntry(null);
 			} else {
 				await createKnowledgeEntry({
-					agentId: agentId as any,
+					agentId: agentId as Id<"agents">,
 					title: title.trim() || question.trim(),
 					content: answer,
 					source: "qna",
@@ -158,7 +159,7 @@ function AgentKnowledgeQnA() {
 		}
 	};
 
-	const handleEdit = (entry: any) => {
+	const handleEdit = (entry: { _id: string; title?: string | null; content: string; sourceMetadata?: { question?: string } | null }) => {
 		setEditingEntry(entry._id);
 		setTitle(entry.title || "");
 		setQuestion(entry.sourceMetadata?.question || "");
@@ -177,7 +178,7 @@ function AgentKnowledgeQnA() {
 		if (!confirm(t("knowledge.qna.deleteError"))) return;
 
 		try {
-			await deleteKnowledgeEntry({ entryId: entryId as any });
+			await deleteKnowledgeEntry({ entryId: entryId as Id<"knowledgeEntries"> });
 		} catch (error) {
 			console.error("Error deleting Q&A:", error);
 			setError(

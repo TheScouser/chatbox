@@ -4,6 +4,7 @@ import { FileText } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import RichTextEditor from "../components/RichTextEditor";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
@@ -47,7 +48,7 @@ function AgentKnowledgeText() {
 
 	// Queries and mutations
 	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
-		agentId: agentId as any,
+		agentId: agentId as Id<"agents">,
 	});
 	const createKnowledgeEntry = useMutation(api.knowledge.createKnowledgeEntry);
 	const updateKnowledgeEntry = useMutation(api.knowledge.updateKnowledgeEntry);
@@ -80,14 +81,14 @@ function AgentKnowledgeText() {
 		try {
 			if (editingEntry) {
 				await updateKnowledgeEntry({
-					entryId: editingEntry as any,
+					entryId: editingEntry as Id<"knowledgeEntries">,
 					title: title.trim(),
 					content: content,
 				});
 				setEditingEntry(null);
 			} else {
 				await createKnowledgeEntry({
-					agentId: agentId as any,
+					agentId: agentId as Id<"agents">,
 					title: title.trim(),
 					content: content,
 					source: "text",
@@ -110,7 +111,7 @@ function AgentKnowledgeText() {
 		}
 	};
 
-	const handleEdit = (entry: any) => {
+	const handleEdit = (entry: { _id: string; title?: string | null; content: string }) => {
 		setEditingEntry(entry._id);
 		setTitle(entry.title || "");
 		setContent(entry.content || "");
@@ -126,7 +127,7 @@ function AgentKnowledgeText() {
 		if (!confirm(t("knowledge.text.deleteError"))) return;
 
 		try {
-			await deleteKnowledgeEntry({ entryId: entryId as any });
+			await deleteKnowledgeEntry({ entryId: entryId as Id<"knowledgeEntries"> });
 		} catch (error) {
 			console.error("Error deleting text entry:", error);
 			setError(

@@ -98,7 +98,7 @@
 			"agentNameRequired": "Agent name is required",
 			"agentNameMinLength": "Agent name must be at least 2 characters",
 			"agentNameMaxLength": "Agent name must be less than 50 characters",
-			"description": "Description (Optional)",
+			"descriptionLabel": "Description (Optional)",
 			"descriptionPlaceholder": "Describe what this agent will help with...",
 			"descriptionMaxLength": "Description must be less than 500 characters",
 			"cancel": "Cancel",

@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
 import { ContentCard } from "../components/ui/content-card";
@@ -33,11 +34,11 @@ function AgentKnowledgeOverview() {
 	const { t } = useTranslation();
 	const { agentId } = Route.useParams();
 	const [isTraining, setIsTraining] = useState(false);
-	const [trainingResult, setTrainingResult] = useState<any>(null);
+	const [trainingResult, setTrainingResult] = useState<{ success: boolean; message?: string } | null>(null);
 
 	// Queries and actions
 	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
-		agentId: agentId as any,
+		agentId: agentId as Id<"agents">,
 	});
 	const generateEmbeddings = useAction(
 		api.embeddings.generateEmbeddingsForAgent,
@@ -113,7 +114,7 @@ function AgentKnowledgeOverview() {
 
 		try {
 			const result = await generateEmbeddings({
-				agentId: agentId as any,
+				agentId: agentId as Id<"agents">,
 			});
 			setTrainingResult(result);
 		} catch (error) {

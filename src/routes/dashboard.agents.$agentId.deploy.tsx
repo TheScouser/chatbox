@@ -704,12 +704,13 @@ function AgentDeploy() {
 							<CardContent className="p-6 space-y-6">
 								<div className="grid grid-cols-2 gap-6">
 									<div className="space-y-2">
-										<label className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2">
+										<label htmlFor="embed-width-input" className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2">
 											<Maximize2 className="h-3 w-3" />
 											Width
 										</label>
 										<div className="relative">
 											<Input
+												id="embed-width-input"
 												value={embedWidth}
 												onChange={(e) => setEmbedWidth(e.target.value)}
 												className="pr-10"
@@ -720,12 +721,13 @@ function AgentDeploy() {
 										</div>
 									</div>
 									<div className="space-y-2">
-										<label className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2">
+										<label htmlFor="embed-height-input" className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2">
 											<Maximize2 className="h-3 w-3 rotate-90" />
 											Height
 										</label>
 										<div className="relative">
 											<Input
+												id="embed-height-input"
 												value={embedHeight}
 												onChange={(e) => setEmbedHeight(e.target.value)}
 												className="pr-10"
@@ -738,7 +740,7 @@ function AgentDeploy() {
 								</div>
 
 								<div className="space-y-3">
-									<label className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2">
+									<label htmlFor="brand-color-input" className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 flex items-center gap-2">
 										<Palette className="h-3 w-3" />
 										Brand Color
 									</label>
@@ -748,6 +750,7 @@ function AgentDeploy() {
 											style={{ backgroundColor: primaryColor }}
 										>
 											<input
+												id="brand-color-input"
 												type="color"
 												value={primaryColor}
 												onChange={(e) => setPrimaryColor(e.target.value)}

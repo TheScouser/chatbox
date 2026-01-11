@@ -33,6 +33,7 @@ export function EntryItem({
 				{content && (
 					<div className="mt-2 text-sm text-muted-foreground prose prose-sm max-w-none">
 						{typeof content === "string" && content.includes("<") ? (
+							// biome-ignore lint/security/noDangerouslySetInnerHtml: HTML content from knowledge entries, should be sanitized server-side
 							<div dangerouslySetInnerHTML={{ __html: displayContent || "" }} />
 						) : (
 							<p>{displayContent}</p>

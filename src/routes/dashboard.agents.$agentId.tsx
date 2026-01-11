@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
@@ -27,11 +28,11 @@ function AgentLayout() {
 	const agents = useQuery(api.agents.getAgentsForUser);
 	const agent = agents?.find((a) => a._id === agentId);
 	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
-		agentId: agentId as any,
+		agentId: agentId as Id<"agents">,
 	});
 	// Conversations query removed as it was unused
 	const knowledgeStats = useQuery(api.vectorSearch.getKnowledgeStats, {
-		agentId: agentId as any,
+		agentId: agentId as Id<"agents">,
 	});
 
 	// Calculate stats for the sidebar

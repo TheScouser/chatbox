@@ -2,7 +2,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 
-const CONVEX_URL = (import.meta as any).env.VITE_CONVEX_URL;
+const CONVEX_URL = import.meta.env?.VITE_CONVEX_URL as string | undefined;
 if (!CONVEX_URL) {
 	console.error("missing envar CONVEX_URL");
 }

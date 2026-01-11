@@ -129,8 +129,8 @@ export function PlanCard({
 				{/* Core Features */}
 				<div className="space-y-3">
 					<h4 className="font-medium text-sm text-gray-600">Limits</h4>
-					{coreFeatures.map((feature, index) => (
-						<div key={index} className="flex justify-between text-sm">
+					{coreFeatures.map((feature) => (
+						<div key={feature.label} className="flex justify-between text-sm">
 							<span>{feature.label}</span>
 							<span className="font-medium">{feature.value}</span>
 						</div>

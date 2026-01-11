@@ -147,9 +147,9 @@ export default function SecuritySettings({ agent }: SecuritySettingsProps) {
 						{/* Domain List */}
 						{allowedDomains.length > 0 && (
 							<div className="space-y-2">
-								{allowedDomains.map((domain, index) => (
+								{allowedDomains.map((domain) => (
 									<div
-										key={index}
+										key={domain}
 										className="flex items-center justify-between p-3 bg-muted/40 rounded-lg hover:bg-muted/60 transition-colors"
 									>
 										<span className="text-sm font-mono text-foreground">

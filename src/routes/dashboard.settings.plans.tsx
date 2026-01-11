@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { useOrganization } from "../contexts/OrganizationContext";
 
 export const Route = createFileRoute("/dashboard/settings/plans")({
@@ -24,7 +25,7 @@ function PlansSettings() {
 
 			const checkoutUrl = await createCheckoutSession({
 				organizationId: currentOrganization._id,
-				planId: planId as any,
+				planId: planId as Id<"subscriptionPlans">,
 				successUrl: `${window.location.origin}/dashboard/settings/billing?success=true`,
 				cancelUrl: `${window.location.origin}/dashboard/settings/plans?canceled=true`,
 			});

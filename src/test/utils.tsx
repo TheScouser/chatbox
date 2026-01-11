@@ -85,6 +85,7 @@ export const createMockKnowledgeEntry = (overrides = {}) => ({
 });
 
 // Mock Convex hooks - simplified for now
+// biome-ignore lint/suspicious/noExplicitAny: test utility, accepts any return value
 export const mockUseQuery = (returnValue: any) => {
 	return vi.fn().mockReturnValue(returnValue);
 };

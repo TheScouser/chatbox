@@ -7,6 +7,7 @@ import { useMutation, useQuery } from "convex/react";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { useOrganization } from "../contexts/OrganizationContext";
 
 export const Route = createFileRoute("/dashboard/billing/plans")({
@@ -27,7 +28,7 @@ function BillingPlans() {
 
 			const checkoutUrl = await createCheckoutSession({
 				organizationId: currentOrganization._id,
-				planId: planId as any,
+				planId: planId as Id<"subscriptionPlans">,
 				successUrl: `${window.location.origin}/dashboard/billing?success=true`,
 				cancelUrl: `${window.location.origin}/dashboard/billing/plans?canceled=true`,
 			});

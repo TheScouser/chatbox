@@ -35,7 +35,7 @@ function AgentKnowledgeUpload() {
 	const [success, setSuccess] = useState(false);
 	// Queries and mutations
 	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
-		agentId: agentId as any,
+		agentId: agentId as Id<"agents">,
 	});
 	const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry);
 	// const extractText = useAction(api.knowledge.extractTextFromFile);
@@ -62,7 +62,15 @@ function AgentKnowledgeUpload() {
 		knowledgeEntries?.filter((entry) => entry.source === "document") || [];
 
 	// Group by fileId or filename to show files with their chunks
-	const groupedDocumentEntries = documentEntries.reduce((acc: any[], entry) => {
+	const groupedDocumentEntries = documentEntries.reduce((acc: Array<{
+		_id: string;
+		groupKey: string;
+		filename?: string | null;
+		size: number;
+		status: string;
+		_creationTime: number;
+		chunks: Doc<"knowledgeEntries">[];
+	}>, entry) => {
 		// Use fileId if available, otherwise group by filename
 		const groupKey =
 			entry.sourceMetadata?.fileId ||
@@ -93,7 +101,7 @@ function AgentKnowledgeUpload() {
 		return acc;
 	}, []);
 
-	const handleFileUploadComplete = (result: any) => {
+	const handleFileUploadComplete = (result: string) => {
 		console.log("File upload completed:", result);
 		setSuccess(true);
 		setTimeout(() => setSuccess(false), 3000);
@@ -104,13 +112,15 @@ function AgentKnowledgeUpload() {
 		setTimeout(() => setError(null), 5000);
 	};
 
-	const handleDeleteFile = async (file: any) => {
+	const handleDeleteFile = async (file: {
+		chunks: Array<{ _id: string }>;
+	}) => {
 		if (!confirm(t("knowledge.upload.deleteError"))) return;
 
 		try {
 			// Delete all chunks for this file
 			for (const chunk of file.chunks) {
-				await deleteKnowledgeEntry({ entryId: chunk._id as any });
+				await deleteKnowledgeEntry({ entryId: chunk._id as Id<"knowledgeEntries"> });
 			}
 		} catch (error) {
 			console.error("Error deleting file:", error);
@@ -177,30 +187,31 @@ function AgentKnowledgeUpload() {
 										title={file.filename}
 										content={
 											file.chunks.length === 0
-												? file.status === "processing"
+											? file.status === "processing"
+												? t("knowledge.upload.processingFailed")
+												: file.status === "error"
 													? t("knowledge.upload.processingFailed")
-													: file.status === "error"
-														? t("knowledge.upload.processingFailed")
-														: t("knowledge.upload.noContentExtracted")
-												: file.chunks
-														.sort((a: any, b: any) => {
-															const extractPartNumber = (title: string) => {
-																const match = title.match(/Part (\d+)\/\d+/);
-																return match
-																	? Number.parseInt(match[1], 10)
-																	: 0;
-															};
-															const aPartNum = extractPartNumber(a.title || "");
-															const bPartNum = extractPartNumber(b.title || "");
-															if (aPartNum > 0 && bPartNum > 0) {
-																return aPartNum - bPartNum;
-															}
-															return (
-																(a._creationTime || 0) - (b._creationTime || 0)
-															);
-														})
-														.map((chunk: any) => chunk.content)
-														.join("")
+													: t("knowledge.upload.noContentExtracted")
+											: file.chunks
+													.sort((a, b) => {
+														const extractPartNumber = (title: string | undefined) => {
+															if (!title) return 0;
+															const match = title.match(/Part (\d+)\/\d+/);
+															return match
+																? Number.parseInt(match[1], 10)
+																: 0;
+														};
+														const aPartNum = extractPartNumber(a.title);
+														const bPartNum = extractPartNumber(b.title);
+														if (aPartNum > 0 && bPartNum > 0) {
+															return aPartNum - bPartNum;
+														}
+														return (
+															a._creationTime - b._creationTime
+														);
+													})
+													.map((chunk) => chunk.content)
+													.join("")
 										}
 										metadata={`${file.status} • ${(file.size / 1024 / 1024).toFixed(2)} MB • ${file.chunks.length} chunks • Uploaded ${new Date(file._creationTime).toLocaleDateString()}`}
 										onDelete={() => handleDeleteFile(file)}

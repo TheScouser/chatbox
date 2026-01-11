@@ -165,6 +165,7 @@ function NavItemComponent({
 			<div className="mb-1">
 				{/* Parent Item */}
 				<button
+					type="button"
 					className={cn(
 						"w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 group outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/50",
 						isParentActive

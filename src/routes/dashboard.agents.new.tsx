@@ -156,7 +156,7 @@ function CreateAgent() {
 							</FormField>
 
 							<FormField
-								label={t("agents.new.description")}
+								label={t("agents.new.descriptionLabel")}
 								error={validation.getFieldError("description")}
 								hint={`${formData.description.length}/500 ${t("common.characters")}`}
 							>

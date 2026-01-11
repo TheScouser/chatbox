@@ -120,14 +120,14 @@ function WidgetDesigner() {
 		if (widgetConfigData) {
 			// Extract config (everything except texts)
 			const { texts, ...config } = widgetConfigData;
-			setLocalConfig(config as any);
+			setLocalConfig(config as WidgetConfig);
 			// Get default locale texts
 			const defaultTexts = texts?.find((t) => t.isDefault);
 			if (defaultTexts) {
-				setLocalTexts(defaultTexts.texts as any);
+				setLocalTexts(defaultTexts.texts as WidgetTexts);
 			} else if (texts && texts.length > 0) {
 				// Fallback to first text if no default found
-				setLocalTexts(texts[0].texts as any);
+				setLocalTexts(texts[0]?.texts as WidgetTexts);
 			}
 			setIsDirty(false);
 		}
@@ -294,7 +294,7 @@ function WidgetDesigner() {
 				{/* Tabs */}
 				<Tabs
 					value={activeTab}
-					onValueChange={(v) => setActiveTab(v as any)}
+					onValueChange={(v) => setActiveTab(v as "branding" | "interface" | "texts" | "configure")}
 					className="flex-1 flex flex-col min-h-0"
 				>
 					<TabsList className="w-full rounded-none border-b border-border bg-transparent px-6 h-12">
@@ -344,11 +344,13 @@ function WidgetDesigner() {
 							/>
 						</TabsContent>
 						<TabsContent value="texts" className="mt-0">
-							<TextsTab
-								texts={localTexts}
-								onChange={handleTextsChange}
-								widgetConfigId={selectedWidgetId!}
-							/>
+							{selectedWidgetId && (
+								<TextsTab
+									texts={localTexts}
+									onChange={handleTextsChange}
+									widgetConfigId={selectedWidgetId}
+								/>
+							)}
 						</TabsContent>
 						<TabsContent value="configure" className="mt-0">
 							<ConfigureTab

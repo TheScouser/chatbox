@@ -4,6 +4,7 @@ import { ExternalLink, Globe } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
 import {
@@ -44,7 +45,7 @@ function AgentKnowledgeUrl() {
 
 	// Queries and actions
 	const knowledgeEntries = useQuery(api.knowledge.getKnowledgeForAgent, {
-		agentId: agentId as any,
+		agentId: agentId as Id<"agents">,
 	});
 	const processUrl = useAction(api.webCrawling.processUrlContent);
 	const deleteKnowledgeEntry = useMutation(api.knowledge.deleteKnowledgeEntry);
@@ -76,7 +77,7 @@ function AgentKnowledgeUrl() {
 
 		try {
 			await processUrl({
-				agentId: agentId as any,
+				agentId: agentId as Id<"agents">,
 				url: url.trim(),
 				title: urlTitle.trim() || undefined,
 			});
@@ -104,7 +105,7 @@ function AgentKnowledgeUrl() {
 		if (!confirm(t("knowledge.url.deleteError"))) return;
 
 		try {
-			await deleteKnowledgeEntry({ entryId: entryId as any });
+			await deleteKnowledgeEntry({ entryId: entryId as Id<"knowledgeEntries"> });
 		} catch (error) {
 			console.error("Error deleting URL entry:", error);
 			setError(
@@ -232,14 +233,11 @@ function AgentKnowledgeUrl() {
 													</p>
 												)}
 												<div className="mt-2 text-sm text-muted-foreground prose prose-sm max-w-none">
-													<div
-														dangerouslySetInnerHTML={{
-															__html:
-																entry.content.length > 200
-																	? `${entry.content.substring(0, 200)}...`
-																	: entry.content,
-														}}
-													/>
+													<div>
+														{entry.content.length > 200
+															? `${entry.content.substring(0, 200)}...`
+															: entry.content}
+													</div>
 												</div>
 												<div className="mt-2 text-xs text-muted-foreground/80">
 													Added{" "}

@@ -58,6 +58,7 @@ export default function ChatWidget({
 	const generateAIResponse = useAction(api.chat.generateAIResponse);
 
 	// Auto-scroll to bottom when new messages arrive
+	// biome-ignore lint/correctness/useExhaustiveDependencies: intentional trigger on messages change
 	useEffect(() => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	}, [messages]);

@@ -98,7 +98,7 @@
 			"agentNameRequired": "Името на агента е задължително",
 			"agentNameMinLength": "Името на агента трябва да бъде поне 2 символа",
 			"agentNameMaxLength": "Името на агента трябва да бъде по-малко от 50 символа",
-			"description": "Описание (По избор)",
+			"descriptionLabel": "Описание (По избор)",
 			"descriptionPlaceholder": "Опишете с какво ще помага този агент...",
 			"descriptionMaxLength": "Описанието трябва да бъде по-малко от 500 символа",
 			"cancel": "Отказ",

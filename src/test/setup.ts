@@ -45,6 +45,7 @@ vi.mock("@tanstack/react-router", () => ({
 	useNavigate: vi.fn(() => vi.fn()),
 	useParams: vi.fn(() => ({})),
 	useSearch: vi.fn(() => ({})),
+	// biome-ignore lint/suspicious/noExplicitAny: test mock, Link component returns ReactNode
 	Link: ({ children }: { children: React.ReactNode }) => children as any,
 }));
 

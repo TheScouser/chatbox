@@ -48,7 +48,7 @@ function initChatboxWidget() {
 	// Resolve Convex URL (from attribute or build-time env)
 	const convexUrl =
 		scriptTag.getAttribute("data-convex-url") ||
-		(import.meta as any).env?.VITE_CONVEX_URL;
+		(import.meta.env?.VITE_CONVEX_URL as string | undefined);
 
 	if (!convexUrl) {
 		console.error(
@@ -82,20 +82,30 @@ function initChatboxWidget() {
 }
 
 // Global widget API
+interface ChatboxWidgetAPI {
+	state?: string;
+	q?: unknown[][];
+	open: () => void;
+	close: () => void;
+	destroy: () => void;
+	getState: () => string;
+	[key: string]: unknown;
+}
+
 declare global {
 	interface Window {
-		ChatboxWidget: any;
+		ChatboxWidget: ChatboxWidgetAPI;
 	}
 }
 
 // Initialize the widget API if it doesn't exist
 if (!window.ChatboxWidget) {
-	window.ChatboxWidget = (...args: any[]) => {
+	window.ChatboxWidget = ((...args: unknown[]) => {
 		if (!window.ChatboxWidget.q) {
 			window.ChatboxWidget.q = [];
 		}
 		window.ChatboxWidget.q.push(args);
-	};
+	}) as ChatboxWidgetAPI;
 }
 
 // Add methods to the widget API
@@ -123,12 +133,12 @@ window.ChatboxWidget.destroy = () => {
 
 // Process any queued commands
 if (window.ChatboxWidget.q) {
-	window.ChatboxWidget.q.forEach((args: any[]) => {
+	for (const args of window.ChatboxWidget.q) {
 		const [command, ...params] = args;
 		if (typeof window.ChatboxWidget[command] === "function") {
 			window.ChatboxWidget[command](...params);
 		}
-	});
+	}
 	window.ChatboxWidget.q = [];
 }
 

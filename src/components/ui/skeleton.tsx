@@ -22,6 +22,7 @@ export function SkeletonText({
 		<div className={cn("space-y-2", className)}>
 			{Array.from({ length: lines }).map((_, i) => (
 				<Skeleton
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton array
 					key={i}
 					className={cn("h-4", i === lines - 1 ? "w-3/4" : "w-full")}
 				/>
@@ -71,7 +72,10 @@ export function SkeletonCardGrid({
 	return (
 		<div className={cn(`grid gap-6 ${gridCols}`, className)}>
 			{Array.from({ length: count }).map((_, i) => (
-				<SkeletonCard key={i} />
+				<SkeletonCard
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton array
+					key={i}
+				/>
 			))}
 		</div>
 	);
@@ -85,6 +89,7 @@ export function SkeletonTableRow({ columns = 4 }: { columns?: number }) {
 		<div className="flex items-center gap-4 py-4 border-b border-border/50">
 			{Array.from({ length: columns }).map((_, i) => (
 				<Skeleton
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton array
 					key={i}
 					className={cn("h-4", i === 0 ? "w-[200px]" : "flex-1")}
 				/>
@@ -103,21 +108,26 @@ export function SkeletonTable({
 }: { rows?: number; columns?: number; className?: string }) {
 	return (
 		<div className={cn("rounded-xl border bg-card", className)}>
-			{/* Header */}
-			<div className="flex items-center gap-4 p-4 border-b border-border">
-				{Array.from({ length: columns }).map((_, i) => (
-					<Skeleton
-						key={i}
-						className={cn("h-4", i === 0 ? "w-[150px]" : "flex-1")}
-					/>
-				))}
-			</div>
-			{/* Rows */}
-			<div className="p-4 space-y-0">
-				{Array.from({ length: rows }).map((_, i) => (
-					<SkeletonTableRow key={i} columns={columns} />
-				))}
-			</div>
+		{/* Header */}
+		<div className="flex items-center gap-4 p-4 border-b border-border">
+			{Array.from({ length: columns }).map((_, i) => (
+				<Skeleton
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton array
+					key={i}
+					className={cn("h-4", i === 0 ? "w-[150px]" : "flex-1")}
+				/>
+			))}
+		</div>
+		{/* Rows */}
+		<div className="p-4 space-y-0">
+			{Array.from({ length: rows }).map((_, i) => (
+				<SkeletonTableRow
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton array
+					key={i}
+					columns={columns}
+				/>
+			))}
+		</div>
 		</div>
 	);
 }
@@ -153,7 +163,10 @@ export function SkeletonList({
 			)}
 		>
 			{Array.from({ length: count }).map((_, i) => (
-				<SkeletonListItem key={i} />
+				<SkeletonListItem
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton array
+					key={i}
+				/>
 			))}
 		</div>
 	);
@@ -202,7 +215,10 @@ export function SkeletonStatCards({
 			)}
 		>
 			{Array.from({ length: count }).map((_, i) => (
-				<SkeletonStatCard key={i} />
+				<SkeletonStatCard
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton array
+					key={i}
+				/>
 			))}
 		</div>
 	);
@@ -236,14 +252,18 @@ export function SkeletonForm({
 				<Skeleton className="h-6 w-40" />
 				<Skeleton className="h-4 w-64" />
 			</div>
-			<div className="space-y-4">
-				{Array.from({ length: fields }).map((_, i) => (
-					<div key={i} className="space-y-2">
-						<Skeleton className="h-4 w-24" />
-						<Skeleton className="h-10 w-full rounded-md" />
-					</div>
-				))}
-			</div>
+		<div className="space-y-4">
+			{Array.from({ length: fields }).map((_, i) => (
+				<div
+					// biome-ignore lint/suspicious/noArrayIndexKey: static skeleton array
+					key={i}
+					className="space-y-2"
+				>
+					<Skeleton className="h-4 w-24" />
+					<Skeleton className="h-10 w-full rounded-md" />
+				</div>
+			))}
+		</div>
 			<div className="flex justify-end gap-3 pt-4">
 				<Skeleton className="h-10 w-24 rounded-md" />
 				<Skeleton className="h-10 w-24 rounded-md" />
@@ -291,7 +311,9 @@ export function LoadingSpinner({
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 24 24"
+			aria-label="Loading spinner"
 		>
+			<title>Loading spinner</title>
 			<circle
 				className="opacity-25"
 				cx="12"

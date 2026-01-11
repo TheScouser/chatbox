@@ -23,9 +23,10 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 interface SettingsPanelProps {
-	agent: any;
+	agent: Doc<"agents">;
 }
 
 type SettingsTab = "general" | "ai" | "chat-interface" | "security";
@@ -212,6 +213,7 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 						const Icon = tab.icon;
 						return (
 							<button
+								type="button"
 								key={tab.id}
 								onClick={() => setActiveSettingsTab(tab.id)}
 								className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md mb-1 ${
@@ -639,9 +641,9 @@ export default function SettingsPanel({ agent }: SettingsPanelProps) {
 									{/* Domain List */}
 									{allowedDomains.length > 0 && (
 										<div className="space-y-2">
-											{allowedDomains.map((domain, index) => (
+											{allowedDomains.map((domain) => (
 												<div
-													key={index}
+													key={domain}
 													className="flex items-center justify-between p-3 bg-muted/40 rounded-lg hover:bg-muted/60 transition-colors"
 												>
 													<span className="text-sm font-mono text-foreground">
