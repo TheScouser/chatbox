@@ -134,7 +134,7 @@ function EmbedChat() {
 		);
 	}
 
-	const { branding, config } = widgetData;
+	const { branding } = widgetData;
 
 	return (
 		<div className="h-screen bg-white">

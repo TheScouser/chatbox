@@ -223,7 +223,7 @@ function FileDropzone({
 	);
 }
 
-export function BrandingTab({ config, onChange, agentId }: BrandingTabProps) {
+export function BrandingTab({ config, onChange }: BrandingTabProps) {
 	const handleLogoUpload = (storageId: Id<"_storage">) => {
 		onChange({
 			branding: {

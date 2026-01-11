@@ -11,9 +11,10 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "format": "biome format",
+    "format": "biome format --write",
     "lint": "biome lint --fix",
-    "check": "biome check --fix"
+    "check": "biome check --fix",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@auth/core": "^0.39.1",

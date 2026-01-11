@@ -74,7 +74,7 @@ export const checkFeatureAccess = query({
       "custom_branding": "customBranding",
       "sso_integration": "ssoIntegration",
       "audit_logs": "auditLogs"
-    };
+    } as Record<string, keyof typeof plan.features>;
 
     const featureKey = featureMap[args.feature];
     const hasAccess = plan.features[featureKey] || false;
@@ -140,11 +140,30 @@ export const checkUsageLimit = query({
     } else {
       // Free plan limits
       planLimits = {
+        aiCredits: 500,
+        knowledgeCharacters: 500000,
+        emailCredits: 25,
+        maxChatbots: 1,
+        maxSeats: 1,
+        maxAiActionsPerAgent: 1,
+        voiceMinutes: 0,
+        resyncCredits: 0,
+        maxFileSizeMB: 2,
+        prioritySupport: false,
+        customDomains: false,
+        advancedAnalytics: false,
+        apiAccess: false,
+        webhookIntegrations: false,
+        customBranding: false,
+        exportChats: false,
+        exportLeads: false,
+        downloadTranscripts: false,
+        ssoIntegration: false,
+        auditLogs: false,
         maxAgents: 1,
         maxKnowledgeEntries: 50,
         maxMessagesPerMonth: 500,
         maxFileUploads: 5,
-        maxFileSizeMB: 2,
       };
     }
 
@@ -156,14 +175,22 @@ export const checkUsageLimit = query({
     const currentUsage = await getCurrentUsage(ctx, args.organizationId, args.metric);
     
     const limitMap: Record<string, keyof typeof planLimits> = {
-      "agents": "maxAgents",
-      "messages": "maxMessagesPerMonth",
-      "knowledge_entries": "maxKnowledgeEntries", 
-      "file_uploads": "maxFileUploads"
+      "agents": "maxAgents" as keyof typeof planLimits,
+      "messages": "maxMessagesPerMonth" as keyof typeof planLimits,
+      "knowledge_entries": "maxKnowledgeEntries" as keyof typeof planLimits, 
+      "file_uploads": "maxFileUploads" as keyof typeof planLimits
     };
 
     const limitKey = limitMap[args.metric];
-    const limit = planLimits[limitKey] as number;
+    // Use maxChatbots as fallback for maxAgents, aiCredits for maxMessagesPerMonth
+    let limit: number;
+    if (limitKey === "maxAgents") {
+      limit = (planLimits.maxAgents ?? planLimits.maxChatbots) as number;
+    } else if (limitKey === "maxMessagesPerMonth") {
+      limit = (planLimits.maxMessagesPerMonth ?? planLimits.aiCredits) as number;
+    } else {
+      limit = planLimits[limitKey] as number;
+    }
     const allowed = currentUsage < limit;
     
     return {
@@ -251,6 +278,11 @@ export const trackUsage = mutation({
     } else {
       // Create new usage record
       const initialMetrics = {
+        aiCreditsUsed: 0,
+        knowledgeCharactersUsed: 0,
+        emailCreditsUsed: 0,
+        voiceMinutesUsed: 0,
+        resyncCreditsUsed: 0,
         messagesUsed: 0,
         agentsCreated: 0,
         knowledgeEntriesAdded: 0,
@@ -270,9 +302,10 @@ export const trackUsage = mutation({
 
     // Check if usage alert should be sent
     const organization = await ctx.db.get(args.organizationId);
-    if (organization) {
-      await checkAndSendUsageAlert(ctx, args.organizationId, args.metric, 
-        existingUsage ? existingUsage.metrics[metricKey as keyof typeof existingUsage.metrics] + args.amount : args.amount);
+    if (organization && metricKey) {
+      const currentValue = existingUsage?.metrics[metricKey as keyof typeof existingUsage.metrics];
+      const newValue = (typeof currentValue === 'number' ? currentValue : 0) + args.amount;
+      await checkAndSendUsageAlert(ctx, args.organizationId, args.metric, newValue);
     }
 
     return { success: true };
@@ -348,14 +381,21 @@ async function checkAndSendUsageAlert(ctx: any, organizationId: string, metric: 
     
     planName = plan.name;
     const limitMap: Record<string, keyof typeof plan.features> = {
-      "messages": "maxMessagesPerMonth",
-      "agents": "maxAgents", 
-      "knowledge_entries": "maxKnowledgeEntries",
-      "file_uploads": "maxFileUploads"
+      "messages": "maxMessagesPerMonth" as keyof typeof plan.features,
+      "agents": "maxAgents" as keyof typeof plan.features, 
+      "knowledge_entries": "maxKnowledgeEntries" as keyof typeof plan.features,
+      "file_uploads": "maxFileUploads" as keyof typeof plan.features
     };
     
     const limitKey = limitMap[metric];
-    limit = plan.features[limitKey] as number;
+    // Use fallbacks for optional properties
+    if (limitKey === "maxAgents") {
+      limit = (plan.features.maxAgents ?? plan.features.maxChatbots) as number;
+    } else if (limitKey === "maxMessagesPerMonth") {
+      limit = (plan.features.maxMessagesPerMonth ?? plan.features.aiCredits) as number;
+    } else {
+      limit = plan.features[limitKey] as number;
+    }
   } else {
     // Free plan
     planName = "Free";

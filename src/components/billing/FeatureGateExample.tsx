@@ -7,12 +7,12 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { useFeatureAccess } from "@/hooks/useFeatureAccess";
+import { useFeatureAccess, type FeatureType } from "@/hooks/useFeatureAccess";
 import { Link } from "@tanstack/react-router";
 import { Crown, Lock } from "lucide-react";
 
 interface FeatureGateProps {
-	feature: string;
+	feature: FeatureType;
 	children: React.ReactNode;
 	fallback?: React.ReactNode;
 }

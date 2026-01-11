@@ -44,7 +44,7 @@ describe("UsageProgress", () => {
 				}) as any,
 		);
 
-		renderWithProviders(<UsageProgress metric="files" title="Files" />);
+		renderWithProviders(<UsageProgress metric="file_uploads" title="Files" />);
 
 		expect(await screen.findByText("Warning")).toBeInTheDocument();
 		expect(screen.getByText("80.0% used")).toBeInTheDocument();

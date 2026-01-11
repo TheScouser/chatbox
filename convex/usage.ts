@@ -67,6 +67,26 @@ export const getUsageOverview = query({
     } else {
       // Free plan limits
       planLimits = {
+        aiCredits: 500,
+        knowledgeCharacters: 500000,
+        emailCredits: 25,
+        maxChatbots: 1,
+        maxSeats: 1,
+        maxAiActionsPerAgent: 1,
+        voiceMinutes: 0,
+        resyncCredits: 0,
+        maxFileSizeMB: 2,
+        prioritySupport: false,
+        customDomains: false,
+        advancedAnalytics: false,
+        apiAccess: false,
+        webhookIntegrations: false,
+        customBranding: false,
+        exportChats: false,
+        exportLeads: false,
+        downloadTranscripts: false,
+        ssoIntegration: false,
+        auditLogs: false,
         maxAgents: 1,
         maxMessagesPerMonth: 500,
         maxKnowledgeEntries: 50,
@@ -88,14 +108,14 @@ export const getUsageOverview = query({
       .withIndex("organizationId", (q) => q.eq("organizationId", args.organizationId))
       .collect();
 
-    const messagesUsed = currentUsage?.metrics.messagesUsed || 0;
+    const messagesUsed = currentUsage?.metrics.messagesUsed || currentUsage?.metrics.aiCreditsUsed || 0;
     const agentsUsed = agents.length;
 
     return {
       creditsUsed: messagesUsed, // Using messages as "credits"
-      creditsLimit: planLimits?.maxMessagesPerMonth || 500,
+      creditsLimit: planLimits?.maxMessagesPerMonth ?? planLimits?.aiCredits ?? 500,
       agentsUsed,
-      agentsLimit: planLimits?.maxAgents || 1,
+      agentsLimit: planLimits?.maxAgents ?? planLimits?.maxChatbots ?? 1,
     };
   },
 });

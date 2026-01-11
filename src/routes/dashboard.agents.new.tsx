@@ -4,7 +4,12 @@ import { ArrowLeft, Bot } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
-import { useFormValidation, validators } from "../hooks/useFormValidation";
+import {
+	useFormValidation,
+	validators,
+	type ValidationSchema,
+	type ValidationRule,
+} from "../hooks/useFormValidation";
 import { Button } from "../components/ui/button";
 import {
 	FormActions,
@@ -43,18 +48,20 @@ function CreateAgent() {
 	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	// Validation schema for create agent form
-	const createAgentSchema = {
+	const createAgentSchema: ValidationSchema = {
 		name: {
 			required: true,
 			requiredMessage: t("agents.new.agentNameRequired"),
 			rules: [
 				validators.minLength(2, t("agents.new.agentNameMinLength")),
 				validators.maxLength(50, t("agents.new.agentNameMaxLength")),
-			],
+			] as ValidationRule<unknown>[],
 		},
 		description: {
 			required: false,
-			rules: [validators.maxLength(500, t("agents.new.descriptionMaxLength"))],
+			rules: [
+				validators.maxLength(500, t("agents.new.descriptionMaxLength")),
+			] as ValidationRule<unknown>[],
 		},
 	};
 

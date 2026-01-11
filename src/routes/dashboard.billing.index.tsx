@@ -14,6 +14,28 @@ import { Link } from "@tanstack/react-router";
 import { CreditCard, Settings, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+// Helper function to safely get plan feature values with fallbacks
+function getPlanFeatureValue(
+	features: { aiCredits: number; maxChatbots: number } & {
+		maxMessagesPerMonth?: number;
+		maxFileUploads?: number;
+		maxAgents?: number;
+	},
+	key: "maxMessagesPerMonth" | "maxFileUploads" | "maxAgents",
+	fallback: number,
+): number {
+	if (key === "maxMessagesPerMonth") {
+		return features.maxMessagesPerMonth ?? features.aiCredits ?? fallback;
+	}
+	if (key === "maxAgents") {
+		return features.maxAgents ?? features.maxChatbots ?? fallback;
+	}
+	if (key === "maxFileUploads") {
+		return features.maxFileUploads ?? fallback;
+	}
+	return fallback;
+}
+
 export const Route = createFileRoute("/dashboard/billing/")({
 	component: BillingDashboard,
 });
@@ -135,19 +157,32 @@ function BillingDashboard() {
 							<div className="flex justify-between text-sm">
 								<span>{t("billing.messages")}</span>
 								<span className="font-medium">
-									--- / {plan?.features.maxMessagesPerMonth || 500}
+									--- /{" "}
+									{plan?.features
+										? getPlanFeatureValue(
+												plan.features,
+												"maxMessagesPerMonth",
+												500,
+											)
+										: 500}
 								</span>
 							</div>
 							<div className="flex justify-between text-sm">
 								<span>{t("billing.fileUploads")}</span>
 								<span className="font-medium">
-									--- / {plan?.features.maxFileUploads || 5}
+									--- /{" "}
+									{plan?.features
+										? getPlanFeatureValue(plan.features, "maxFileUploads", 5)
+										: 5}
 								</span>
 							</div>
 							<div className="flex justify-between text-sm">
 								<span>{t("billing.agents")}</span>
 								<span className="font-medium">
-									--- / {plan?.features.maxAgents || 1}
+									--- /{" "}
+									{plan?.features
+										? getPlanFeatureValue(plan.features, "maxAgents", 1)
+										: 1}
 								</span>
 							</div>
 						</div>

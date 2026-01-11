@@ -4,7 +4,12 @@ import { MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../convex/_generated/api";
-import { useFormValidation, validators } from "../hooks/useFormValidation";
+import {
+	useFormValidation,
+	validators,
+	type ValidationSchema,
+	type ValidationRule,
+} from "../hooks/useFormValidation";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
 import {
@@ -54,14 +59,14 @@ function AgentKnowledgeQnA() {
 	const [editingEntry, setEditingEntry] = useState<string | null>(null);
 
 	// Validation schema for Q&A form
-	const qnaValidationSchema = {
+	const qnaValidationSchema: ValidationSchema = {
 		question: {
 			required: true,
 			requiredMessage: t("knowledge.qna.questionRequired"),
 			rules: [
 				validators.minLength(5, t("knowledge.qna.questionMinLength")),
 				validators.maxLength(500, t("knowledge.qna.questionMaxLength")),
-			],
+			] as ValidationRule<unknown>[],
 		},
 		answer: {
 			required: true,
@@ -69,13 +74,13 @@ function AgentKnowledgeQnA() {
 			rules: [
 				validators.minLength(10, t("knowledge.qna.answerMinLength")),
 				validators.maxLength(2000, t("knowledge.qna.answerMaxLength")),
-			],
+			] as ValidationRule<unknown>[],
 		},
 		title: {
 			required: false,
 			rules: [
 				validators.maxLength(100, "Title must be less than 100 characters"),
-			],
+			] as ValidationRule<unknown>[],
 		},
 	};
 

@@ -386,7 +386,7 @@ export const trackKnowledgeCharacters = internalMutation({
     characters: v.number(),
     operation: v.union(v.literal("add"), v.literal("remove")),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, _args) => {
     // Note: We don't track this in billingUsage since it's a total, not monthly
     // But we can still track it for analytics if needed
     // For now, we'll just validate in the query, not track here

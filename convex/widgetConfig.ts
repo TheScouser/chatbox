@@ -1,8 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { validateOrganizationAccessQuery } from "./helpers";
-import { internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
 
 // Use the shared helper function
 const validateOrganizationAccess = validateOrganizationAccessQuery;

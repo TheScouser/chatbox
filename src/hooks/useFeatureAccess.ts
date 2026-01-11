@@ -2,16 +2,34 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useOrganization } from "../contexts/OrganizationContext";
 
-export function useFeatureAccess(feature: string) {
+// Valid feature types from convex/featureGates.ts
+export type FeatureType =
+	| "priority_support"
+	| "custom_domains"
+	| "advanced_analytics"
+	| "api_access"
+	| "webhook_integrations"
+	| "custom_branding"
+	| "sso_integration"
+	| "audit_logs";
+
+// Valid metric types from convex/featureGates.ts
+export type MetricType =
+	| "agents"
+	| "messages"
+	| "knowledge_entries"
+	| "file_uploads";
+
+export function useFeatureAccess(feature: FeatureType) {
 	const { currentOrganization } = useOrganization();
 	const access = useQuery(
 		api.featureGates.checkFeatureAccess,
 		currentOrganization?._id
 			? {
 					organizationId: currentOrganization._id,
-					feature: feature as any,
+					feature,
 				}
-			: ("skip" as any),
+			: "skip",
 	);
 
 	return {
@@ -23,16 +41,16 @@ export function useFeatureAccess(feature: string) {
 	};
 }
 
-export function useUsageLimit(metric: string) {
+export function useUsageLimit(metric: MetricType) {
 	const { currentOrganization } = useOrganization();
 	const limit = useQuery(
 		api.featureGates.checkUsageLimit,
 		currentOrganization?._id
 			? {
 					organizationId: currentOrganization._id,
-					metric: metric as any,
+					metric,
 				}
-			: ("skip" as any),
+			: "skip",
 	);
 
 	return {

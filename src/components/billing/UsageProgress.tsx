@@ -1,11 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useUsageLimit } from "@/hooks/useFeatureAccess";
+import { useUsageLimit, type MetricType } from "@/hooks/useFeatureAccess";
 import { AlertTriangle } from "lucide-react";
 
 interface UsageProgressProps {
-	metric: string;
+	metric: MetricType;
 	title: string;
 	description?: string;
 }

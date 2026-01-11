@@ -281,6 +281,14 @@ export default defineSchema({
       exportChats: v.boolean(),
       exportLeads: v.boolean(),
       downloadTranscripts: v.boolean(),
+      ssoIntegration: v.boolean(),
+      auditLogs: v.boolean(),
+      
+      // Additional limits (for backward compatibility)
+      maxAgents: v.optional(v.number()),  // Alias for maxChatbots
+      maxMessagesPerMonth: v.optional(v.number()),  // Alias for aiCredits
+      maxKnowledgeEntries: v.optional(v.number()),
+      maxFileUploads: v.optional(v.number()),
     }),
     isActive: v.boolean(),
     sortOrder: v.number(),
@@ -320,6 +328,13 @@ export default defineSchema({
       emailCreditsUsed: v.number(),
       voiceMinutesUsed: v.number(),
       resyncCreditsUsed: v.number(),
+      // Legacy metrics for backward compatibility
+      messagesUsed: v.optional(v.number()),
+      agentsCreated: v.optional(v.number()),
+      knowledgeEntriesAdded: v.optional(v.number()),
+      filesUploaded: v.optional(v.number()),
+      storageUsedMB: v.optional(v.number()),
+      apiCallsMade: v.optional(v.number()),
     }),
     lastUpdated: v.number(),
     createdAt: v.optional(v.number()),

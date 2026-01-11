@@ -8,7 +8,7 @@ import { validateOrganizationAccessQuery } from "./helpers";
 // Initialize Stripe (will be undefined in development if not configured)
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: "2025-05-28.basil" as any, // Cast to any to avoid type mismatch with old types
+      apiVersion: "2025-05-28.basil" as Stripe.StripeConfig["apiVersion"],
     })
   : null;
 
@@ -159,6 +159,12 @@ function getFreePlanFeatures() {
       exportChats: false,
       exportLeads: false,
       downloadTranscripts: false,
+      ssoIntegration: false,
+      auditLogs: false,
+      maxAgents: 1,
+      maxMessagesPerMonth: 500,
+      maxKnowledgeEntries: 50,
+      maxFileUploads: 5,
     },
   };
 }
