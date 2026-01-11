@@ -46,7 +46,7 @@ export function EmailTestComponent() {
 					name: recipientName,
 					subject: subject || t("settings.emailTesting.defaultSubject"),
 					content: content || t("settings.emailTesting.defaultContent"),
-					type: "announcement" as any,
+					type: "announcement",
 				});
 			}
 

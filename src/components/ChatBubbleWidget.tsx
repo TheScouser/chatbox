@@ -1,7 +1,7 @@
 import { useAction, useMutation } from "convex/react";
 import { MessageSquare, Minimize2, Send, X } from "lucide-react";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { detectUserLocale } from "../lib/locale";
@@ -42,13 +42,13 @@ export default function ChatBubbleWidget({
 	const generateAIResponse = useAction(api.chat.generateAIResponse);
 	const createConversation = useMutation(api.conversations.createConversation);
 
-	const scrollToBottom = () => {
+	const scrollToBottom = useCallback(() => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-	};
+	}, []);
 
 	useEffect(() => {
 		scrollToBottom();
-	}, [messages]);
+	}, [messages, scrollToBottom]);
 
 	const sendMessage = async (content: string) => {
 		if (!content.trim()) return;
@@ -133,6 +133,7 @@ export default function ChatBubbleWidget({
 			{/* Chat Bubble */}
 			{!isOpen && (
 				<button
+					type="button"
 					onClick={() => setIsOpen(true)}
 					style={{
 						width: "60px",
@@ -195,6 +196,7 @@ export default function ChatBubbleWidget({
 						</div>
 						<div style={{ display: "flex", gap: "8px" }}>
 							<button
+								type="button"
 								onClick={() => setIsMinimized(!isMinimized)}
 								style={{
 									background: "none",
@@ -211,6 +213,7 @@ export default function ChatBubbleWidget({
 								<Minimize2 size={16} />
 							</button>
 							<button
+								type="button"
 								onClick={() => setIsOpen(false)}
 								style={{
 									background: "none",

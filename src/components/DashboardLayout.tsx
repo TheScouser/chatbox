@@ -173,7 +173,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	useEffect(() => {
 		if (currentAgent && organizations) {
 			const agentOrg = organizations.find(
-				(org: any) => org._id === currentAgent.organizationId,
+				(org) => org._id === currentAgent.organizationId,
 			);
 			if (agentOrg && agentOrg._id !== selectedOrganizationId) {
 				setSelectedOrganizationId(agentOrg._id);

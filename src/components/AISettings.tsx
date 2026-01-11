@@ -12,9 +12,10 @@ import { useMutation } from "convex/react";
 import { Bot } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 interface AISettingsProps {
-	agent: any;
+	agent: Doc<"agents">;
 }
 
 export default function AISettings({ agent }: AISettingsProps) {

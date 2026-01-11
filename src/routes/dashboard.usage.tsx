@@ -135,16 +135,14 @@ function UsagePage() {
 							{organizationName &&
 								t("usage.organization", { orgName: organizationName })}
 							{subscription && (
-								<>
-									{t("usage.billingPeriod", {
+								t("usage.billingPeriod", {
 										start: new Date(
 											subscription.currentPeriodStart,
 										).toLocaleDateString(),
 										end: new Date(
 											subscription.currentPeriodEnd,
 										).toLocaleDateString(),
-									})}
-								</>
+									})
 							)}
 							{isFree && t("usage.startWithFree")}
 						</CardDescription>

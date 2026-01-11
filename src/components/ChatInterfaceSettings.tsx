@@ -9,12 +9,13 @@ import {
 } from "@/components/ui/select";
 import { Bot, Settings } from "lucide-react";
 import { useState } from "react";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 interface ChatInterfaceSettingsProps {
-	agent: any;
+	agent: Doc<"agents">;
 }
 
-export default function ChatInterfaceSettings({}: ChatInterfaceSettingsProps) {
+export default function ChatInterfaceSettings({ agent }: ChatInterfaceSettingsProps) {
 	// Chat interface state
 	const [embedWidth, setEmbedWidth] = useState("400");
 	const [embedHeight, setEmbedHeight] = useState("600");

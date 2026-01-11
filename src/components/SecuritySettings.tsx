@@ -5,9 +5,10 @@ import { useMutation } from "convex/react";
 import { Check, Copy, Info, X } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 interface SecuritySettingsProps {
-	agent: any;
+	agent: Doc<"agents">;
 }
 
 export default function SecuritySettings({ agent }: SecuritySettingsProps) {

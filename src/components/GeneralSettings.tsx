@@ -5,9 +5,10 @@ import { useMutation } from "convex/react";
 import { Check, Copy, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Doc } from "../../convex/_generated/dataModel";
 
 interface GeneralSettingsProps {
-	agent: any;
+	agent: Doc<"agents">;
 }
 
 export default function GeneralSettings({ agent }: GeneralSettingsProps) {

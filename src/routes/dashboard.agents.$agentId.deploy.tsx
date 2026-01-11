@@ -300,9 +300,7 @@ function AgentDeploy() {
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
 				comingSoon={true}
-				instructions={
-					<>
-						<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+				instructions=<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
 							<li>
 								Go to{" "}
 								<a
@@ -326,8 +324,6 @@ function AgentDeploy() {
 								Configure the webhook URL above in your Slack app settings
 							</li>
 						</ol>
-					</>
-				}
 			/>
 
 			<DeploymentMethodCard
@@ -339,9 +335,7 @@ function AgentDeploy() {
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
 				comingSoon={true}
-				instructions={
-					<>
-						<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+				instructions=<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
 							<li>
 								Go to{" "}
 								<a
@@ -358,8 +352,6 @@ function AgentDeploy() {
 							<li>Add bot to your Teams app manifest</li>
 							<li>Deploy and test in Teams</li>
 						</ol>
-					</>
-				}
 			/>
 
 			<DeploymentMethodCard
@@ -371,9 +363,7 @@ function AgentDeploy() {
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
 				comingSoon={true}
-				instructions={
-					<>
-						<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+				instructions=<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
 							<li>Set up a Meta Business account and WhatsApp Business API</li>
 							<li>Get your API credentials from Meta Business Manager</li>
 							<li>Configure webhook URL in Meta Business settings</li>
@@ -382,8 +372,6 @@ function AgentDeploy() {
 								Test by sending a message to your WhatsApp Business number
 							</li>
 						</ol>
-					</>
-				}
 			/>
 
 			<DeploymentMethodCard
@@ -395,9 +383,7 @@ function AgentDeploy() {
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
 				comingSoon={true}
-				instructions={
-					<>
-						<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+				instructions=<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
 							<li>
 								Sign up for a{" "}
 								<a
@@ -417,8 +403,6 @@ function AgentDeploy() {
 							<li>Set up outgoing message API integration</li>
 							<li>Test by sending SMS to your Twilio number</li>
 						</ol>
-					</>
-				}
 			/>
 		</div>
 	);
@@ -444,9 +428,7 @@ function AgentDeploy() {
 						Production Ready
 					</Badge>
 				}
-				instructions={
-					<>
-						<div className="space-y-3">
+				instructions=<div className="space-y-3">
 							<div>
 								<p className="font-semibold mb-1">Endpoint:</p>
 								<code className="bg-muted px-2 py-1 rounded text-xs">
@@ -480,8 +462,6 @@ function AgentDeploy() {
 								</pre>
 							</div>
 						</div>
-					</>
-				}
 			/>
 
 			<DeploymentMethodCard
@@ -493,9 +473,7 @@ function AgentDeploy() {
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
 				comingSoon={true}
-				instructions={
-					<>
-						<div className="space-y-3">
+				instructions=<div className="space-y-3">
 							<div>
 								<p className="font-semibold mb-1">Webhook URL:</p>
 								<code className="bg-muted px-2 py-1 rounded text-xs break-all">
@@ -543,8 +521,6 @@ function AgentDeploy() {
 								</p>
 							</div>
 						</div>
-					</>
-				}
 			/>
 		</div>
 	);
@@ -565,9 +541,7 @@ function AgentDeploy() {
 				copyType="wordpress"
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
-				instructions={
-					<>
-						<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+				instructions=<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
 							<li>
 								Install the Chatbox plugin from WordPress plugin directory (or
 								upload manually)
@@ -585,8 +559,6 @@ function AgentDeploy() {
 							</li>
 							<li>Or use the widget in Appearance → Widgets</li>
 						</ol>
-					</>
-				}
 			/>
 
 			<DeploymentMethodCard
@@ -597,9 +569,7 @@ function AgentDeploy() {
 				copyType="shopify"
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
-				instructions={
-					<>
-						<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+				instructions=<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
 							<li>Go to your Shopify admin → Online Store → Themes</li>
 							<li>Click "Actions" → "Edit code" on your active theme</li>
 							<li>
@@ -612,8 +582,6 @@ function AgentDeploy() {
 							</li>
 							<li>Or create a custom section in your theme for more control</li>
 						</ol>
-					</>
-				}
 			/>
 
 			<DeploymentMethodCard
@@ -624,9 +592,7 @@ function AgentDeploy() {
 				copyType="wix"
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
-				instructions={
-					<>
-						<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+				instructions=<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
 							<li>
 								Go to your Wix editor and select the page where you want to add
 								the widget
@@ -636,8 +602,6 @@ function AgentDeploy() {
 							<li>Paste the code snippet in the custom code section</li>
 							<li>Save and publish your site</li>
 						</ol>
-					</>
-				}
 			/>
 
 			<DeploymentMethodCard
@@ -648,16 +612,12 @@ function AgentDeploy() {
 				copyType="squarespace"
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
-				instructions={
-					<>
-						<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+				instructions=<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
 							<li>Go to Settings → Advanced → Code Injection</li>
 							<li>Paste the code snippet in the "Footer" section</li>
 							<li>Click "Save" to apply changes</li>
 							<li>The widget will appear on all pages of your site</li>
 						</ol>
-					</>
-				}
 			/>
 
 			<DeploymentMethodCard
@@ -668,17 +628,13 @@ function AgentDeploy() {
 				copyType="webflow"
 				copiedCode={copiedCode}
 				onCopy={copyToClipboard}
-				instructions={
-					<>
-						<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+				instructions=<ol className="list-decimal list-inside space-y-2 text-muted-foreground">
 							<li>Open your Webflow project</li>
 							<li>Go to Project Settings → Custom Code</li>
 							<li>Paste the code snippet in the "Footer Code" section</li>
 							<li>Or add it to a specific page using the Embed element</li>
 							<li>Publish your site to see the changes</li>
 						</ol>
-					</>
-				}
 			/>
 		</div>
 	);
