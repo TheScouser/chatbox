@@ -177,6 +177,7 @@ function DeploymentMethodCard({
 }
 
 function AgentDeploy() {
+	const { t } = useTranslation();
 	const { agentId } = Route.useParams();
 	const [copiedCode, setCopiedCode] = useState<string | null>(null);
 	const [activeTab, setActiveTab] = useState("web");
