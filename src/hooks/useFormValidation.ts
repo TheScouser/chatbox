@@ -25,7 +25,9 @@ export type ValidationSchema = Record<string, FieldValidation<unknown>>;
 /**
  * Form errors type
  */
-export type FormErrors<T extends Record<string, unknown>> = Partial<Record<keyof T, string>>;
+export type FormErrors<T extends Record<string, unknown>> = Partial<
+	Record<keyof T, string>
+>;
 
 /**
  * Common validation rules factory
@@ -108,7 +110,7 @@ export const validators = {
 	 */
 	custom: <T>(
 		validateFn: (value: T, formData?: Record<string, unknown>) => boolean,
-		message: string
+		message: string,
 	): ValidationRule<T> => ({
 		validate: validateFn,
 		message,
@@ -121,7 +123,7 @@ export const validators = {
 function validateField<T>(
 	value: T,
 	validation: FieldValidation<T>,
-	formData?: Record<string, unknown>
+	formData?: Record<string, unknown>,
 ): string | undefined {
 	// Check required
 	if (validation.required) {
@@ -152,7 +154,7 @@ function validateField<T>(
  * Hook for form validation
  */
 export function useFormValidation<T extends Record<string, unknown>>(
-	schema: ValidationSchema
+	schema: ValidationSchema,
 ) {
 	const [errors, setErrors] = useState<FormErrors<T>>({});
 	const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({});
@@ -164,9 +166,13 @@ export function useFormValidation<T extends Record<string, unknown>>(
 		(fieldName: keyof T, value: unknown, formData?: T): string | undefined => {
 			const fieldSchema = schema[fieldName as string];
 			if (!fieldSchema) return undefined;
-			return validateField(value, fieldSchema as FieldValidation<typeof value>, formData);
+			return validateField(
+				value,
+				fieldSchema as FieldValidation<typeof value>,
+				formData,
+			);
 		},
-		[schema]
+		[schema],
 	);
 
 	/**
@@ -179,7 +185,11 @@ export function useFormValidation<T extends Record<string, unknown>>(
 
 			for (const [fieldName, fieldSchema] of Object.entries(schema)) {
 				const value = formData[fieldName as keyof T];
-				const error = validateField(value, fieldSchema as FieldValidation<typeof value>, formData);
+				const error = validateField(
+					value,
+					fieldSchema as FieldValidation<typeof value>,
+					formData,
+				);
 				if (error) {
 					newErrors[fieldName as keyof T] = error;
 					isValid = false;
@@ -189,7 +199,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
 			setErrors(newErrors);
 			return { isValid, errors: newErrors };
 		},
-		[schema]
+		[schema],
 	);
 
 	/**
@@ -204,21 +214,24 @@ export function useFormValidation<T extends Record<string, unknown>>(
 				[fieldName]: error,
 			}));
 		},
-		[validateSingleField]
+		[validateSingleField],
 	);
 
 	/**
 	 * Handle field change - clear error when user starts typing
 	 */
-	const handleChange = useCallback((fieldName: keyof T) => {
-		if (errors[fieldName]) {
-			setErrors((prev) => {
-				const newErrors = { ...prev };
-				delete newErrors[fieldName];
-				return newErrors;
-			});
-		}
-	}, [errors]);
+	const handleChange = useCallback(
+		(fieldName: keyof T) => {
+			if (errors[fieldName]) {
+				setErrors((prev) => {
+					const newErrors = { ...prev };
+					delete newErrors[fieldName];
+					return newErrors;
+				});
+			}
+		},
+		[errors],
+	);
 
 	/**
 	 * Clear all errors
@@ -261,7 +274,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
 		(fieldName: keyof T): string | undefined => {
 			return touched[fieldName] ? errors[fieldName] : undefined;
 		},
-		[errors, touched]
+		[errors, touched],
 	);
 
 	return {
@@ -296,11 +309,12 @@ export interface ValidatedFieldProps {
 export function createFieldProps<T extends Record<string, unknown>>(
 	fieldName: keyof T,
 	validation: ReturnType<typeof useFormValidation<T>>,
-	formData: T
+	formData: T,
 ): ValidatedFieldProps {
 	return {
 		error: validation.getFieldError(fieldName),
-		onBlur: () => validation.handleBlur(fieldName, formData[fieldName], formData),
+		onBlur: () =>
+			validation.handleBlur(fieldName, formData[fieldName], formData),
 		onChange: () => validation.handleChange(fieldName),
 	};
 }

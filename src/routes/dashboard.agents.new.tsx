@@ -54,9 +54,7 @@ function CreateAgent() {
 		},
 		description: {
 			required: false,
-			rules: [
-				validators.maxLength(500, t("agents.new.descriptionMaxLength")),
-			],
+			rules: [validators.maxLength(500, t("agents.new.descriptionMaxLength"))],
 		},
 	};
 
@@ -91,9 +89,7 @@ function CreateAgent() {
 		} catch (error) {
 			console.error("Failed to create agent:", error);
 			setSubmitError(
-				error instanceof Error
-					? error.message
-					: t("agents.new.createError")
+				error instanceof Error ? error.message : t("agents.new.createError"),
 			);
 		} finally {
 			setIsSubmitting(false);
@@ -143,7 +139,9 @@ function CreateAgent() {
 								<Input
 									value={formData.name}
 									onChange={(e) => handleInputChange("name", e.target.value)}
-									onBlur={() => validation.handleBlur("name", formData.name, formData)}
+									onBlur={() =>
+										validation.handleBlur("name", formData.name, formData)
+									}
 									placeholder={t("agents.new.agentNamePlaceholder")}
 									maxLength={50}
 									aria-invalid={Boolean(validation.getFieldError("name"))}
@@ -161,10 +159,18 @@ function CreateAgent() {
 									onChange={(e) =>
 										handleInputChange("description", e.target.value)
 									}
-									onBlur={() => validation.handleBlur("description", formData.description, formData)}
+									onBlur={() =>
+										validation.handleBlur(
+											"description",
+											formData.description,
+											formData,
+										)
+									}
 									placeholder={t("agents.new.descriptionPlaceholder")}
 									maxLength={500}
-									aria-invalid={Boolean(validation.getFieldError("description"))}
+									aria-invalid={Boolean(
+										validation.getFieldError("description"),
+									)}
 								/>
 							</FormField>
 						</FormSection>
@@ -177,11 +183,10 @@ function CreateAgent() {
 							>
 								{t("agents.new.cancel")}
 							</Button>
-							<Button
-								type="submit"
-								disabled={isSubmitting}
-							>
-								{isSubmitting ? t("agents.new.creating") : t("agents.new.create")}
+							<Button type="submit" disabled={isSubmitting}>
+								{isSubmitting
+									? t("agents.new.creating")
+									: t("agents.new.create")}
 							</Button>
 						</FormActions>
 					</form>

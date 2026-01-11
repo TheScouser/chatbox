@@ -120,7 +120,9 @@ function AgentKnowledgeOverview() {
 			console.error("Failed to train agent:", error);
 			setTrainingResult({
 				message:
-					error instanceof Error ? error.message : t("knowledge.trainingFailed"),
+					error instanceof Error
+						? error.message
+						: t("knowledge.trainingFailed"),
 				processed: 0,
 				errors: 1,
 			});
@@ -210,11 +212,17 @@ function AgentKnowledgeOverview() {
 					<AlertDescription>
 						<div className="space-y-2">
 							<p className="font-medium">
-								{trainingResult.errors > 0 ? t("knowledge.trainingFailed") : t("knowledge.trainingComplete")}
+								{trainingResult.errors > 0
+									? t("knowledge.trainingFailed")
+									: t("knowledge.trainingComplete")}
 							</p>
 							<p>{trainingResult.message}</p>
 							{trainingResult.processed > 0 && (
-								<p>{t("knowledge.processedEntries", { count: trainingResult.processed })}</p>
+								<p>
+									{t("knowledge.processedEntries", {
+										count: trainingResult.processed,
+									})}
+								</p>
 							)}
 						</div>
 					</AlertDescription>
@@ -266,9 +274,7 @@ function AgentKnowledgeOverview() {
 						<div className="space-y-4">
 							<div>
 								<p className="font-medium mb-2">{t("knowledge.addSources")}</p>
-								<p>
-									{t("knowledge.addSourcesDesc")}
-								</p>
+								<p>{t("knowledge.addSourcesDesc")}</p>
 							</div>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 								{knowledgeSources.map((source) => {
@@ -355,7 +361,9 @@ function AgentKnowledgeOverview() {
 													{entry.embedding && (
 														<>
 															<span>•</span>
-															<span className="text-green-600">{t("knowledge.trained")}</span>
+															<span className="text-green-600">
+																{t("knowledge.trained")}
+															</span>
 														</>
 													)}
 												</div>
@@ -368,7 +376,9 @@ function AgentKnowledgeOverview() {
 						{knowledgeEntries && knowledgeEntries.length > 5 && (
 							<div className="p-4 text-center border-t border-border/30">
 								<p className="text-sm text-muted-foreground">
-									{t("knowledge.showingEntries", { total: knowledgeEntries.length })}
+									{t("knowledge.showingEntries", {
+										total: knowledgeEntries.length,
+									})}
 								</p>
 							</div>
 						)}

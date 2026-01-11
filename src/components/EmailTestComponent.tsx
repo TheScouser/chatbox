@@ -45,9 +45,7 @@ export function EmailTestComponent() {
 					to: recipient,
 					name: recipientName,
 					subject: subject || t("settings.emailTesting.defaultSubject"),
-					content:
-						content ||
-						t("settings.emailTesting.defaultContent"),
+					content: content || t("settings.emailTesting.defaultContent"),
 					type: "announcement" as any,
 				});
 			}
@@ -77,7 +75,9 @@ export function EmailTestComponent() {
 			<CardContent className="space-y-4">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
-						<Label htmlFor="recipient">{t("settings.emailTesting.recipientEmail")}</Label>
+						<Label htmlFor="recipient">
+							{t("settings.emailTesting.recipientEmail")}
+						</Label>
 						<Input
 							id="recipient"
 							type="email"
@@ -87,7 +87,9 @@ export function EmailTestComponent() {
 						/>
 					</div>
 					<div>
-						<Label htmlFor="recipientName">{t("settings.emailTesting.recipientName")}</Label>
+						<Label htmlFor="recipientName">
+							{t("settings.emailTesting.recipientName")}
+						</Label>
 						<Input
 							id="recipientName"
 							value={recipientName}
@@ -98,13 +100,19 @@ export function EmailTestComponent() {
 				</div>
 
 				<div>
-					<Label htmlFor="emailType">{t("settings.emailTesting.emailType")}</Label>
+					<Label htmlFor="emailType">
+						{t("settings.emailTesting.emailType")}
+					</Label>
 					<Select value={emailType} onValueChange={setEmailType}>
 						<SelectTrigger>
-							<SelectValue placeholder={t("settings.emailTesting.selectEmailType")} />
+							<SelectValue
+								placeholder={t("settings.emailTesting.selectEmailType")}
+							/>
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="general">{t("settings.emailTesting.generalNotification")}</SelectItem>
+							<SelectItem value="general">
+								{t("settings.emailTesting.generalNotification")}
+							</SelectItem>
 							{/* Other email types would be tested through their respective flows */}
 						</SelectContent>
 					</Select>
@@ -113,7 +121,9 @@ export function EmailTestComponent() {
 				{emailType === "general" && (
 					<>
 						<div>
-							<Label htmlFor="subject">{t("settings.emailTesting.subject")}</Label>
+							<Label htmlFor="subject">
+								{t("settings.emailTesting.subject")}
+							</Label>
 							<Input
 								id="subject"
 								value={subject}
@@ -122,7 +132,9 @@ export function EmailTestComponent() {
 							/>
 						</div>
 						<div>
-							<Label htmlFor="content">{t("settings.emailTesting.content")}</Label>
+							<Label htmlFor="content">
+								{t("settings.emailTesting.content")}
+							</Label>
 							<Textarea
 								id="content"
 								value={content}
@@ -139,22 +151,30 @@ export function EmailTestComponent() {
 					disabled={loading || !emailType}
 					className="w-full"
 				>
-					{loading ? t("settings.emailTesting.sending") : t("settings.emailTesting.sendTestEmail")}
+					{loading
+						? t("settings.emailTesting.sending")
+						: t("settings.emailTesting.sendTestEmail")}
 				</Button>
 
 				<div className="text-sm text-gray-600 space-y-1">
 					<p>
-						<strong>{t("settings.emailTesting.note")}</strong> {t("settings.emailTesting.noteText")}
+						<strong>{t("settings.emailTesting.note")}</strong>{" "}
+						{t("settings.emailTesting.noteText")}
 					</p>
 					<ul className="list-disc list-inside space-y-1 ml-4">
 						<li>
-							<strong>{t("settings.emailTesting.welcomeEmail")}:</strong> {t("settings.emailTesting.welcomeEmailDesc")}
+							<strong>{t("settings.emailTesting.welcomeEmail")}:</strong>{" "}
+							{t("settings.emailTesting.welcomeEmailDesc")}
 						</li>
 						<li>
-							<strong>{t("settings.emailTesting.billingNotifications")}:</strong> {t("settings.emailTesting.billingNotificationsDesc")}
+							<strong>
+								{t("settings.emailTesting.billingNotifications")}:
+							</strong>{" "}
+							{t("settings.emailTesting.billingNotificationsDesc")}
 						</li>
 						<li>
-							<strong>{t("settings.emailTesting.usageAlerts")}:</strong> {t("settings.emailTesting.usageAlertsDesc")}
+							<strong>{t("settings.emailTesting.usageAlerts")}:</strong>{" "}
+							{t("settings.emailTesting.usageAlertsDesc")}
 						</li>
 					</ul>
 				</div>

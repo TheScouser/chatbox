@@ -132,12 +132,17 @@ function UsagePage() {
 							</Badge>
 						</CardTitle>
 						<CardDescription>
-							{organizationName && t("usage.organization", { orgName: organizationName })}
+							{organizationName &&
+								t("usage.organization", { orgName: organizationName })}
 							{subscription && (
 								<>
 									{t("usage.billingPeriod", {
-										start: new Date(subscription.currentPeriodStart).toLocaleDateString(),
-										end: new Date(subscription.currentPeriodEnd).toLocaleDateString()
+										start: new Date(
+											subscription.currentPeriodStart,
+										).toLocaleDateString(),
+										end: new Date(
+											subscription.currentPeriodEnd,
+										).toLocaleDateString(),
 									})}
 								</>
 							)}
@@ -147,13 +152,18 @@ function UsagePage() {
 					<CardContent>
 						<div className="flex items-center justify-between">
 							<div className="space-y-2">
-								<div className="text-sm text-gray-600">{t("usage.planLimits")}</div>
+								<div className="text-sm text-gray-600">
+									{t("usage.planLimits")}
+								</div>
 								<div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
 									<div>
 										<span className="font-medium">
 											{(plan?.features.aiCredits || 100).toLocaleString()}
 										</span>
-										<span className="text-gray-500"> {t("usage.aiCreditsMonth")}</span>
+										<span className="text-gray-500">
+											{" "}
+											{t("usage.aiCreditsMonth")}
+										</span>
 									</div>
 									<div>
 										<span className="font-medium">
@@ -161,13 +171,19 @@ function UsagePage() {
 												plan?.features.knowledgeCharacters || 500000
 											).toLocaleString()}
 										</span>
-										<span className="text-gray-500"> {t("usage.kbCharacters")}</span>
+										<span className="text-gray-500">
+											{" "}
+											{t("usage.kbCharacters")}
+										</span>
 									</div>
 									<div>
 										<span className="font-medium">
 											{plan?.features.maxChatbots || 2}
 										</span>
-										<span className="text-gray-500"> {t("usage.chatbots")}</span>
+										<span className="text-gray-500">
+											{" "}
+											{t("usage.chatbots")}
+										</span>
 									</div>
 									<div>
 										<span className="font-medium">
@@ -230,7 +246,9 @@ function UsagePage() {
 									<div className="flex items-start gap-3">
 										<div className="w-2 h-2 bg-purple-500 rounded-full mt-2" />
 										<div>
-											<p className="font-medium">{t("usage.mostActiveAgent")}</p>
+											<p className="font-medium">
+												{t("usage.mostActiveAgent")}
+											</p>
 											<p className="text-sm text-gray-600">
 												{agentBreakdown.agents[0]?.agentName || "N/A"}
 											</p>
@@ -245,9 +263,7 @@ function UsagePage() {
 				<Card>
 					<CardHeader>
 						<CardTitle>{t("usage.optimizationTips")}</CardTitle>
-						<CardDescription>
-							{t("usage.getMostOut")}
-						</CardDescription>
+						<CardDescription>{t("usage.getMostOut")}</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{isFree ? (
@@ -255,7 +271,9 @@ function UsagePage() {
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">{t("usage.maximizeFreeAgent")}</p>
+										<p className="font-medium">
+											{t("usage.maximizeFreeAgent")}
+										</p>
 										<p className="text-sm text-gray-600">
 											{t("usage.maximizeFreeAgentDesc")}
 										</p>
@@ -264,7 +282,9 @@ function UsagePage() {
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">{t("usage.optimizeKnowledgeBase")}</p>
+										<p className="font-medium">
+											{t("usage.optimizeKnowledgeBase")}
+										</p>
 										<p className="text-sm text-gray-600">
 											{t("usage.optimizeKnowledgeBaseDesc")}
 										</p>
@@ -294,7 +314,9 @@ function UsagePage() {
 								<div className="flex items-start gap-3">
 									<div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
 									<div>
-										<p className="font-medium">{t("usage.monitorPerformance")}</p>
+										<p className="font-medium">
+											{t("usage.monitorPerformance")}
+										</p>
 										<p className="text-sm text-gray-600">
 											{t("usage.monitorPerformanceDesc")}
 										</p>

@@ -91,7 +91,9 @@ function AgentKnowledgeUrl() {
 		} catch (error) {
 			console.error("Error processing URL:", error);
 			setError(
-				error instanceof Error ? error.message : t("knowledge.url.processError"),
+				error instanceof Error
+					? error.message
+					: t("knowledge.url.processError"),
 			);
 		} finally {
 			setIsProcessingUrl(false);
@@ -126,9 +128,7 @@ function AgentKnowledgeUrl() {
 
 			{success && (
 				<Alert>
-					<AlertDescription>
-						{t("knowledge.url.addFromUrl")}
-					</AlertDescription>
+					<AlertDescription>{t("knowledge.url.addFromUrl")}</AlertDescription>
 				</Alert>
 			)}
 
@@ -187,7 +187,9 @@ function AgentKnowledgeUrl() {
 									{t("common.cancel")}
 								</Button>
 								<Button type="submit" disabled={isProcessingUrl || !url.trim()}>
-									{isProcessingUrl ? t("knowledge.url.processing") : t("knowledge.url.addFromUrlButton")}
+									{isProcessingUrl
+										? t("knowledge.url.processing")
+										: t("knowledge.url.addFromUrlButton")}
 								</Button>
 							</FormActions>
 						</form>

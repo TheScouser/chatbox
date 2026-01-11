@@ -145,7 +145,9 @@ function AgentKnowledgeQnA() {
 			setTimeout(() => setSuccess(false), 3000);
 		} catch (err) {
 			console.error("Error saving Q&A:", err);
-			setError(err instanceof Error ? err.message : t("knowledge.qna.saveError"));
+			setError(
+				err instanceof Error ? err.message : t("knowledge.qna.saveError"),
+			);
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -173,7 +175,9 @@ function AgentKnowledgeQnA() {
 			await deleteKnowledgeEntry({ entryId: entryId as any });
 		} catch (error) {
 			console.error("Error deleting Q&A:", error);
-			setError(error instanceof Error ? error.message : t("knowledge.qna.deleteError"));
+			setError(
+				error instanceof Error ? error.message : t("knowledge.qna.deleteError"),
+			);
 		}
 	};
 
@@ -198,7 +202,9 @@ function AgentKnowledgeQnA() {
 
 			<TwoColumnLayout>
 				<FormCard
-					title={editingEntry ? t("knowledge.qna.edit") : t("knowledge.qna.addNew")}
+					title={
+						editingEntry ? t("knowledge.qna.edit") : t("knowledge.qna.addNew")
+					}
 					description={t("knowledge.qna.description")}
 					icon={MessageSquare}
 				>
@@ -216,7 +222,9 @@ function AgentKnowledgeQnA() {
 											setTitle(e.target.value);
 											validation.handleChange("title");
 										}}
-										onBlur={() => validation.handleBlur("title", title, formData)}
+										onBlur={() =>
+											validation.handleBlur("title", title, formData)
+										}
 										placeholder="Ex: Refund requests"
 										aria-invalid={Boolean(validation.getFieldError("title"))}
 									/>
@@ -233,7 +241,9 @@ function AgentKnowledgeQnA() {
 											setQuestion(e.target.value);
 											validation.handleChange("question");
 										}}
-										onBlur={() => validation.handleBlur("question", question, formData)}
+										onBlur={() =>
+											validation.handleBlur("question", question, formData)
+										}
 										placeholder={t("knowledge.qna.questionPlaceholder")}
 										aria-invalid={Boolean(validation.getFieldError("question"))}
 									/>
@@ -250,7 +260,9 @@ function AgentKnowledgeQnA() {
 											setAnswer(e.target.value);
 											validation.handleChange("answer");
 										}}
-										onBlur={() => validation.handleBlur("answer", answer, formData)}
+										onBlur={() =>
+											validation.handleBlur("answer", answer, formData)
+										}
 										placeholder={t("knowledge.qna.answerPlaceholder")}
 										className="min-h-[300px]"
 										aria-invalid={Boolean(validation.getFieldError("answer"))}
@@ -267,10 +279,7 @@ function AgentKnowledgeQnA() {
 										{t("common.cancel")}
 									</Button>
 								)}
-								<Button
-									type="submit"
-									disabled={isSubmitting}
-								>
+								<Button type="submit" disabled={isSubmitting}>
 									{isSubmitting
 										? t("knowledge.qna.saving")
 										: editingEntry

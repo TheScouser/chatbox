@@ -46,7 +46,9 @@ function AgentsList() {
 				description={
 					currentOrganization ? (
 						<>
-							{t("agents.descriptionWithOrg", { orgName: currentOrganization.name })}
+							{t("agents.descriptionWithOrg", {
+								orgName: currentOrganization.name,
+							})}
 						</>
 					) : (
 						t("agents.description")
@@ -78,7 +80,9 @@ function AgentsList() {
 					description={
 						currentOrganization ? (
 							<>
-								{t("agents.noAgentsInOrgDesc", { orgName: currentOrganization.name })}
+								{t("agents.noAgentsInOrgDesc", {
+									orgName: currentOrganization.name,
+								})}
 							</>
 						) : (
 							t("agents.noAgentsDesc")

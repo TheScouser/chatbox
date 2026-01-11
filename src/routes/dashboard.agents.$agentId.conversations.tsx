@@ -55,7 +55,7 @@ function AgentConversations() {
 		);
 	}
 
-		if (!agent) {
+	if (!agent) {
 		return (
 			<PageLayout>
 				<ContentCardEmpty
@@ -174,7 +174,9 @@ function AgentConversations() {
 												variant="outline"
 												className="text-[9px] bg-background/50 border-border/40"
 											>
-												{isSelected ? t("conversations.open") : t("conversations.archived")}
+												{isSelected
+													? t("conversations.open")
+													: t("conversations.archived")}
 											</Badge>
 											<div className="flex items-center text-[10px] text-muted-foreground/50 font-bold uppercase tracking-tight">
 												<Terminal className="h-2.5 w-2.5 mr-1" />
@@ -277,7 +279,9 @@ function AgentConversations() {
 									</p>
 									<div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
 										<ChevronRight className="h-3 w-3" />
-										{t("conversations.chooseFromLogs", { count: conversations.length })}
+										{t("conversations.chooseFromLogs", {
+											count: conversations.length,
+										})}
 									</div>
 								</div>
 							</div>

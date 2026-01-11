@@ -103,9 +103,7 @@ function AgentKnowledgeText() {
 		} catch (error) {
 			console.error("Error saving text knowledge:", error);
 			setError(
-				error instanceof Error
-					? error.message
-					: t("knowledge.text.saveError"),
+				error instanceof Error ? error.message : t("knowledge.text.saveError"),
 			);
 		} finally {
 			setIsSubmitting(false);
@@ -132,7 +130,9 @@ function AgentKnowledgeText() {
 		} catch (error) {
 			console.error("Error deleting text entry:", error);
 			setError(
-				error instanceof Error ? error.message : t("knowledge.text.deleteError"),
+				error instanceof Error
+					? error.message
+					: t("knowledge.text.deleteError"),
 			);
 		}
 	};
@@ -159,7 +159,9 @@ function AgentKnowledgeText() {
 
 			<TwoColumnLayout>
 				<FormCard
-					title={editingEntry ? t("knowledge.text.edit") : t("knowledge.text.addNew")}
+					title={
+						editingEntry ? t("knowledge.text.edit") : t("knowledge.text.addNew")
+					}
 					description={t("knowledge.text.description")}
 					icon={FileText}
 				>
@@ -193,9 +195,9 @@ function AgentKnowledgeText() {
 									editingEntry
 										? handleCancelEdit
 										: () => {
-											setTitle("");
-											setContent("");
-										}
+												setTitle("");
+												setContent("");
+											}
 								}
 							>
 								{editingEntry ? t("common.cancel") : t("common.cancel")}

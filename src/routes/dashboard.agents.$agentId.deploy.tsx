@@ -51,7 +51,7 @@ import {
 	Cloud,
 	ArrowRight,
 	ExternalLink,
-	Monitor
+	Monitor,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/agents/$agentId/deploy")({
@@ -806,7 +806,8 @@ function AgentDeploy() {
 											/>
 											<p className="text-[10px] text-muted-foreground font-medium flex items-center gap-1">
 												<ChevronRight className="h-2 w-2" />
-												This color will be used for buttons, icons, and highlights
+												This color will be used for buttons, icons, and
+												highlights
 											</p>
 										</div>
 									</div>
@@ -956,11 +957,12 @@ function AgentDeploy() {
 		{
 			id: "email",
 			name: "Email",
-			description: "Connect your agent to an email address and let it respond to messages from your customers.",
+			description:
+				"Connect your agent to an email address and let it respond to messages from your customers.",
 			icon: <Mail className="h-5 w-5 text-rose-500" />,
 			badge: "Beta",
 			buttonText: "Subscribe to enable",
-			status: "locked"
+			status: "locked",
 		},
 		{
 			id: "zapier",
@@ -968,71 +970,79 @@ function AgentDeploy() {
 			description: "Connect your agent with thousands of apps using Zapier.",
 			icon: <Zap className="h-5 w-5 text-orange-500" />,
 			buttonText: "Subscribe to enable",
-			status: "locked"
+			status: "locked",
 		},
 		{
 			id: "slack",
 			name: "Slack",
-			description: "Connect your agent to Slack, mention it, and have it reply to any message.",
+			description:
+				"Connect your agent to Slack, mention it, and have it reply to any message.",
 			icon: <Slack className="h-5 w-5 text-purple-500" />,
 			buttonText: "Subscribe to enable",
-			status: "locked"
+			status: "locked",
 		},
 		{
 			id: "wordpress",
 			name: "WordPress",
-			description: "Use the official Chatbox plugin for WordPress to add the chat widget to your website.",
+			description:
+				"Use the official Chatbox plugin for WordPress to add the chat widget to your website.",
 			icon: <Globe className="h-5 w-5 text-blue-600" />,
 			buttonText: "Setup",
-			status: "available"
+			status: "available",
 		},
 		{
 			id: "whatsapp",
 			name: "WhatsApp",
-			description: "Connect your agent to a WhatsApp number and let it respond to messages from your customers.",
+			description:
+				"Connect your agent to a WhatsApp number and let it respond to messages from your customers.",
 			icon: <MessageSquare className="h-5 w-5 text-green-500" />,
 			buttonText: "Subscribe to enable",
-			status: "locked"
+			status: "locked",
 		},
 		{
 			id: "messenger",
 			name: "Messenger",
-			description: "Connect your agent to a Facebook page and let it respond to messages from your customers.",
+			description:
+				"Connect your agent to a Facebook page and let it respond to messages from your customers.",
 			icon: <Facebook className="h-5 w-5 text-blue-500" />,
 			buttonText: "Subscribe to enable",
-			status: "locked"
+			status: "locked",
 		},
 		{
 			id: "instagram",
 			name: "Instagram",
-			description: "Connect your agent to an Instagram page and let it respond to messages from your customers.",
+			description:
+				"Connect your agent to an Instagram page and let it respond to messages from your customers.",
 			icon: <Instagram className="h-5 w-5 text-pink-500" />,
 			buttonText: "Subscribe to enable",
-			status: "locked"
+			status: "locked",
 		},
 		{
 			id: "zendesk",
 			name: "Zendesk",
-			description: "Create Zendesk tickets from your customers and let your agent reply to them.",
+			description:
+				"Create Zendesk tickets from your customers and let your agent reply to them.",
 			icon: <LifeBuoy className="h-5 w-5 text-emerald-600" />,
 			buttonText: "Subscribe to enable",
-			status: "locked"
+			status: "locked",
 		},
 		{
 			id: "salesforce",
 			name: "Salesforce",
-			description: "Create Salesforce cases from your customers and let your agent reply to them.",
+			description:
+				"Create Salesforce cases from your customers and let your agent reply to them.",
 			icon: <Cloud className="h-5 w-5 text-sky-400" />,
 			buttonText: "Subscribe to enable",
-			status: "locked"
+			status: "locked",
 		},
 		{
 			id: "api",
 			name: "API",
-			description: "Integrate your agent directly with your applications using our REST API.",
+			description:
+				"Integrate your agent directly with your applications using our REST API.",
 			icon: <Code2 className="h-5 w-5 text-zinc-400" />,
 			buttonText: "Subscribe to enable",
-			status: "locked"
+			status: "locked",
 		},
 	];
 
@@ -1055,7 +1065,9 @@ function AgentDeploy() {
 									<div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:scale-110 transition-transform">
 										<MessageSquare className="h-6 w-6 text-primary" />
 									</div>
-									<h3 className="text-xl font-bold">{t("deploy.chatWidget")}</h3>
+									<h3 className="text-xl font-bold">
+										{t("deploy.chatWidget")}
+									</h3>
 									<p className="text-sm text-muted-foreground max-w-xs">
 										{t("deploy.chatWidgetDesc")}
 									</p>
@@ -1071,7 +1083,9 @@ function AgentDeploy() {
 									variant="outline"
 									size="icon"
 									className="rounded-xl border-border/60 hover:bg-muted"
-									onClick={() => window.open(`${baseUrl}/widget-demo/${agent._id}`, "_blank")}
+									onClick={() =>
+										window.open(`${baseUrl}/widget-demo/${agent._id}`, "_blank")
+									}
 								>
 									<Monitor className="h-4 w-4" />
 								</Button>
@@ -1116,7 +1130,9 @@ function AgentDeploy() {
 									className="flex-1 rounded-xl hover:bg-muted"
 									onClick={() => copyToClipboard(embedUrl, "public-link")}
 								>
-									{copiedCode === "public-link" ? t("deploy.copied") : t("deploy.setup")}
+									{copiedCode === "public-link"
+										? t("deploy.copied")
+										: t("deploy.setup")}
 								</Button>
 							</div>
 						</div>
@@ -1126,14 +1142,20 @@ function AgentDeploy() {
 				{/* Integrations Grid */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 					{integrations.map((item) => (
-						<Card key={item.id} className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-sm hover:bg-card/50 transition-all hover:shadow-xl hover:-translate-y-1">
+						<Card
+							key={item.id}
+							className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-sm hover:bg-card/50 transition-all hover:shadow-xl hover:-translate-y-1"
+						>
 							<div className="p-6 space-y-4 flex flex-col h-full">
 								<div className="flex items-center justify-between">
 									<div className="w-10 h-10 rounded-xl bg-muted/40 flex items-center justify-center group-hover:scale-110 transition-all">
 										{item.icon}
 									</div>
 									{item.badge && (
-										<Badge variant="outline" className="text-[9px] font-bold py-0 h-5 bg-background/50">
+										<Badge
+											variant="outline"
+											className="text-[9px] font-bold py-0 h-5 bg-background/50"
+										>
 											{item.badge}
 										</Badge>
 									)}
@@ -1147,14 +1169,20 @@ function AgentDeploy() {
 								</div>
 
 								<div className="flex items-center gap-2 pt-2">
-									<Button variant="outline" size="icon" className="h-8 w-8 rounded-lg shrink-0 border-border/60">
+									<Button
+										variant="outline"
+										size="icon"
+										className="h-8 w-8 rounded-lg shrink-0 border-border/60"
+									>
 										<Monitor className="h-3.5 w-3.5" />
 									</Button>
 									<Button
-										variant={item.status === 'available' ? 'default' : 'secondary'}
+										variant={
+											item.status === "available" ? "default" : "secondary"
+										}
 										size="sm"
 										className="flex-1 h-8 text-[11px] font-bold rounded-lg"
-										disabled={item.id === 'api' && item.status === 'locked'}
+										disabled={item.id === "api" && item.status === "locked"}
 									>
 										{item.buttonText}
 									</Button>

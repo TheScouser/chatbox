@@ -18,7 +18,9 @@ function EmbedChat() {
 	>(undefined);
 
 	// Extract widgetId from URL parameters
-	const [widgetId, setWidgetId] = useState<Id<"widgetConfigurations"> | undefined>(undefined);
+	const [widgetId, setWidgetId] = useState<
+		Id<"widgetConfigurations"> | undefined
+	>(undefined);
 
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
@@ -41,17 +43,18 @@ function EmbedChat() {
 		api.widgetConfig.getWidgetConfigForEmbed,
 		agent
 			? {
-				agentId: agentId as Id<"agents">,
-				widgetId: widgetId,
-				locale: initialLocale,
-			}
-			: "skip"
+					agentId: agentId as Id<"agents">,
+					widgetId: widgetId,
+					locale: initialLocale,
+				}
+			: "skip",
 	);
 
 	// Determine locale to use: widget language setting or detected locale
-	const effectiveLocale = widgetData?.interface?.language && widgetData.interface.language !== "auto"
-		? widgetData.interface.language
-		: initialLocale;
+	const effectiveLocale =
+		widgetData?.interface?.language && widgetData.interface.language !== "auto"
+			? widgetData.interface.language
+			: initialLocale;
 
 	// Apply widget configuration styles
 	useEffect(() => {
@@ -89,10 +92,10 @@ function EmbedChat() {
 		const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 		return result
 			? {
-				r: Number.parseInt(result[1], 16),
-				g: Number.parseInt(result[2], 16),
-				b: Number.parseInt(result[3], 16),
-			}
+					r: Number.parseInt(result[1], 16),
+					g: Number.parseInt(result[2], 16),
+					b: Number.parseInt(result[3], 16),
+				}
 			: null;
 	};
 
@@ -123,7 +126,9 @@ function EmbedChat() {
 			<div className="h-screen flex items-center justify-center bg-white">
 				<div className="text-center p-4">
 					<Bot className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-					<p className="text-sm text-gray-600">Widget configuration not found</p>
+					<p className="text-sm text-gray-600">
+						Widget configuration not found
+					</p>
 				</div>
 			</div>
 		);

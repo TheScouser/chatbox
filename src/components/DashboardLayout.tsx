@@ -34,67 +34,118 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 	const navigate = useNavigate();
 
 	// Navigation configurations - using translations
-	const globalNavigation: NavItem[] = useMemo(() => [
-		{ name: t("navigation.agents"), href: "/dashboard/agents", icon: Bot },
-		{ name: t("navigation.usage"), href: "/dashboard/usage", icon: TrendingUp },
-		{
-			name: t("navigation.settings"),
-			href: "/dashboard/settings",
-			icon: Settings,
-			expandable: true,
-			children: [
-				{
-					name: t("navigation.general"),
-					href: "/dashboard/settings",
-					icon: Settings,
-					exact: true,
-				},
-				{ name: t("navigation.members"), href: "/dashboard/settings/members", icon: Users },
-				{ name: t("navigation.plans"), href: "/dashboard/settings/plans", icon: FolderOpen },
-				{
-					name: t("navigation.billing"),
-					href: "/dashboard/settings/billing",
-					icon: CreditCard,
-				},
-			],
-		},
-	], [t]);
+	const globalNavigation: NavItem[] = useMemo(
+		() => [
+			{ name: t("navigation.agents"), href: "/dashboard/agents", icon: Bot },
+			{
+				name: t("navigation.usage"),
+				href: "/dashboard/usage",
+				icon: TrendingUp,
+			},
+			{
+				name: t("navigation.settings"),
+				href: "/dashboard/settings",
+				icon: Settings,
+				expandable: true,
+				children: [
+					{
+						name: t("navigation.general"),
+						href: "/dashboard/settings",
+						icon: Settings,
+						exact: true,
+					},
+					{
+						name: t("navigation.members"),
+						href: "/dashboard/settings/members",
+						icon: Users,
+					},
+					{
+						name: t("navigation.plans"),
+						href: "/dashboard/settings/plans",
+						icon: FolderOpen,
+					},
+					{
+						name: t("navigation.billing"),
+						href: "/dashboard/settings/billing",
+						icon: CreditCard,
+					},
+				],
+			},
+		],
+		[t],
+	);
 
-	const agentNavigation: NavItem[] = useMemo(() => [
-		{ name: t("navigation.chatPlayground"), href: "/chat", icon: BotMessageSquareIcon },
-		{
-			name: t("navigation.sources"),
-			href: "/knowledge",
-			icon: DatabaseIcon,
-			expandable: true,
-			children: [
-				{ name: t("navigation.text"), href: "/knowledge/text", icon: FileText },
-				{ name: t("navigation.qna"), href: "/knowledge/qna", icon: MessageSquare },
-				{ name: t("navigation.files"), href: "/knowledge/upload", icon: Upload },
-				{ name: t("navigation.website"), href: "/knowledge/url", icon: Globe },
-			],
-		},
-		{ name: t("navigation.conversations"), href: "/conversations", icon: MessageSquare },
-		{ name: t("navigation.widget"), href: "/widget", icon: Layout },
-		{ name: t("navigation.deploy"), href: "/deploy", icon: Globe },
-		{ name: t("navigation.analytics"), href: "/analytics", icon: BarChart3, disabled: true },
-		{
-			name: t("navigation.settings"),
-			href: "/settings",
-			icon: Settings,
-			expandable: true,
-			children: [
-				{ name: t("navigation.general"), href: "/settings", icon: User },
-				{ name: t("navigation.ai"), href: "/settings/ai", icon: Bot },
-				{
-					name: t("navigation.chatInterface"),
-					href: "/settings/chat-interface",
-					icon: MessageSquare,
-				},
-				{ name: t("navigation.security"), href: "/settings/security", icon: Shield },
-			],
-		},
-	], [t]);
+	const agentNavigation: NavItem[] = useMemo(
+		() => [
+			{
+				name: t("navigation.chatPlayground"),
+				href: "/chat",
+				icon: BotMessageSquareIcon,
+			},
+			{
+				name: t("navigation.sources"),
+				href: "/knowledge",
+				icon: DatabaseIcon,
+				expandable: true,
+				children: [
+					{
+						name: t("navigation.text"),
+						href: "/knowledge/text",
+						icon: FileText,
+					},
+					{
+						name: t("navigation.qna"),
+						href: "/knowledge/qna",
+						icon: MessageSquare,
+					},
+					{
+						name: t("navigation.files"),
+						href: "/knowledge/upload",
+						icon: Upload,
+					},
+					{
+						name: t("navigation.website"),
+						href: "/knowledge/url",
+						icon: Globe,
+					},
+				],
+			},
+			{
+				name: t("navigation.conversations"),
+				href: "/conversations",
+				icon: MessageSquare,
+			},
+			{ name: t("navigation.widget"), href: "/widget", icon: Layout },
+			{ name: t("navigation.deploy"), href: "/deploy", icon: Globe },
+			{
+				name: t("navigation.analytics"),
+				href: "/analytics",
+				icon: BarChart3,
+				disabled: true,
+			},
+			{
+				name: t("navigation.settings"),
+				href: "/settings",
+				icon: Settings,
+				expandable: true,
+				children: [
+					{ name: t("navigation.general"), href: "/settings", icon: User },
+					{ name: t("navigation.ai"), href: "/settings/ai", icon: Bot },
+					{
+						name: t("navigation.chatInterface"),
+						href: "/settings/chat-interface",
+						icon: MessageSquare,
+					},
+					{
+						name: t("navigation.security"),
+						href: "/settings/security",
+						icon: Shield,
+					},
+				],
+			},
+		],
+		[t],
+	);
 
 	// UI State
 	const [showAgentsDropdown, setShowAgentsDropdown] = useState(false);
@@ -213,7 +264,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 						<Link
 							to="/dashboard/agents"
 							className={`flex items-center px-3 py-2 text-sm text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent/50 rounded-md transition-colors ${sidebarCollapsed ? "justify-center" : ""}`}
-							title={sidebarCollapsed ? t("navigation.backToAllAgents") : undefined}
+							title={
+								sidebarCollapsed ? t("navigation.backToAllAgents") : undefined
+							}
 						>
 							<Bot className={`h-4 w-4 ${sidebarCollapsed ? "" : "mr-3"}`} />
 							{!sidebarCollapsed && t("navigation.backToAllAgents")}

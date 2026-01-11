@@ -47,7 +47,9 @@ function RootComponent() {
 			<ThemeProvider>
 				<ClerkProvider>
 					<ConvexProvider>
-						<Suspense fallback={<PageLoading message="Loading application..." />}>
+						<Suspense
+							fallback={<PageLoading message="Loading application..." />}
+						>
 							{needsOrganization ? (
 								<OrganizationProvider>
 									{showHeader && <Header />}

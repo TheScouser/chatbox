@@ -194,7 +194,11 @@ interface QueryErrorProps {
 	className?: string;
 }
 
-export function QueryError({ error, onRetry, className = "" }: QueryErrorProps) {
+export function QueryError({
+	error,
+	onRetry,
+	className = "",
+}: QueryErrorProps) {
 	if (!error) return null;
 
 	return (
@@ -208,7 +212,8 @@ export function QueryError({ error, onRetry, className = "" }: QueryErrorProps) 
 				Failed to load data
 			</h3>
 			<p className="text-sm text-muted-foreground mb-4 max-w-sm">
-				{error.message || "Something went wrong while loading. Please try again."}
+				{error.message ||
+					"Something went wrong while loading. Please try again."}
 			</p>
 			{onRetry && (
 				<Button variant="outline" onClick={onRetry}>

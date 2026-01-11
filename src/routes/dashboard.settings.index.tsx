@@ -16,7 +16,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Skeleton, SkeletonForm, SkeletonPageHeader } from "@/components/ui/skeleton";
+import {
+	Skeleton,
+	SkeletonForm,
+	SkeletonPageHeader,
+} from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
@@ -33,7 +37,9 @@ export const Route = createFileRoute("/dashboard/settings/")({
 function GeneralSettings() {
 	const { t, i18n } = useTranslation();
 	const user = useQuery(api.users.getCurrentUser);
-	const [selectedLocale, setSelectedLocale] = useState<string>(i18n.language || "en");
+	const [selectedLocale, setSelectedLocale] = useState<string>(
+		i18n.language || "en",
+	);
 	const [localeSaved, setLocaleSaved] = useState(false);
 
 	// Load current locale preference
@@ -74,18 +80,14 @@ function GeneralSettings() {
 		<div className="space-y-6">
 			<div>
 				<h2 className="text-2xl font-bold">{t("settings.title")}</h2>
-				<p className="text-gray-600">
-					{t("settings.description")}
-				</p>
+				<p className="text-gray-600">{t("settings.description")}</p>
 			</div>
 
 			{/* Profile Information */}
 			<Card>
 				<CardHeader>
 					<CardTitle>{t("settings.profile.title")}</CardTitle>
-					<CardDescription>
-						{t("settings.profile.description")}
-					</CardDescription>
+					<CardDescription>{t("settings.profile.description")}</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -137,10 +139,14 @@ function GeneralSettings() {
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
-						<Label htmlFor="language">{t("settings.interfaceLanguage.dashboardLanguage")}</Label>
+						<Label htmlFor="language">
+							{t("settings.interfaceLanguage.dashboardLanguage")}
+						</Label>
 						<Select value={selectedLocale} onValueChange={handleLocaleChange}>
 							<SelectTrigger id="language" className="w-full">
-								<SelectValue placeholder={t("settings.interfaceLanguage.selectLanguage")} />
+								<SelectValue
+									placeholder={t("settings.interfaceLanguage.selectLanguage")}
+								/>
 							</SelectTrigger>
 							<SelectContent>
 								{LANGUAGES.map((lang) => (
@@ -171,7 +177,9 @@ function GeneralSettings() {
 							onClick={handleSaveLocale}
 							disabled={localeSaved}
 						>
-							{localeSaved ? t("settings.interfaceLanguage.saving") : t("settings.interfaceLanguage.save")}
+							{localeSaved
+								? t("settings.interfaceLanguage.saving")
+								: t("settings.interfaceLanguage.save")}
 						</Button>
 					</div>
 				</CardContent>
@@ -189,7 +197,9 @@ function GeneralSettings() {
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="font-medium">{t("settings.notifications.emailNotifications")}</p>
+								<p className="font-medium">
+									{t("settings.notifications.emailNotifications")}
+								</p>
 								<p className="text-sm text-gray-600">
 									{t("settings.notifications.emailNotificationsDesc")}
 								</p>
@@ -199,7 +209,9 @@ function GeneralSettings() {
 
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="font-medium">{t("settings.notifications.usageAlerts")}</p>
+								<p className="font-medium">
+									{t("settings.notifications.usageAlerts")}
+								</p>
 								<p className="text-sm text-gray-600">
 									{t("settings.notifications.usageAlertsDesc")}
 								</p>
@@ -209,7 +221,9 @@ function GeneralSettings() {
 
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="font-medium">{t("settings.notifications.productUpdates")}</p>
+								<p className="font-medium">
+									{t("settings.notifications.productUpdates")}
+								</p>
 								<p className="text-sm text-gray-600">
 									{t("settings.notifications.productUpdatesDesc")}
 								</p>
@@ -219,7 +233,9 @@ function GeneralSettings() {
 					</div>
 
 					<div className="flex justify-end">
-						<Button variant="outline">{t("settings.notifications.updatePreferences")}</Button>
+						<Button variant="outline">
+							{t("settings.notifications.updatePreferences")}
+						</Button>
 					</div>
 				</CardContent>
 			</Card>
@@ -231,18 +247,26 @@ function GeneralSettings() {
 			<Card>
 				<CardHeader>
 					<CardTitle>{t("settings.accountActions.title")}</CardTitle>
-					<CardDescription>{t("settings.accountActions.description")}</CardDescription>
+					<CardDescription>
+						{t("settings.accountActions.description")}
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<Button variant="outline">{t("settings.accountActions.exportData")}</Button>
-						<Button variant="outline">{t("settings.accountActions.downloadInvoices")}</Button>
+						<Button variant="outline">
+							{t("settings.accountActions.exportData")}
+						</Button>
+						<Button variant="outline">
+							{t("settings.accountActions.downloadInvoices")}
+						</Button>
 					</div>
 
 					<hr />
 
 					<div className="space-y-2">
-						<p className="font-medium text-red-600">{t("settings.accountActions.dangerZone")}</p>
+						<p className="font-medium text-red-600">
+							{t("settings.accountActions.dangerZone")}
+						</p>
 						<p className="text-sm text-gray-600">
 							{t("settings.accountActions.dangerZoneDesc")}
 						</p>

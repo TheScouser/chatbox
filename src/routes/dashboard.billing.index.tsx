@@ -83,7 +83,11 @@ function BillingDashboard() {
 							</p>
 							{subscription && (
 								<p className="text-sm text-gray-500">
-									{t("billing.nextBilling", { date: new Date(subscription.currentPeriodEnd).toLocaleDateString() })}
+									{t("billing.nextBilling", {
+										date: new Date(
+											subscription.currentPeriodEnd,
+										).toLocaleDateString(),
+									})}
 								</p>
 							)}
 						</div>
